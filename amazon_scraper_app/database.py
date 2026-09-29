@@ -393,8 +393,18 @@ def get_product_stats(product_id: int, current_price: float = None, original_pri
     else:
         volatility = "High"
 
+    # Sanity guard: Normalize orig/tgt if mistakenly stored in local currency (e.g. INR > 5x cur)
+    if cur > 0 and orig > cur * 5:
+        orig = round(orig / 83.50, 2)
+    if cur > 0 and tgt > cur * 5:
+        tgt = round(tgt / 83.50, 2)
+
     # Baseline peak for savings
     baseline_peak = max(orig, highest)
+    # Sanity guard: baseline peak shouldn't be absurdly inflated (> 2.5x cur)
+    if cur > 0 and baseline_peak > cur * 2.5:
+        baseline_peak = round(cur * 1.25, 2)
+
     if baseline_peak > cur and baseline_peak > 0:
         discount_pct = round(((baseline_peak - cur) / baseline_peak) * 100, 1)
         savings = round(baseline_peak - cur, 2)
@@ -549,10 +559,24 @@ def save_or_update_product(data: dict, user_id: int = None):
         norm_price = raw_price
         
         raw_orig = data.get("original_price")
-        norm_orig = float(raw_orig) if raw_orig else round(norm_price * 1.15, 2)
+        if raw_orig:
+            raw_orig_val = float(raw_orig)
+            if (currency == "INR" or region == "IN") and (raw_orig_val > norm_price * 5 or raw_orig_val > 500):
+                norm_orig = round(raw_orig_val / 83.50, 2)
+            else:
+                norm_orig = raw_orig_val
+        else:
+            norm_orig = round(norm_price * 1.15, 2)
         
         raw_target = data.get("target_price")
-        norm_target = float(raw_target) if raw_target else round(norm_price * 0.90, 2)
+        if raw_target:
+            raw_tgt_val = float(raw_target)
+            if (currency == "INR" or region == "IN") and (raw_tgt_val > norm_price * 5 or raw_tgt_val > 500):
+                norm_target = round(raw_tgt_val / 83.50, 2)
+            else:
+                norm_target = raw_tgt_val
+        else:
+            norm_target = round(norm_price * 0.90, 2)
     else:
         # Fallback guard: Normalize to USD baseline if price was passed in un-converted local currency
         if currency == "INR" and raw_price > 500:
@@ -568,14 +592,14 @@ def save_or_update_product(data: dict, user_id: int = None):
         raw_orig = data.get("original_price")
         if raw_orig:
             raw_orig_val = float(raw_orig)
-            norm_orig = round(raw_orig_val / 83.50, 2) if (currency == "INR" and raw_orig_val > 500) else raw_orig_val
+            norm_orig = round(raw_orig_val / 83.50, 2) if (currency == "INR" and (raw_orig_val > norm_price * 5 or raw_orig_val > 500)) else raw_orig_val
         else:
             norm_orig = round(norm_price * 1.15, 2)
 
         raw_target = data.get("target_price")
         if raw_target:
             raw_tgt_val = float(raw_target)
-            norm_target = round(raw_tgt_val / 83.50, 2) if (currency == "INR" and raw_tgt_val > 500) else raw_tgt_val
+            norm_target = round(raw_tgt_val / 83.50, 2) if (currency == "INR" and (raw_tgt_val > norm_price * 5 or raw_tgt_val > 500)) else raw_tgt_val
         else:
             norm_target = round(norm_price * 0.90, 2)
 

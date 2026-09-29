@@ -187,7 +187,8 @@ def api_add_product():
     if "target_price" in data and data["target_price"]:
         try:
             raw_target = float(data["target_price"])
-            if (data.get("currency") == "INR" or scraped.get("currency") == "INR") and raw_target > 500:
+            p_price = scraped.get("price", 100)
+            if (data.get("currency") == "INR" or scraped.get("currency") == "INR") and raw_target > (p_price * 5):
                 scraped["target_price"] = round(raw_target / 83.50, 2)
             else:
                 scraped["target_price"] = raw_target
