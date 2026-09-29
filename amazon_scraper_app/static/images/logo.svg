@@ -1,0 +1,56 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Multi-Tone Metallic Gold Gradient -->
+    <linearGradient id="gold_grad" x1="10" y1="10" x2="70" y2="70" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop offset="0.3" stop-color="#f5e4d3"/>
+      <stop offset="0.7" stop-color="#e8caae"/>
+      <stop offset="1" stop-color="#b87333"/>
+    </linearGradient>
+
+    <!-- Electric Cyan Emerald Cyber Gradient -->
+    <linearGradient id="cyber_grad" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00f2fe"/>
+      <stop offset="0.5" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+
+    <!-- Glowing Rose Spark Gradient -->
+    <linearGradient id="rose_grad" x1="0" y1="80" x2="80" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f43f5e"/>
+      <stop offset="1" stop-color="#e06d75"/>
+    </linearGradient>
+
+    <!-- Deep Core Radial Mask -->
+    <radialGradient id="core_glow" cx="40" cy="40" r="38" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2a181c" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#0e0809" stop-opacity="0.98"/>
+    </radialGradient>
+
+    <!-- Laser Glow Filter -->
+    <filter id="laser_glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer Glass Base Container -->
+  <rect x="4" y="4" width="72" height="72" rx="22" fill="url(#core_glow)" stroke="url(#gold_grad)" stroke-width="2" />
+
+  <!-- Outer Cyber Orbit Ring Segment -->
+  <circle cx="40" cy="40" r="31" stroke="url(#cyber_grad)" stroke-width="3" stroke-dasharray="145 50" stroke-linecap="round" filter="url(#laser_glow)" opacity="0.95"/>
+
+  <!-- Inner Gold Hexagonal Shield Face -->
+  <path d="M40 16L58 26V54L40 64L22 54V26L40 16Z" fill="#180d10" stroke="url(#gold_grad)" stroke-width="2.5" />
+  <path d="M40 20L54 28V52L40 60L26 52V28L40 20Z" fill="url(#gold_grad)" fill-opacity="0.12" />
+
+  <!-- Center Dynamic Lightning & Trend Arrow Symbol -->
+  <path d="M42 22L27 41H39L36 58L53 37H40L42 22Z" fill="url(#gold_grad)" filter="url(#laser_glow)" />
+
+  <!-- Live Pulse Beacon Point -->
+  <circle cx="60" cy="20" r="5" fill="#10b981" filter="url(#laser_glow)"/>
+  <circle cx="60" cy="20" r="9" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.5"/>
+</svg>

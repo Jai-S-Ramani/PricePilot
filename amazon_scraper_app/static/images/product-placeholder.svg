@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c1013"/>
+      <stop offset="50%" stop-color="#12080a"/>
+      <stop offset="100%" stop-color="#241418"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5e4d3"/>
+      <stop offset="50%" stop-color="#e8caae"/>
+      <stop offset="100%" stop-color="#b87333"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <!-- Background Card -->
+  <rect width="200" height="200" rx="20" fill="url(#bgGrad)"/>
+  <rect x="2" y="2" width="196" height="196" rx="18" fill="none" stroke="rgba(232, 202, 174, 0.2)" stroke-width="1.5"/>
+  
+  <!-- Subtle Ambient Glow -->
+  <circle cx="100" cy="90" r="45" fill="rgba(232, 202, 174, 0.06)" filter="url(#glow)"/>
+
+  <!-- Package / Product Icon -->
+  <g transform="translate(100, 85)">
+    <!-- 3D Isometric Box Cube -->
+    <!-- Top Face -->
+    <polygon points="0,-32 28,-16 0,0 -28,-16" fill="rgba(232, 202, 174, 0.25)" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linejoin="round"/>
+    <!-- Left Face -->
+    <polygon points="-28,-16 0,0 0,32 -28,16" fill="rgba(184, 115, 51, 0.2)" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linejoin="round"/>
+    <!-- Right Face -->
+    <polygon points="0,0 28,-16 28,16 0,32" fill="rgba(245, 228, 211, 0.15)" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linejoin="round"/>
+    
+    <!-- Amazon Smile Arrow Hint -->
+    <path d="M -14,8 Q 0,16 14,8" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+    <polygon points="12,6 16,9 12,12" fill="#f59e0b"/>
+  </g>
+
+  <!-- Product Label -->
+  <text x="100" y="152" text-anchor="middle" font-family="'Outfit', 'Inter', sans-serif" font-size="11" font-weight="700" fill="#e8caae" letter-spacing="1">AMAZON ITEM</text>
+  <text x="100" y="168" text-anchor="middle" font-family="'Inter', sans-serif" font-size="9" font-weight="500" fill="rgba(232, 202, 174, 0.6)">Monitored Product</text>
+</svg>

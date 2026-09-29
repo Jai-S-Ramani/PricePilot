@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amazon Price Tracker & Scraper Intelligence Dashboard</title>
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- GSAP Animation Platform & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <!-- App Styles (Cache Buster v4.6 Live Search Autocomplete) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}?v=4.6">
+</head>
+<body>
+
+  <!-- Futuristic Live Market Intelligence Ticker -->
+  <div class="market-ticker-wrap">
+    <div class="ticker-badge"><i class="fa-solid fa-bolt-lightning"></i> MARKET INTEL</div>
+    <div class="ticker-track" id="tickerTrack">
+      <div class="ticker-item"><span class="ticker-dot pulse"></span> <strong>Global Sweep:</strong> 5 Amazon Regional Marketplaces Synchronized (US, IN, UK, CA, DE)</div>
+      <div class="ticker-item"><i class="fa-solid fa-fire text-amber"></i> <strong>Strong Signals:</strong> Multiple Buy-Now Price Trajectories Active</div>
+      <div class="ticker-item"><i class="fa-solid fa-piggy-bank text-emerald"></i> <strong>Peak Savings:</strong> Over $380 in Total Discounted Value Identified</div>
+      <div class="ticker-item"><i class="fa-solid fa-shield-halved text-sky"></i> <strong>Daemon Sentinel:</strong> Auto-Price Sweep Running</div>
+    </div>
+  </div>
+
+  <!-- Top Header / Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-logo">
+          <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Amazon Tracker Logo" class="logo-img">
+        </div>
+        <div class="brand-text">
+          <h1>Amazon Tracker</h1>
+          <p>Autonomous Price Intelligence & Scraper Engine</p>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <!-- Live Background Scheduler Status Pill -->
+        <div id="schedulerStatusPill" class="scheduler-pill" title="Background Auto-Sync Status">
+          <span class="scheduler-dot"></span>
+          <span id="schedulerPillText">Sync: Active (30m)</span>
+        </div>
+
+        <!-- User Authentication Badge / Home Link (Always Visible) -->
+        <div id="userAuthContainer" class="nav-auth-container">
+          <a href="/" class="btn btn-secondary nav-auth-btn">
+            <i class="fa-solid fa-house"></i> Home
+          </a>
+        </div>
+
+        <!-- 3-Dot Options Menu Button & Dropdown -->
+        <div class="nav-menu-wrapper">
+          <button id="threeDotBtn" class="btn btn-secondary nav-menu-btn" title="More Options" aria-label="More Options">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </button>
+          
+          <!-- 3-Dot Dropdown Popup -->
+          <div id="headerMenuDropdown" class="menu-dropdown glass hidden">
+            <div class="menu-group">
+              <label class="menu-label"><i class="fa-solid fa-palette"></i> Theme Mode</label>
+              <select id="themeSelector" class="menu-select" title="Switch Theme Palette">
+                <option value="dark">🌙 Dark Ultra-Luxe (Obsidian & Biscuit)</option>
+                <option value="light">☀️ Light Sand Luxe (Sand & Copper)</option>
+              </select>
+            </div>
+
+            <div class="menu-group">
+              <label class="menu-label"><i class="fa-solid fa-coins"></i> Currency</label>
+              <select id="currencySelector" class="menu-select" title="Select Display Currency">
+                <option value="INR" selected>🇮🇳 INR (₹)</option>
+                <option value="USD">💵 USD ($)</option>
+                <option value="EUR">💶 EUR (€)</option>
+                <option value="GBP">💷 GBP (£)</option>
+                <option value="CAD">🇨🇦 CAD (CA$)</option>
+                <option value="AUD">🇦🇺 AUD (A$)</option>
+                <option value="JPY">🇯🇵 JPY (¥)</option>
+              </select>
+            </div>
+
+            <div class="menu-divider"></div>
+
+            <div class="menu-group auto-alerts-group" id="autoAlertsMenuGroup">
+              <label class="menu-label"><i class="fa-solid fa-bolt text-emerald"></i> Automated Alerts</label>
+              <div class="menu-toggle-row">
+                <span id="autoAlertsStatusText" class="toggle-status-text">Active (Auto)</span>
+                <button id="toggleAutoAlertsBtn" class="toggle-switch-btn active" title="Toggle Auto Alerts">
+                  <span class="toggle-slider"></span>
+                </button>
+              </div>
+            </div>
+
+            <div class="menu-group scheduler-group">
+              <label class="menu-label"><i class="fa-solid fa-clock-rotate-left text-emerald"></i> Background Sync</label>
+              <div class="menu-toggle-row">
+                <span id="schedulerMenuStatusText" class="toggle-status-text">Active (30m)</span>
+                <button id="toggleSchedulerBtn" class="toggle-switch-btn active" title="Toggle Background Scheduler">
+                  <span class="toggle-slider"></span>
+                </button>
+              </div>
+            </div>
+
+            <button id="triggerSchedulerBtn" class="menu-action-btn">
+              <i class="fa-solid fa-cloud-arrow-down"></i> Trigger Sync Now
+            </button>
+
+            <button id="viewAlertLogsBtn" class="menu-action-btn">
+              <i class="fa-solid fa-bell"></i> Alert Activity Log (<span id="alertCountBadge">0</span>)
+            </button>
+
+            <button id="openNotificationSettingsBtn" class="menu-action-btn">
+              <i class="fa-brands fa-discord text-purple"></i> Multi-Channel Alert Channels
+            </button>
+
+            <button id="scrapeAllBtn" class="menu-action-btn">
+              <i class="fa-solid fa-arrows-rotate spinner-icon"></i> Run Scraper Check
+            </button>
+
+            <a href="/api/export/csv" class="menu-action-btn primary-action">
+              <i class="fa-solid fa-file-csv"></i> Export Dataset CSV
+            </a>
+
+            <a href="/api/export/json" target="_blank" class="menu-action-btn">
+              <i class="fa-solid fa-file-code"></i> Export Dataset JSON
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-layout">
+    <!-- Key Analytics KPI Bar with Smooth Count-Up Attributes -->
+    <section class="kpi-grid">
+      <div class="kpi-card glass animate-card">
+        <div class="kpi-icon icon-purple"><i class="fa-solid fa-boxes-stacked"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-title">Tracked Products</span>
+          <h3 id="statTotalProducts" data-counter="int">0</h3>
+        </div>
+      </div>
+      <div class="kpi-card glass animate-card">
+        <div class="kpi-icon icon-green"><i class="fa-solid fa-fire"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-title">Price Drops Active</span>
+          <h3 id="statPriceDrops" data-counter="int">0</h3>
+        </div>
+      </div>
+      <div class="kpi-card glass animate-card">
+        <div class="kpi-icon icon-emerald"><i class="fa-solid fa-piggy-bank"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-title">Potential Savings</span>
+          <h3 id="statTotalSavings" data-counter="currency">$0.00</h3>
+        </div>
+      </div>
+      <div class="kpi-card glass animate-card">
+        <div class="kpi-icon icon-blue"><i class="fa-solid fa-tags"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-title">Average Discount</span>
+          <h3 id="statAvgDiscount" data-counter="pct">0.0%</h3>
+        </div>
+      </div>
+      <div class="kpi-card glass animate-card">
+        <div class="kpi-icon icon-amber"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-title">Daemon Auto-Sync</span>
+          <h3 id="statScraperStatus" class="status-online"><span class="radar-dot"></span> Active (30m)</h3>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Add Product & URL Input Bar with Focus Beam -->
+    <section class="add-section glass">
+      <div class="focus-glow-beam"></div>
+      <div class="section-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+        <div class="section-title" style="margin-bottom: 0;">
+          <i class="fa-solid fa-magnifying-glass-chart"></i> Track New Amazon Product
+        </div>
+        <div class="add-mode-toggle" style="display: flex; gap: 6px; background: rgba(0,0,0,0.25); padding: 4px; border-radius: 8px; border: 1px solid var(--border-color);">
+          <button id="tabModeUrl" type="button" class="btn-mode-tab active" style="padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: none; background: var(--accent-purple, #8b5cf6); color: white;">
+            <i class="fa-solid fa-link"></i> Paste URL / ASIN
+          </button>
+          <button id="tabModeSearch" type="button" class="btn-mode-tab" style="padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: none; background: transparent; color: inherit;">
+            <i class="fa-solid fa-magnifying-glass"></i> Live Amazon Search
+          </button>
+        </div>
+      </div>
+
+      <!-- URL Input Form -->
+      <form id="addProductForm" class="add-form">
+        <div class="input-group">
+          <i class="fa-brands fa-amazon input-icon"></i>
+          <input type="text" id="productUrlInput" placeholder="Paste Amazon product URL or ASIN (e.g. amazon.com, amazon.in, amazon.co.uk)..." required>
+        </div>
+        <div class="input-group-target">
+          <span id="targetPriceSymbol" class="input-prefix">₹</span>
+          <input type="number" step="0.01" id="targetPriceInput" placeholder="Target Alert Price">
+        </div>
+        <button type="submit" class="btn btn-accent btn-pulse">
+          <i class="fa-solid fa-plus"></i> Scrape & Track
+        </button>
+      </form>
+
+      <!-- Live Search Form & Results -->
+      <div id="searchAmazonContainer" class="search-amazon-box hidden" style="margin-top: 8px;">
+        <form id="searchAmazonForm" class="add-form" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <div class="input-group" style="flex: 2; min-width: 250px;">
+            <i class="fa-brands fa-amazon input-icon"></i>
+            <input type="text" id="searchAmazonQueryInput" placeholder="Search Amazon India catalog (e.g. OnePlus Buds, MacBook Air, Samsung Galaxy, boAt, iPhone)..." autocomplete="off" required>
+          </div>
+          <select id="searchAmazonRegionSelect" class="select-filter" style="width: auto; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.25); color: inherit; border: 1px solid var(--border-color);">
+            <option value="IN" selected>🇮🇳 India (₹)</option>
+            <option value="US">🇺🇸 US ($)</option>
+            <option value="UK">🇬🇧 UK (£)</option>
+            <option value="CA">🇨🇦 Canada (CA$)</option>
+            <option value="DE">🇩🇪 Germany (€)</option>
+          </select>
+          <button type="submit" id="searchAmazonSubmitBtn" class="btn btn-accent" style="white-space: nowrap;">
+            <i class="fa-solid fa-magnifying-glass"></i> Search Products
+          </button>
+        </form>
+
+        <!-- Real-Time Autocomplete Suggestion Pills -->
+        <div id="searchSuggestionsBox" class="search-suggestions-container hidden" style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
+          <span style="font-size: 0.74rem; color: #94a3b8; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+            <i class="fa-solid fa-wand-magic-sparkles" style="color: #8b5cf6;"></i> Auto-complete:
+          </span>
+          <div id="suggestionChipsWrap" style="display: inline-flex; flex-wrap: wrap; gap: 6px;"></div>
+        </div>
+
+        <!-- Trending Popular Searches Row -->
+        <div class="popular-searches-row" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
+          <span style="font-size: 0.74rem; color: #94a3b8; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+            <i class="fa-solid fa-fire text-amber" style="color: #f59e0b;"></i> Trending:
+          </span>
+          <button type="button" class="trend-search-pill" data-q="MacBook Air M3">MacBook Air M3</button>
+          <button type="button" class="trend-search-pill" data-q="iPhone 16 Pro">iPhone 16 Pro</button>
+          <button type="button" class="trend-search-pill" data-q="Sony WH-1000XM5">Sony XM5</button>
+          <button type="button" class="trend-search-pill" data-q="AirPods Pro 2">AirPods Pro</button>
+          <button type="button" class="trend-search-pill" data-q="PlayStation 5">PS5 Slim</button>
+          <button type="button" class="trend-search-pill" data-q="Ninja Air Fryer">Ninja Air Fryer</button>
+          <button type="button" class="trend-search-pill" data-q="Nespresso Vertuo">Coffee Maker</button>
+        </div>
+
+        <div id="liveSearchResults" class="live-search-results hidden" style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+          <!-- Dynamically populated live search cards -->
+        </div>
+      </div>
+
+      <div class="sample-chips">
+        <span class="chip-label">Quick Add Portfolio Samples:</span>
+        <button class="chip" data-asin="B07FNW9FGJ">👕 Got Data MIS Analyst T-Shirt</button>
+        <button class="chip" data-asin="B09B8V1LZ3">🎧 Sony WH-1000XM5</button>
+        <button class="chip" data-asin="B0CX23VJP5">💻 Apple MacBook Air M3</button>
+        <button class="chip" data-asin="B08N5WRWNW">🖱️ Logitech MX Master 3S</button>
+        <button class="chip" data-asin="B0BY8MCQ9S">🇮🇳 OnePlus Buds 2 (India)</button>
+        <button class="chip" data-asin="B09B8V1UK1">🇬🇧 Raspberry Pi 5 (UK)</button>
+        <button class="chip" data-asin="B07W5JK7B9">⚡ Anker 577 Dock</button>
+      </div>
+    </section>
+
+    <!-- Main Products Grid Header with Live Count Badge -->
+    <section class="products-header">
+      <h2><i class="fa-solid fa-layer-group"></i> Monitored Products <span id="productCounterBadge" class="header-count-badge">0</span></h2>
+      <div class="filter-controls">
+        <input type="text" id="searchFilter" placeholder="Search name or ASIN..." class="search-input">
+        
+        <select id="recommendationFilter" class="select-filter" title="Filter by Smart Price Signal">
+          <option value="ALL">All Signals</option>
+          <option value="BUY_NOW">🟢 Buy Now (Strong Deal)</option>
+          <option value="FAIR_PRICE">🟡 Fair Price</option>
+          <option value="WAIT">🔴 Wait for Drop</option>
+        </select>
+
+        <select id="sortFilter" class="select-filter" title="Sort Products">
+          <option value="DEFAULT">Sort: Default</option>
+          <option value="DISCOUNT_DESC">🔥 Highest Discount %</option>
+          <option value="SAVINGS_DESC">💰 Highest Savings ($)</option>
+          <option value="PRICE_ASC">💵 Price: Low to High</option>
+          <option value="PRICE_DESC">💎 Price: High to Low</option>
+          <option value="NAME_ASC">🔤 Name (A - Z)</option>
+        </select>
+
+        <select id="categoryFilter" class="select-filter">
+          <option value="ALL">All Categories</option>
+          <option value="DEALS">🔥 Price Drops Only</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section id="productsGrid" class="products-grid">
+      <!-- Product Cards injected dynamically -->
+    </section>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state hidden glass">
+      <i class="fa-solid fa-box-open"></i>
+      <h3>No products found</h3>
+      <p>Add an Amazon product URL or click a Quick Add sample chip to start tracking!</p>
+    </div>
+  </div>
+
+
+
+  <!-- Price History Analytics Modal -->
+  <div id="chartModal" class="modal-overlay hidden">
+    <div class="modal-content glass">
+      <div class="modal-header">
+        <div>
+          <h3 id="modalProductTitle">Product Price Analytics</h3>
+          <p id="modalProductSubtitle" class="text-subtle">Historical Price Trend Analysis & Target Thresholds</p>
+        </div>
+        <button id="closeChartModal" class="btn-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="stats-ribbon">
+          <div class="ribbon-item">
+            <span>Current Price</span>
+            <strong id="modalCurrentPrice" class="text-highlight">$0.00</strong>
+          </div>
+          <div class="ribbon-item">
+            <span>Target Price</span>
+            <strong id="modalTargetPrice" class="text-purple">$0.00</strong>
+          </div>
+          <div class="ribbon-item">
+            <span>30-Day Low</span>
+            <strong id="modalLowestPrice" class="text-green">$0.00</strong>
+          </div>
+          <div class="ribbon-item">
+            <span>30-Day High</span>
+            <strong id="modalHighestPrice" class="text-red">$0.00</strong>
+          </div>
+        </div>
+
+        <!-- Chart Timeframe Bar & Deal Score Badge -->
+        <div class="chart-timeframe-bar" style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0 8px 0; gap: 8px; flex-wrap: wrap;">
+          <div class="timeframe-buttons" style="display: flex; gap: 6px;">
+            <button class="timeframe-btn active" data-range="ALL" style="padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--accent-purple, #8b5cf6); color: white;">ALL</button>
+            <button class="timeframe-btn" data-range="1Y" style="padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: inherit;">1Y</button>
+            <button class="timeframe-btn" data-range="3M" style="padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: inherit;">3M</button>
+            <button class="timeframe-btn" data-range="1M" style="padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: inherit;">1M</button>
+            <button class="timeframe-btn" data-range="7D" style="padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: inherit;">7D</button>
+          </div>
+          <div id="chartDealScoreBadge" class="chart-deal-score-badge" style="font-size: 0.85rem; padding: 4px 12px; border-radius: 9999px; background: rgba(16, 185, 129, 0.2); color: #10b981; font-weight: bold; border: 1px solid rgba(16, 185, 129, 0.4);">
+            🔥 Deal Score: Calculating...
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="priceChart"></canvas>
+        </div>
+
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px;">
+          <div style="font-size: 0.8rem; color: #94a3b8; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-database text-sky" style="color: #38bdf8;"></i> Time-series data points synced to SQLite & CSV
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <a id="modalDownloadCsvBtn" href="#" class="btn btn-secondary btn-sm" style="text-decoration: none; padding: 6px 12px; font-size: 0.82rem;">
+              <i class="fa-solid fa-file-csv" style="color: #10b981;"></i> Export CSV
+            </a>
+            <a id="modalDownloadJsonBtn" href="#" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration: none; padding: 6px 12px; font-size: 0.82rem;">
+              <i class="fa-solid fa-file-code" style="color: #8b5cf6;"></i> Export JSON
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Alert Test Modal -->
+  <div id="alertModal" class="modal-overlay hidden">
+    <div class="modal-content glass modal-md">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-paper-plane"></i> Email Alert Preview Simulator</h3>
+        <button id="closeAlertModal" class="btn-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="sendTestAlertForm" class="alert-form">
+          <label>Recipient Email Address</label>
+          <input type="email" id="alertEmailInput" value="alex.analyst@example.com" required>
+          <input type="hidden" id="alertProductId">
+          <button type="submit" class="btn btn-primary" style="margin-top: 12px; width: 100%;">
+            <i class="fa-solid fa-paper-plane"></i> Generate & Send Alert Preview
+          </button>
+        </form>
+
+        <div id="emailPreviewContainer" class="email-preview-box hidden">
+          <div class="email-preview-header">
+            <strong>Subject:</strong> <span id="previewSubject"></span>
+          </div>
+          <iframe id="emailPreviewFrame" class="email-preview-frame"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Required Modal for Alerts -->
+  <div id="alertAuthModal" class="modal-overlay hidden">
+    <div class="modal-content glass modal-sm auth-gate-modal">
+      <div class="modal-header">
+        <div class="auth-gate-header-title">
+          <div class="auth-gate-icon"><i class="fa-solid fa-lock"></i></div>
+          <div>
+            <h3>Sign In to Unlock Alerts</h3>
+            <p class="text-subtle">Price drop email notifications are exclusively available to registered members.</p>
+          </div>
+        </div>
+        <button id="closeAlertAuthModal" class="btn-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="auth-modal-tabs">
+          <button id="modalTabLogin" class="auth-modal-tab active">Log In</button>
+          <button id="modalTabRegister" class="auth-modal-tab">Create Account</button>
+        </div>
+
+        <!-- Quick Login Form -->
+        <form id="quickLoginForm" class="quick-auth-form">
+          <div class="form-group">
+            <label><i class="fa-solid fa-envelope"></i> Email Address</label>
+            <input type="email" id="quickLoginEmail" placeholder="your.email@example.com" required>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-lock"></i> Password</label>
+            <input type="password" id="quickLoginPassword" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fa-solid fa-right-to-bracket"></i> Log In & Continue to Alert
+          </button>
+        </form>
+
+        <!-- Quick Register Form -->
+        <form id="quickRegisterForm" class="quick-auth-form hidden">
+          <div class="form-group">
+            <label><i class="fa-solid fa-user"></i> Full Name (Optional)</label>
+            <input type="text" id="quickRegName" placeholder="Alex Analyst">
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-envelope"></i> Email Address</label>
+            <input type="email" id="quickRegEmail" placeholder="your.email@example.com" required>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-lock"></i> Password</label>
+            <input type="password" id="quickRegPassword" placeholder="At least 6 characters" required minlength="6">
+          </div>
+          <button type="submit" class="btn btn-accent btn-block">
+            <i class="fa-solid fa-user-plus"></i> Create Account & Unlock Alerts
+          </button>
+        </form>
+
+        <div class="auth-modal-footer">
+          <span>Or return to <a href="/" class="auth-modal-link">Home Page</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert Activity History Modal -->
+  <div id="alertActivityModal" class="modal-overlay hidden">
+    <div class="modal-content glass modal-lg">
+      <div class="modal-header">
+        <div class="activity-header-left">
+          <div class="activity-icon"><i class="fa-solid fa-bolt"></i></div>
+          <div>
+            <h3>Automated Alert Activity</h3>
+            <p class="text-subtle">Audit trail of automated email notifications dispatched upon price drops</p>
+          </div>
+        </div>
+        <button id="closeAlertActivityModal" class="btn-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="activity-status-banner">
+          <div class="status-indicator-pill">
+            <span class="radar-dot dot-emerald"></span>
+            <span id="activityBannerText">Auto-Alert Engine: Active</span>
+          </div>
+          <span class="cooldown-note"><i class="fa-solid fa-shield-halved"></i> 6-Hour Smart Cooldown Protection Active</span>
+        </div>
+
+        <div id="alertLogsContainer" class="alert-logs-list">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-Store Competitor Price Comparison Modal -->
+  <div id="competitorModal" class="modal-overlay hidden">
+    <div class="modal-content glass modal-lg competitor-modal">
+      <div class="modal-header">
+        <div class="competitor-modal-title-wrap">
+          <span class="section-tag"><i class="fa-solid fa-code-compare"></i> CROSS-PLATFORM ARBITRAGE</span>
+          <h3 id="compModalProductTitle">Multi-Store Price Benchmark</h3>
+          <p id="compModalProductSubtitle" class="text-subtle">Real-time competitor indexing across leading Indian and Global marketplaces</p>
+        </div>
+        <button id="closeCompetitorModal" class="btn-close">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Market Arbitrage Verdict Banner -->
+        <div id="compArbitrageBanner" class="arbitrage-verdict-banner">
+          <div class="verdict-icon"><i class="fa-solid fa-trophy text-amber"></i></div>
+          <div class="verdict-content">
+            <strong id="compVerdictText">Analyzing cross-store prices...</strong>
+            <span id="compVerdictSub">Comparing Amazon vs 11 verified retailer marketplaces</span>
+          </div>
+          <div class="verdict-stat">
+            <span class="verdict-stat-label">Max Arbitrage Savings</span>
+            <strong id="compMaxSavings" class="verdict-stat-val text-emerald">$0.00</strong>
+          </div>
+        </div>
+
+        <!-- Store Market Tabs: Indian vs Global Retailers & Availability Filter -->
+        <div class="competitor-market-tabs-row">
+          <div class="competitor-tabs">
+            <button id="compTabIndian" class="comp-market-tab active" data-market="indian">
+              <span class="tab-flag">🇮🇳</span> Indian Retailers <span class="tab-count-badge" id="compTabIndianBadge">13 Stores</span>
+            </button>
+            <button id="compTabGlobal" class="comp-market-tab" data-market="global">
+              <span class="tab-flag">🌐</span> Global / US Retailers <span class="tab-count-badge" id="compTabGlobalBadge">5 Stores</span>
+            </button>
+          </div>
+
+          <div class="competitor-filter-controls">
+            <!-- Availability Filter Toggle Switch -->
+            <label class="comp-availability-toggle" title="Hide stores that do not carry this type of product (e.g. Nykaa for tech/buds)">
+              <input type="checkbox" id="compAvailabilityOnlyToggle" checked>
+              <span class="availability-slider"></span>
+              <span class="availability-toggle-label">
+                <i class="fa-solid fa-filter-circle-check text-emerald"></i>
+                <span>In-Stock & Carried Only</span>
+              </span>
+            </label>
+
+            <div class="competitor-currency-indicator">
+              <i class="fa-solid fa-coins" style="color: var(--accent-biscuit)"></i>
+              <span>Converted to <strong id="compCurrentCurrencyCode">USD</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Catalog Availability Notice Banner -->
+        <div id="compAvailabilityNotice" class="comp-availability-notice hidden">
+          <i class="fa-solid fa-filter text-amber"></i>
+          <span id="compAvailabilityNoticeText">Catalog filter active: Some dealers excluded</span>
+        </div>
+
+        <!-- Sector Channel Filter Pills (For Indian Retailers: Fashion, Quick Commerce, Mega) -->
+        <div id="compChannelPillsRow" class="competitor-channel-pills">
+          <button class="channel-pill active" data-channel="all">
+            <i class="fa-solid fa-layer-group"></i> All Stores (13)
+          </button>
+          <button class="channel-pill" data-channel="fashion">
+            <i class="fa-solid fa-shirt text-rose"></i> Fashion & Beauty (Myntra, AJIO, Nykaa, Meesho)
+          </button>
+          <button class="channel-pill" data-channel="quick_commerce">
+            <i class="fa-solid fa-bolt-lightning text-amber"></i> 10-Min Quick Commerce (Blinkit, Zepto, Instamart, BigBasket)
+          </button>
+          <button class="channel-pill" data-channel="mega">
+            <i class="fa-solid fa-tv text-sky"></i> Electronics & Mega (Flipkart, Croma, Reliance, Tata)
+          </button>
+        </div>
+
+        <!-- Competitor Stores Grid -->
+        <div id="competitorStoresGrid" class="competitor-stores-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- Market Price Spread Visual Bar -->
+        <div class="competitor-spread-section">
+          <div class="spread-header">
+            <h4><i class="fa-solid fa-chart-simple text-amber"></i> Market Price Spread & Relative Value</h4>
+            <span id="compPriceSpreadVal" class="spread-meta">Price Spread: $0.00</span>
+          </div>
+          <div id="competitorSpreadBars" class="spread-bars-container">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-Channel Notification Settings Modal -->
+  <div id="notificationSettingsModal" class="modal-overlay hidden">
+    <div class="modal-content glass modal-md" style="max-width: 540px;">
+      <div class="modal-header">
+        <h3><i class="fa-brands fa-discord text-purple"></i> Multi-Channel Alert Channels</h3>
+        <button id="closeNotificationSettingsModal" class="btn-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-subtle" style="margin-bottom: 16px; font-size: 0.9rem;">
+          Configure where you want to receive automated price drop alerts when tracked items hit your target prices.
+        </p>
+
+        <form id="notificationSettingsForm" class="notification-settings-form">
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">
+              <i class="fa-brands fa-discord" style="color: #5865F2;"></i> Discord Webhook URL
+            </label>
+            <input type="url" id="discordWebhookInput" placeholder="https://discord.com/api/webhooks/..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.25); color: inherit; box-sizing: border-box;">
+            <small style="color: #94a3b8; display: block; margin-top: 4px; font-size: 0.8rem;">Sends formatted Rich Embeds with discount percentages and direct buy links to your Discord channel.</small>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">
+              <i class="fa-brands fa-telegram" style="color: #229ED9;"></i> Telegram Chat ID
+            </label>
+            <input type="text" id="telegramChatInput" placeholder="e.g. @my_deal_channel or 12345678" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.25); color: inherit; box-sizing: border-box;">
+            <small style="color: #94a3b8; display: block; margin-top: 4px; font-size: 0.8rem;">Receive instant push alerts to Telegram.</small>
+          </div>
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button type="submit" class="btn btn-primary" style="flex: 1; min-width: 140px;">
+              <i class="fa-solid fa-floppy-disk"></i> Save Channels
+            </button>
+            <button type="button" id="testDiscordWebhookBtn" class="btn btn-secondary" style="white-space: nowrap;">
+              <i class="fa-solid fa-paper-plane"></i> Send Test Discord Ping
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- App Script (Cache Buster v4.0 Full Feature Suite) -->
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=4.0"></script>
+</body>
+</html>
