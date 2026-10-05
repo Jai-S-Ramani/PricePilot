@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Graphify MCP Server Architecture",
+    "output": "graphify-mcp.architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "mcp-full-pipeline",
+        "label": "Agent-to-Graph MCP Pipeline",
+        "focus": ["agent_host", "mcp_server", "query_engine", "traversal_service", "graph_store", "manifest_cache"],
+        "note": "Complete JSON-RPC protocol flow from IDE Agent tool calls to graph query traversal and cached persistence."
+      },
+      {
+        "id": "query-tools",
+        "label": "MCP Query & Diagnostic Tools",
+        "focus": ["mcp_server", "query_engine", "traversal_service", "graph_store"],
+        "note": "Real-time semantic routing for query_graph, get_node, god_nodes, and shortest_path."
+      },
+      {
+        "id": "indexing-engine",
+        "label": "AST & Manifest Synchronization",
+        "focus": ["ast_extractor", "graph_store", "manifest_cache"],
+        "note": "Deterministic AST code extraction and SHA-256 manifest incremental hashing."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "agent_host",
+      "type": "external",
+      "label": "Antigravity Agent",
+      "sublabel": "IDE MCP Host Client",
+      "pos": [40, 280],
+      "size": [130, 60]
+    },
+    {
+      "id": "mcp_server",
+      "type": "backend",
+      "label": "graphify.serve",
+      "sublabel": "JSON-RPC Stdio Server",
+      "pos": [260, 280],
+      "size": [150, 60],
+      "tag": "MCP Protocol"
+    },
+    {
+      "id": "query_engine",
+      "type": "backend",
+      "label": "Query & Filter Engine",
+      "sublabel": "query_graph · god_nodes",
+      "pos": [500, 160],
+      "size": [160, 60],
+      "tag": "Graph Tools"
+    },
+    {
+      "id": "traversal_service",
+      "type": "backend",
+      "label": "Traversal Engine",
+      "sublabel": "shortest_path · neighbors",
+      "pos": [500, 400],
+      "size": [160, 60],
+      "tag": "NetworkX"
+    },
+    {
+      "id": "graph_store",
+      "type": "database",
+      "label": "Graph Knowledge Base",
+      "sublabel": "graphify-out/graph.json",
+      "pos": [750, 280],
+      "size": [160, 60],
+      "tag": "253 Nodes · 524 Edges"
+    },
+    {
+      "id": "ast_extractor",
+      "type": "backend",
+      "label": "AST Parser",
+      "sublabel": "Static Tree-sitter / AST",
+      "pos": [750, 120],
+      "size": [160, 60],
+      "tag": "Incremental"
+    },
+    {
+      "id": "manifest_cache",
+      "type": "database",
+      "label": "Manifest Index",
+      "sublabel": "manifest.json · SHA-256",
+      "pos": [750, 440],
+      "size": [160, 60],
+      "tag": "Cache Guard"
+    },
+    {
+      "id": "html_exporter",
+      "type": "frontend",
+      "label": "3D Visualizer",
+      "sublabel": "graphify-out/graph.html",
+      "pos": [990, 280],
+      "size": [150, 60],
+      "tag": "D3 / Force-Graph"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Graphify MCP Server & Engine Core",
+      "wraps": ["mcp_server", "query_engine", "traversal_service", "graph_store", "ast_extractor", "manifest_cache", "html_exporter"]
+    }
+  ],
+  "connections": [
+    { "id": "agent-to-mcp", "from": "agent_host", "to": "mcp_server", "label": "JSON-RPC Stdio", "labelDy": -22, "variant": "emphasis" },
+    { "id": "mcp-to-query", "from": "mcp_server", "to": "query_engine", "label": "Dispatch Tool" },
+    { "id": "mcp-to-traversal", "from": "mcp_server", "to": "traversal_service", "label": "Graph BFS/DFS" },
+    { "id": "query-to-store", "from": "query_engine", "to": "graph_store", "label": "Lookup Node" },
+    { "id": "traversal-to-store", "from": "traversal_service", "to": "graph_store", "label": "Read Adjacency" },
+    { "id": "ast-to-store", "from": "ast_extractor", "to": "graph_store", "fromSide": "bottom", "toSide": "top" },
+    { "id": "manifest-to-store", "from": "manifest_cache", "to": "graph_store", "fromSide": "top", "toSide": "bottom" },
+    { "id": "store-to-html", "from": "graph_store", "to": "html_exporter", "label": "Export HTML", "variant": "emphasis" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Protocol & Ingestion",
+      "items": [
+        "Standard MCP JSON-RPC stdio protocol server via python -m graphify.serve",
+        "Deterministic AST parser indexing multi-language codebases incrementally"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Query & Analysis",
+      "items": [
+        "NetworkX graph engine powering topological queries, shortest path, and community scoring",
+        "Centrality metrics identifying god nodes, surprise bridges, and PR impact radius"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Dual Visualization",
+      "items": [
+        "Standalone interactive force-directed graph HTML (graph.html) with 3D community clustering",
+        "Seamless integration with agent reasoning loops and automated architectural documentation"
+      ]
+    }
+  ]
+}
