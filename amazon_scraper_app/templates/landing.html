@@ -15,8 +15,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}?v=5.0">
-  <!-- Landing Page Styles (Cache Buster v4.0 Minimalist Bauhaus) -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}?v=4.0">
+  <!-- Landing Page Styles (Cache Buster v4.1 Minimalist Bauhaus) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}?v=4.1">
 </head>
 <body>
 
@@ -361,27 +361,90 @@
 
   <!-- Footer -->
   <footer class="landing-footer">
-    <div class="footer-container">
+    <!-- 5-Column Navigation Grid -->
+    <div class="footer-nav-grid">
+      <!-- Column 1: Company -->
+      <div class="footer-col">
+        <h4 class="footer-col-title">Company</h4>
+        <ul class="footer-col-links">
+          <li><a href="#preview">About PricePilot</a></li>
+          <li><a href="#how-it-works">How It Operates</a></li>
+          <li><a href="#features">Platform Capabilities</a></li>
+          <li><a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer">Open Source Core</a></li>
+          <li><a href="mailto:jaisramani05@gmail.com">Contact Engineering</a></li>
+          <li><a href="#preview">Security & Privacy</a></li>
+          <li><a href="/dashboard">Corporate Solutions</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 2: Explore -->
+      <div class="footer-col">
+        <h4 class="footer-col-title">Explore</h4>
+        <ul class="footer-col-links">
+          <li><a href="/dashboard">Live Deal Scanner <span class="badge-highlight">HOT</span></a></li>
+          <li><a href="/dashboard">18-Store Arbitrage</a></li>
+          <li><a href="/dashboard">Amazon India (₹)</a></li>
+          <li><a href="/dashboard">Amazon US ($)</a></li>
+          <li><a href="/dashboard">Amazon UK (£)</a></li>
+          <li><a href="/dashboard">Amazon Germany (€)</a></li>
+          <li><a href="/dashboard">Amazon Canada (CA$)</a></li>
+          <li><a href="/api/export/csv">Download CSV Dataset</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 3: Tutorials -->
+      <div class="footer-col">
+        <h4 class="footer-col-title">Tutorials</h4>
+        <ul class="footer-col-links">
+          <li><a href="#how-it-works">BS4 DOM Extraction</a></li>
+          <li><a href="#how-it-works">User-Agent Rotation</a></li>
+          <li><a href="#features">30-Day Volatility Model</a></li>
+          <li><a href="#features">Sparkline Math & SVGs</a></li>
+          <li><a href="#features">7-Currency FX Pipeline</a></li>
+          <li><a href="#features">Discord & Telegram Alerts</a></li>
+          <li><a href="#how-it-works">Scheduled Cron Architecture</a></li>
+          <li><a href="#features">Price Drop Calculation</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 4: Courses -->
+      <div class="footer-col">
+        <h4 class="footer-col-title">Courses</h4>
+        <ul class="footer-col-links">
+          <li><a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer">Python for Data Analytics</a></li>
+          <li><a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer">Web Scraping & Automation</a></li>
+          <li><a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer">Flask REST API Engineering</a></li>
+          <li><a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer">SQLite WAL Database Design</a></li>
+          <li><a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer">Daemon Sentinel Loops</a></li>
+          <li><a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer">GSAP Interactive UI Systems</a></li>
+          <li><a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer">Telemetry & Chart.js Data Viz</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 5: Preparation Corner -->
+      <div class="footer-col">
+        <h4 class="footer-col-title">Preparation Corner</h4>
+        <ul class="footer-col-links">
+          <li><a href="https://www.linkedin.com/in/jai-s-ramani-2948532bb" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-linkedin" style="color: #0a66c2;"></i> LinkedIn Profile</a></li>
+          <li><a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github"></i> GitHub Profile</a></li>
+          <li><a href="mailto:jaisramani05@gmail.com"><i class="fa-solid fa-envelope" style="color: var(--accent-emerald);"></i> jaisramani05@gmail.com</a></li>
+          <li><a href="/dashboard"><i class="fa-solid fa-bolt" style="color: var(--accent-amber);"></i> 1-Click Guest Demo</a></li>
+          <li><a href="/dashboard"><i class="fa-solid fa-chart-pie"></i> Command Center</a></li>
+          <li><a href="/api/export/json" target="_blank"><i class="fa-solid fa-file-code"></i> Live REST JSON Feed</a></li>
+          <li><a href="/api/products"><i class="fa-solid fa-code"></i> Catalog API Endpoints</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Attribution & Sentinel Status Bar -->
+    <div class="footer-bottom-bar">
       <div class="footer-brand">
         <strong>PricePilot — Autonomous Price Tracker & Arbitrage Intelligence</strong>
-        <p>Architected & Developed by <strong>Jai S Ramani</strong></p>
-        <div class="footer-social-links" style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 8px;">
-          <a href="mailto:jaisramani05@gmail.com" class="footer-social-link" style="color: var(--accent-primary); text-decoration: none; font-size: 0.86rem; display: inline-flex; align-items: center; gap: 5px;" title="Email: jaisramani05@gmail.com">
-            <i class="fa-solid fa-envelope"></i> jaisramani05@gmail.com
-          </a>
-          <span style="opacity: 0.3;">•</span>
-          <a href="https://www.linkedin.com/in/jai-s-ramani-2948532bb" target="_blank" rel="noopener noreferrer" class="footer-social-link" style="color: #0a66c2; text-decoration: none; font-size: 0.86rem; display: inline-flex; align-items: center; gap: 5px;" title="LinkedIn: Jai S Ramani">
-            <i class="fa-brands fa-linkedin"></i> LinkedIn Profile
-          </a>
-          <span style="opacity: 0.3;">•</span>
-          <a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer" class="footer-social-link" style="color: var(--text-main); text-decoration: none; font-size: 0.86rem; display: inline-flex; align-items: center; gap: 5px;" title="GitHub: Jai-S-Ramani">
-            <i class="fa-brands fa-github"></i> GitHub Profile
-          </a>
-        </div>
+        <p>Architected & Developed by <strong>Jai S Ramani</strong> &bull; <a href="mailto:jaisramani05@gmail.com" class="footer-mail-link" style="color: var(--accent-primary); text-decoration: none; font-weight: 600;"><i class="fa-solid fa-envelope"></i> jaisramani05@gmail.com</a></p>
       </div>
       <div class="footer-status">
         <span class="status-indicator"></span>
-        <span>Daemon Sentinel: Online</span>
+        <span>Daemon Sentinel: Online &bull; All 18 Stores Synchronized</span>
       </div>
     </div>
   </footer>
