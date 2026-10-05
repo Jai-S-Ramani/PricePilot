@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const scrapeAllBtn = document.getElementById('scrapeAllBtn');
   const searchFilter = document.getElementById('searchFilter');
   const categoryFilter = document.getElementById('categoryFilter');
-  const themeSelector = document.getElementById('themeSelector');
+  const themeToggleBtn = document.getElementById('themeToggleBtn');
   const currencySelector = document.getElementById('currencySelector');
 
   // Stats Elements
@@ -234,32 +234,40 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -----------------------------------------------------------------
-  // Dynamic OS System Theme Auto-Detection & Switcher
+  // Dynamic OS System Theme Auto-Detection & 1-Click Navbar Switcher
   // -----------------------------------------------------------------
-  function applyDynamicTheme() {
-    const savedTheme = localStorage.getItem('app_theme');
-    const targetTheme = savedTheme || 'dark';
+  function updateThemeIcon(theme) {
+    if (!themeToggleBtn) return;
+    themeToggleBtn.innerHTML = theme === 'dark' 
+      ? '<i class="fa-solid fa-sun" style="color: var(--accent-amber)"></i>' 
+      : '<i class="fa-solid fa-moon"></i>';
+  }
 
-    document.documentElement.setAttribute('data-theme', targetTheme);
-    if (themeSelector) themeSelector.value = targetTheme;
+  function applyDynamicTheme() {
+    const savedTheme = localStorage.getItem('app_theme') || localStorage.getItem('landing_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
   }
 
   applyDynamicTheme();
 
   if (window.matchMedia) {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if (!localStorage.getItem('app_theme')) {
+      if (!localStorage.getItem('app_theme') && !localStorage.getItem('landing_theme')) {
         applyDynamicTheme();
       }
     });
   }
 
-  if (themeSelector) {
-    themeSelector.addEventListener('change', (e) => {
-      const selected = e.target.value;
-      document.documentElement.setAttribute('data-theme', selected);
-      localStorage.setItem('app_theme', selected);
-      showToast(`Switched theme to ${selected === 'light' ? 'Light Sand Luxe ☀️' : 'Dark Ultra-Luxe 🌙'}`, 'info');
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'dark';
+      const nextTheme = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('app_theme', nextTheme);
+      localStorage.setItem('landing_theme', nextTheme);
+      updateThemeIcon(nextTheme);
+      showToast(`Switched theme to ${nextTheme === 'light' ? 'Light Architectural Mode ☀️' : 'Dark Monochrome Mode 🌙'}`, 'info');
     });
   }
 
@@ -464,6 +472,47 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -----------------------------------------------------------------
+  // Intelligent Product DP (Display Picture) Resolver
+  // -----------------------------------------------------------------
+  function getProductDP(p) {
+    if (p.image_url && !p.image_url.includes('placeholder.svg')) {
+      return p.image_url;
+    }
+    const text = ((p.title || '') + ' ' + (p.category || '') + ' ' + (p.asin || '')).toLowerCase();
+    if (text.includes('keyboard') || text.includes('mechanical') || text.includes('keychron') || text.includes('typing')) {
+      return 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80';
+    }
+    if (text.includes('mouse') || text.includes('trackball') || text.includes('mx master') || text.includes('logitech')) {
+      return 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=600&auto=format&fit=crop&q=80';
+    }
+    if (text.includes('headphone') || text.includes('earbud') || text.includes('audio') || text.includes('sony') || text.includes('airpod') || text.includes('buds') || text.includes('wh-')) {
+      return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80';
+    }
+    if (text.includes('laptop') || text.includes('macbook') || text.includes('notebook') || text.includes('computer') || text.includes('pc') || text.includes('dell') || text.includes('asus') || text.includes('m3')) {
+      return 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&auto=format&fit=crop&q=80';
+    }
+    if (text.includes('phone') || text.includes('iphone') || text.includes('pixel') || text.includes('samsung') || text.includes('smartphone') || text.includes('mobile')) {
+      return 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&auto=format&fit=crop&q=80';
+    }
+    if (text.includes('watch') || text.includes('smartwatch') || text.includes('wearable') || text.includes('apple watch')) {
+      return 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80';
+    }
+    if (text.includes('power bank') || text.includes('dock') || text.includes('charger') || text.includes('cable') || text.includes('anker') || text.includes('xiaomi')) {
+      return 'https://images.unsplash.com/photo-1544652478-6653e09f18a2?w=600&auto=format&fit=crop&q=80';
+    }
+    if (text.includes('coffee') || text.includes('espresso') || text.includes('maker') || text.includes('kitchen') || text.includes('nespresso')) {
+      return 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=600&auto=format&fit=crop&q=80';
+    }
+    if (text.includes('camera') || text.includes('lens') || text.includes('dslr') || text.includes('mirrorless') || text.includes('photography')) {
+      return 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&auto=format&fit=crop&q=80';
+    }
+    if (text.includes('shirt') || text.includes('apparel') || text.includes('clothing') || text.includes('analyst')) {
+      return 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80';
+    }
+    return 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=80';
+  }
+
+  // -----------------------------------------------------------------
   // Render Products Grid & Trigger GSAP Animations
   // -----------------------------------------------------------------
   function renderProducts(products) {
@@ -518,16 +567,23 @@ document.addEventListener('DOMContentLoaded', () => {
       const diff = p.current_price - target;
       const isDeal = diff <= 0;
       
+      const targetNative = (p.native_price && p.current_price) 
+        ? (target * (p.native_price / p.current_price)) 
+        : null;
+      const diffNative = (p.native_price && p.current_price) 
+        ? (p.native_price - (targetNative || target)) 
+        : null;
+
       let statusText = '';
       let fillWidth = 100;
       let barClass = 'deal-pending';
 
       if (isDeal) {
-        statusText = `🔥 Deal Active! Price is ${formatMoney(Math.abs(diff))} below target`;
+        statusText = `🔥 Deal Active! Price is ${formatMoney(Math.abs(diff), diffNative != null ? Math.abs(diffNative) : null, p.currency)} below target`;
         fillWidth = 100;
         barClass = 'deal-active';
       } else {
-        statusText = `🎯 Target Goal: Needs ${formatMoney(diff)} drop to trigger alert`;
+        statusText = `🎯 Target Goal: Needs ${formatMoney(diff, diffNative, p.currency)} drop to trigger alert`;
         const basePrice = Math.max(p.original_price || p.current_price, p.current_price * 1.25);
         const progressPct = Math.max(15, Math.min(95, Math.round(((basePrice - p.current_price) / (basePrice - target)) * 100)));
         fillWidth = isNaN(progressPct) ? 50 : progressPct;
@@ -561,6 +617,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const dealLabel = p.deal_label || `🔥 ${dealScore}% Deal`;
       const dealScoreBadge = `<span class="deal-score-pill" title="${p.deal_label || 'Deal Score'}" style="font-size: 0.72rem; padding: 2px 8px; border-radius: 9999px; background: rgba(16, 185, 129, 0.2); color: #10b981; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.4);"><i class="fa-solid fa-fire"></i> ${dealLabel}</span>`;
 
+      const resolvedImage = getProductDP(p);
+
       return `
         <div class="product-card glass ${isDeal ? 'deal-featured' : ''}" data-id="${p.id}">
           <div class="card-glare"></div>
@@ -576,7 +634,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           <div class="card-top">
             <div class="product-img-wrapper">
-              <img src="${p.image_url || '/static/images/product-placeholder.svg'}" alt="${p.title}" class="product-img" loading="lazy" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='/static/images/product-placeholder.svg';">
+              <img src="${resolvedImage}" alt="${p.title}" class="product-img" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=80';">
               <div class="rating-badge"><i class="fa-solid fa-star"></i> ${p.rating || '4.5'}</div>
             </div>
             <div class="card-details">
@@ -598,8 +656,8 @@ document.addEventListener('DOMContentLoaded', () => {
               <span>${statusText}</span>
             </div>
             <div class="target-labels">
-              <span>Alert Target: <strong>${formatMoney(target, p.native_price ? (p.native_price * 0.9) : null, p.currency)}</strong></span>
-              <span>30-Day Low: <strong>${formatMoney(p.lowest_price || p.current_price, p.native_price, p.currency)}</strong></span>
+              <span>Alert Target: <strong>${formatMoney(target, targetNative, p.currency)}</strong></span>
+              <span>30-Day Low: <strong>${formatMoney(p.lowest_price || p.current_price, (p.native_price && p.current_price && p.lowest_price) ? (p.lowest_price * (p.native_price / p.current_price)) : null, p.currency)}</strong></span>
             </div>
             <div class="progress-bar-bg" title="${fillWidth}% progress towards alert price">
               <div class="progress-bar-fill ${barClass}" style="width: ${fillWidth}%;"></div>
@@ -761,27 +819,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchAmazonSubmitBtn = document.getElementById('searchAmazonSubmitBtn');
   const searchSuggestionsBox = document.getElementById('searchSuggestionsBox');
   const suggestionChipsWrap = document.getElementById('suggestionChipsWrap');
+  const searchAmazonTargetPreset = document.getElementById('searchAmazonTargetPreset');
   let searchDebounceTimer = null;
 
   if (tabModeUrl && tabModeSearch) {
     tabModeUrl.addEventListener('click', () => {
       tabModeUrl.classList.add('active');
-      tabModeUrl.style.background = 'var(--accent-purple, #8b5cf6)';
-      tabModeUrl.style.color = 'white';
+      tabModeUrl.style.background = '';
+      tabModeUrl.style.color = '';
       tabModeSearch.classList.remove('active');
-      tabModeSearch.style.background = 'transparent';
-      tabModeSearch.style.color = 'inherit';
+      tabModeSearch.style.background = '';
+      tabModeSearch.style.color = '';
       addProductForm.classList.remove('hidden');
       searchAmazonContainer.classList.add('hidden');
     });
 
     tabModeSearch.addEventListener('click', () => {
       tabModeSearch.classList.add('active');
-      tabModeSearch.style.background = 'var(--accent-purple, #8b5cf6)';
-      tabModeSearch.style.color = 'white';
+      tabModeSearch.style.background = '';
+      tabModeSearch.style.color = '';
       tabModeUrl.classList.remove('active');
-      tabModeUrl.style.background = 'transparent';
-      tabModeUrl.style.color = 'inherit';
+      tabModeUrl.style.background = '';
+      tabModeUrl.style.color = '';
       addProductForm.classList.add('hidden');
       searchAmazonContainer.classList.remove('hidden');
       if (searchAmazonQueryInput) searchAmazonQueryInput.focus();
@@ -865,33 +924,98 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&region=${region}&limit=6`);
       const data = await res.json();
       if (data.status === 'success' && data.results && data.results.length > 0) {
-        liveSearchResults.innerHTML = data.results.map(item => {
+        const defaultDiscountMultiplier = searchAmazonTargetPreset ? (parseFloat(searchAmazonTargetPreset.value) || 0.90) : 0.90;
+
+        liveSearchResults.innerHTML = data.results.map((item, idx) => {
           const sym = item.symbol || '₹';
           const locale = item.currency === 'INR' ? 'en-IN' : undefined;
-          const priceStr = `${sym}${Number(item.price).toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          const price = parseFloat(item.price) || 0;
+          const priceStr = `${sym}${price.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          const initialTarget = Math.round(price * defaultDiscountMultiplier * 100) / 100;
+          const initialTargetStr = initialTarget.toFixed(2);
           const productPayload = JSON.stringify(item).replace(/"/g, '&quot;');
 
           return `
-            <div class="search-result-card glass" style="display: flex; gap: 12px; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.3); align-items: center;">
-              <img src="${item.image_url}" alt="${item.title}" style="width: 65px; height: 65px; object-fit: cover; border-radius: 8px; background: rgba(255,255,255,0.05); padding: 2px;" onerror="this.onerror=null; this.src='/static/images/product-placeholder.svg'">
-              <div style="flex: 1; min-width: 0;">
-                <h5 style="font-size: 0.83rem; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;" title="${item.title}">${item.title}</h5>
-                <div style="display: flex; gap: 8px; align-items: center; font-size: 0.85rem; margin-bottom: 4px;">
-                  <strong style="color: #10b981; font-weight: 800;">${priceStr}</strong>
-                  <span style="font-size: 0.74rem; color: #94a3b8;"><i class="fa-solid fa-star" style="color: #f59e0b;"></i> ${item.rating || 4.5}</span>
-                  <span style="font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; background: rgba(139,92,246,0.2); color: #c4b5fd;">${item.region || region}</span>
+            <div class="search-result-card glass" data-index="${idx}" data-price="${price}" data-currency="${item.currency || 'INR'}">
+              <div class="search-card-main">
+                <img src="${item.image_url}" alt="${item.title}" class="search-card-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=80'">
+                <div class="search-card-info">
+                  <h5 class="search-card-title" title="${item.title}">${item.title}</h5>
+                  <div class="search-card-meta">
+                    <span class="search-card-price">${priceStr}</span>
+                    <span class="search-card-rating"><i class="fa-solid fa-star" style="color: var(--accent-amber);"></i> ${item.rating || 4.5}</span>
+                    <span class="search-card-region">${item.region || region}</span>
+                  </div>
                 </div>
-                <button type="button" class="btn btn-sm btn-accent track-search-item-btn" data-url="${item.url}" data-price="${item.price}" data-product='${productPayload}' style="padding: 4px 12px; font-size: 0.75rem; border-radius: 6px; width: 100%;">
-                  <i class="fa-solid fa-plus"></i> + Track Item (${priceStr})
-                </button>
               </div>
+
+              <!-- Price Set Option (Editable Target Alert Price & Quick % Shortcuts) -->
+              <div class="search-target-box">
+                <div class="search-target-header">
+                  <span class="search-target-label"><i class="fa-solid fa-bullseye" style="color: var(--accent-amber);"></i> Alert Target Price</span>
+                  <div class="search-pct-pills">
+                    <button type="button" class="search-pct-btn ${defaultDiscountMultiplier === 0.90 ? 'active' : ''}" data-pct="0.90">-10%</button>
+                    <button type="button" class="search-pct-btn ${defaultDiscountMultiplier === 0.85 ? 'active' : ''}" data-pct="0.85">-15%</button>
+                    <button type="button" class="search-pct-btn ${defaultDiscountMultiplier === 0.80 ? 'active' : ''}" data-pct="0.80">-20%</button>
+                    <button type="button" class="search-pct-btn ${defaultDiscountMultiplier === 0.75 ? 'active' : ''}" data-pct="0.75">-25%</button>
+                  </div>
+                </div>
+                <div class="search-target-input-row">
+                  <span class="search-target-symbol">${sym}</span>
+                  <input type="number" step="0.01" class="search-target-input" value="${initialTargetStr}" placeholder="Set alert target..." title="Enter your custom alert price">
+                </div>
+              </div>
+
+              <button type="button" class="btn btn-sm btn-accent track-search-item-btn" data-url="${item.url}" data-price="${price}" data-product='${productPayload}'>
+                <i class="fa-solid fa-plus"></i> Track with Target (<span class="btn-target-preview">${sym}${initialTargetStr}</span>)
+              </button>
             </div>
           `;
         }).join('');
 
+        // Setup interactive target price adjustments for each card
+        liveSearchResults.querySelectorAll('.search-result-card').forEach(card => {
+          const itemPrice = parseFloat(card.dataset.price) || 0;
+          const targetInput = card.querySelector('.search-target-input');
+          const targetPreview = card.querySelector('.btn-target-preview');
+          const sym = card.querySelector('.search-target-symbol')?.textContent || '₹';
+          const pctBtns = card.querySelectorAll('.search-pct-btn');
+
+          function updateTargetDisplay(val) {
+            const num = parseFloat(val);
+            if (!isNaN(num) && num > 0) {
+              if (targetPreview) targetPreview.textContent = `${sym}${num.toFixed(2)}`;
+            } else {
+              if (targetPreview) targetPreview.textContent = `${sym}${(itemPrice * 0.9).toFixed(2)}`;
+            }
+          }
+
+          pctBtns.forEach(pBtn => {
+            pBtn.addEventListener('click', (ev) => {
+              ev.stopPropagation();
+              pctBtns.forEach(b => b.classList.remove('active'));
+              pBtn.classList.add('active');
+              const mult = parseFloat(pBtn.dataset.pct) || 0.90;
+              const calcVal = (itemPrice * mult).toFixed(2);
+              if (targetInput) targetInput.value = calcVal;
+              updateTargetDisplay(calcVal);
+            });
+          });
+
+          if (targetInput) {
+            targetInput.addEventListener('input', () => {
+              pctBtns.forEach(b => b.classList.remove('active'));
+              updateTargetDisplay(targetInput.value);
+            });
+          }
+        });
+
         liveSearchResults.querySelectorAll('.track-search-item-btn').forEach(btn => {
           btn.addEventListener('click', async (ev) => {
             const btnEl = ev.currentTarget;
+            const card = btnEl.closest('.search-result-card');
+            const targetInput = card?.querySelector('.search-target-input');
+            const customTarget = targetInput ? parseFloat(targetInput.value) : null;
             const url = btnEl.dataset.url;
             const price = parseFloat(btnEl.dataset.price);
             let metadata = {};
@@ -903,12 +1027,22 @@ document.addEventListener('DOMContentLoaded', () => {
             btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Tracking...`;
             
             // Calculate target price in base USD
-            const baseUSD = metadata.base_usd || (metadata.currency === 'INR' ? (price / 83.50) : price);
-            const targetUSD = (baseUSD * 0.90).toFixed(2);
+            let targetUSD = null;
+            const itemCurrency = metadata.currency || 'INR';
+            const rate = itemCurrency === 'INR' ? 83.50 : (CURRENCIES[itemCurrency]?.rate || 1.0);
+
+            if (customTarget && !isNaN(customTarget) && customTarget > 0) {
+              targetUSD = (customTarget / rate).toFixed(2);
+            } else {
+              const baseUSD = metadata.base_usd || (price / rate);
+              targetUSD = (baseUSD * 0.90).toFixed(2);
+            }
 
             const success = await addProductByUrl(url, targetUSD, metadata);
             if (success) {
-              btnEl.innerHTML = `<i class="fa-solid fa-check"></i> Tracked!`;
+              const sym = card?.querySelector('.search-target-symbol')?.textContent || '₹';
+              const displayTarget = customTarget ? `${sym}${customTarget.toFixed(2)}` : '';
+              btnEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Tracked at ${displayTarget}!`;
               btnEl.style.background = '#10b981';
             } else {
               btnEl.disabled = false;
@@ -935,6 +1069,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const q = searchAmazonQueryInput ? searchAmazonQueryInput.value.trim() : '';
       if (searchSuggestionsBox) searchSuggestionsBox.classList.add('hidden');
       executeLiveSearch(q);
+    });
+  }
+
+  if (searchAmazonTargetPreset) {
+    searchAmazonTargetPreset.addEventListener('change', () => {
+      const mult = parseFloat(searchAmazonTargetPreset.value) || 0.90;
+      liveSearchResults.querySelectorAll('.search-result-card').forEach(card => {
+        const itemPrice = parseFloat(card.dataset.price) || 0;
+        const targetInput = card.querySelector('.search-target-input');
+        const targetPreview = card.querySelector('.btn-target-preview');
+        const sym = card.querySelector('.search-target-symbol')?.textContent || '₹';
+        const calcVal = (itemPrice * mult).toFixed(2);
+        if (targetInput) targetInput.value = calcVal;
+        if (targetPreview) targetPreview.textContent = `${sym}${calcVal}`;
+        card.querySelectorAll('.search-pct-btn').forEach(btn => {
+          btn.classList.toggle('active', Math.abs(parseFloat(btn.dataset.pct) - mult) < 0.001);
+        });
+      });
     });
   }
 
@@ -1088,8 +1240,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetPriceConverted = targetPriceUSD * curr.rate;
 
     const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, 'rgba(232, 202, 174, 0.4)');
-    gradient.addColorStop(1, 'rgba(232, 202, 174, 0.0)');
+    gradient.addColorStop(0, 'rgba(255, 119, 0, 0.35)');
+    gradient.addColorStop(1, 'rgba(255, 119, 0, 0.0)');
 
     if (priceChartInstance) {
       priceChartInstance.destroy();
@@ -1103,21 +1255,21 @@ document.addEventListener('DOMContentLoaded', () => {
           {
             label: `Tracked Price (${curr.symbol})`,
             data: prices,
-            borderColor: '#e8caae',
+            borderColor: '#ff7700',
             backgroundColor: gradient,
-            borderWidth: 3,
+            borderWidth: 2.5,
             fill: true,
             tension: 0.35,
             pointRadius: 4,
             pointHoverRadius: 7,
-            pointBackgroundColor: '#e06d75',
-            pointBorderColor: '#0e0809',
+            pointBackgroundColor: '#ff7700',
+            pointBorderColor: '#0a0a0c',
             pointBorderWidth: 2
           },
           {
             label: `Target Alert Threshold (${curr.symbol})`,
             data: new Array(labels.length).fill(targetPriceConverted),
-            borderColor: '#10b981',
+            borderColor: '#00d68f',
             borderWidth: 2,
             borderDash: [6, 6],
             pointRadius: 0,
@@ -1129,15 +1281,15 @@ document.addEventListener('DOMContentLoaded', () => {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { labels: { color: '#d4c2b2', font: { family: 'Inter', size: 12 } } },
+          legend: { labels: { color: '#94a3b8', font: { family: 'Inter', size: 12, weight: '600' } } },
           tooltip: {
-            backgroundColor: '#180e10',
-            borderColor: '#e8caae',
+            backgroundColor: '#0f131d',
+            borderColor: 'rgba(56, 189, 248, 0.35)',
             borderWidth: 1,
-            titleColor: '#fdfaf6',
-            bodyColor: '#d4c2b2',
+            titleColor: '#f8fafc',
+            bodyColor: '#94a3b8',
             titleFont: { family: 'Outfit', size: 14, weight: 'bold' },
-            bodyFont: { family: 'Inter', size: 13 },
+            bodyFont: { family: 'JetBrains Mono', size: 13 },
             padding: 12,
             callbacks: {
               label: (context) => `${context.dataset.label}: ${curr.symbol}${context.parsed.y.toLocaleString(undefined, { minimumFractionDigits: currentCurrency === 'JPY' ? 0 : 2 })}`
@@ -1145,12 +1297,12 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         },
         scales: {
-          x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#d4c2b2', font: { family: 'Inter', size: 11 } } },
+          x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono', size: 11 } } },
           y: { 
             grid: { color: 'rgba(255, 255, 255, 0.05)' }, 
             ticks: { 
-              color: '#d4c2b2', 
-              font: { family: 'Inter', size: 11 }, 
+              color: '#94a3b8', 
+              font: { family: 'JetBrains Mono', size: 11 }, 
               callback: v => curr.symbol + v.toLocaleString(undefined, { minimumFractionDigits: currentCurrency === 'JPY' ? 0 : 2 })
             } 
           }
@@ -1166,12 +1318,10 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', (e) => {
       document.querySelectorAll('.timeframe-btn').forEach(b => {
         b.classList.remove('active');
-        b.style.background = 'rgba(0,0,0,0.2)';
-        b.style.color = 'inherit';
+        b.style.background = '';
+        b.style.color = '';
       });
       e.currentTarget.classList.add('active');
-      e.currentTarget.style.background = 'var(--accent-purple, #8b5cf6)';
-      e.currentTarget.style.color = 'white';
       currentActiveTimeframe = e.currentTarget.dataset.range;
       const filtered = filterHistoryByTimeframe(currentModalHistory, currentActiveTimeframe);
       renderChart(filtered, currentModalTargetUSD);
@@ -1336,7 +1486,10 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="competitor-store-card amazon-benchmark-card">
           <div class="store-card-header">
             <div class="store-brand-info">
-              <span class="store-icon amazon-brand-icon"><i class="fa-brands fa-amazon"></i></span>
+              <span class="store-icon amazon-brand-icon">
+                <img src="/static/images/retailers/amazon.svg" alt="Amazon" class="retailer-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                <i class="fa-brands fa-amazon" style="display:none; color: #ff9900;"></i>
+              </span>
               <div>
                 <h4 class="store-name">Amazon (${comp.region})</h4>
                 <span class="store-tag amazon-ref-tag">Tracking Baseline</span>
@@ -1354,13 +1507,17 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
         ${stores.map(store => {
+          const logoMarkup = store.logo_url
+            ? `<img src="${store.logo_url}" alt="${store.name}" class="retailer-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';"><i class="${store.icon}" style="display:none; color: ${store.brand_color};"></i>`
+            : `<i class="${store.icon}" style="color: ${store.brand_color};"></i>`;
+
           if (!store.is_available) {
             return `
               <div class="competitor-store-card store-card-not-carried" style="--store-brand: ${store.brand_color}">
                 <div class="store-card-header">
                   <div class="store-brand-info">
-                    <span class="store-icon" style="background: ${store.badge_bg}; border: 1px solid ${store.badge_border}; color: ${store.brand_color}">
-                      <i class="${store.icon}"></i>
+                    <span class="store-icon" style="background: ${store.badge_bg}; border: 1px solid ${store.badge_border};">
+                      ${logoMarkup}
                     </span>
                     <div>
                       <h4 class="store-name">${store.name}</h4>
@@ -1397,8 +1554,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="competitor-store-card" style="--store-brand: ${store.brand_color}">
               <div class="store-card-header">
                 <div class="store-brand-info">
-                  <span class="store-icon" style="background: ${store.badge_bg}; border: 1px solid ${store.badge_border}; color: ${store.brand_color}">
-                    <i class="${store.icon}"></i>
+                  <span class="store-icon" style="background: ${store.badge_bg}; border: 1px solid ${store.badge_border};">
+                    ${logoMarkup}
                   </span>
                   <div>
                     <h4 class="store-name">${store.name}</h4>
@@ -1426,8 +1583,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render Spread Relative Bars (strictly among available stores)
     const availableStoresForSpread = stores.filter(s => s.is_available !== false);
     const allToCompare = [
-      { name: `Amazon (${comp.region})`, price: amazonPrice, isAmazon: true, brandColor: '#f59e0b' },
-      ...availableStoresForSpread.map(s => ({ name: s.name, price: s.price, isAmazon: false, brandColor: s.brand_color }))
+      { name: `Amazon (${comp.region})`, price: amazonPrice, isAmazon: true, brandColor: '#f59e0b', logoUrl: '/static/images/retailers/amazon.svg' },
+      ...availableStoresForSpread.map(s => ({ name: s.name, price: s.price, isAmazon: false, brandColor: s.brand_color, logoUrl: s.logo_url }))
     ];
 
     const maxPrice = Math.max(...allToCompare.map(x => x.price));
@@ -1439,7 +1596,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return `
         <div class="spread-bar-row ${item.isAmazon ? 'amazon-bar-row' : ''}">
           <div class="spread-bar-label">
-            <span class="bar-store-name">${item.isAmazon ? '👑 ' : ''}${item.name}</span>
+            <span class="bar-store-name">
+              ${item.logoUrl ? `<img src="${item.logoUrl}" alt="${item.name}" class="bar-store-logo">` : ''}
+              ${item.isAmazon ? '👑 ' : ''}${item.name}
+            </span>
             <span class="bar-store-price">${formatMoney(item.price)}</span>
           </div>
           <div class="spread-bar-track">

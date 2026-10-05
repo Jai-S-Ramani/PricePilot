@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="26" fill="#9B2361"/>
+  <!-- Shopping Bag outline -->
+  <path d="M42 45h36l-3 44H45L42 45z" fill="#751545"/>
+  <path d="M51 45v-8a9 9 0 0 1 18 0v8" fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"/>
+  <!-- Meesho 'm' -->
+  <text x="60" y="76" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="28" fill="#FFFFFF" text-anchor="middle">m</text>
+  <text x="60" y="105" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="10" fill="#FCE7F3" text-anchor="middle" letter-spacing="1">meesho</text>
+</svg>

@@ -269,6 +269,12 @@ GLOBAL_RETAILERS = [
     }
 ]
 
+# Attach official vector logo paths to all retailer configurations
+for _retailer in INDIAN_RETAILERS + GLOBAL_RETAILERS:
+    if "logo_url" not in _retailer:
+        _retailer["logo_url"] = f"/static/images/retailers/{_retailer['id']}.svg"
+
+
 
 def classify_product_vertical(product):
     """
@@ -419,6 +425,7 @@ def build_store_comparison(product, retailer_config, product_vertical):
         "badge_bg": retailer_config["badge_bg"],
         "badge_border": retailer_config["badge_border"],
         "icon": retailer_config["icon"],
+        "logo_url": retailer_config.get("logo_url", f"/static/images/retailers/{retailer_config['id']}.svg"),
         "price": competitor_price,
         "diff": diff,
         "diff_pct": diff_pct,

@@ -1,56 +1,170 @@
-<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <!-- Multi-Tone Metallic Gold Gradient -->
-    <linearGradient id="gold_grad" x1="10" y1="10" x2="70" y2="70" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#ffffff"/>
-      <stop offset="0.3" stop-color="#f5e4d3"/>
-      <stop offset="0.7" stop-color="#e8caae"/>
-      <stop offset="1" stop-color="#b87333"/>
-    </linearGradient>
-
-    <!-- Electric Cyan Emerald Cyber Gradient -->
-    <linearGradient id="cyber_grad" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#00f2fe"/>
-      <stop offset="0.5" stop-color="#10b981"/>
-      <stop offset="1" stop-color="#059669"/>
-    </linearGradient>
-
-    <!-- Glowing Rose Spark Gradient -->
-    <linearGradient id="rose_grad" x1="0" y1="80" x2="80" y2="0" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#f43f5e"/>
-      <stop offset="1" stop-color="#e06d75"/>
-    </linearGradient>
-
-    <!-- Deep Core Radial Mask -->
-    <radialGradient id="core_glow" cx="40" cy="40" r="38" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#2a181c" stop-opacity="0.95"/>
-      <stop offset="1" stop-color="#0e0809" stop-opacity="0.98"/>
+    <!-- Background Ambient Glow -->
+    <radialGradient id="emerald_ambient" cx="65%" cy="50%" r="45%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.22"/>
+      <stop offset="60%" stop-color="#059669" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#059669" stop-opacity="0"/>
     </radialGradient>
 
-    <!-- Laser Glow Filter -->
-    <filter id="laser_glow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="3.5" result="blur" />
+    <!-- 3D Depth Shadow Filter -->
+    <filter id="shadow_deep" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="3" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+
+    <filter id="shadow_arrow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="2" dy="5" stdDeviation="4" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+
+    <!-- Intense Emerald Glow -->
+    <filter id="emerald_glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
       <feMerge>
-        <feMergeNode in="blur" />
-        <feMergeNode in="SourceGraphic" />
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+
+    <!-- Gradients for Obsidian Structure -->
+    <linearGradient id="obsidian_front" x1="50" y1="30" x2="160" y2="160" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2a3342"/>
+      <stop offset="45%" stop-color="#18202d"/>
+      <stop offset="100%" stop-color="#0b1017"/>
+    </linearGradient>
+
+    <linearGradient id="obsidian_side" x1="30" y1="50" x2="160" y2="160" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1c232f"/>
+      <stop offset="100%" stop-color="#06090e"/>
+    </linearGradient>
+
+    <linearGradient id="obsidian_bar1" x1="36" y1="95" x2="56" y2="160" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2e3848"/>
+      <stop offset="50%" stop-color="#1a222f"/>
+      <stop offset="100%" stop-color="#0c1118"/>
+    </linearGradient>
+
+    <linearGradient id="obsidian_bar2" x1="64" y1="65" x2="86" y2="160" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2c3646"/>
+      <stop offset="50%" stop-color="#171f2b"/>
+      <stop offset="100%" stop-color="#0a0f16"/>
+    </linearGradient>
+
+    <!-- Emerald Rim Glow Gradient for top of 'P' -->
+    <linearGradient id="emerald_rim" x1="70" y1="36" x2="155" y2="36" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00e676" stop-opacity="0.95"/>
+      <stop offset="40%" stop-color="#10b981" stop-opacity="0.8"/>
+      <stop offset="85%" stop-color="#059669" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#059669" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Emerald Arrow Gradients (Faceted Crystalline 3D) -->
+    <linearGradient id="arrow_facet_light" x1="88" y1="55" x2="128" y2="115" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6ee7b7"/>
+      <stop offset="35%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+
+    <linearGradient id="arrow_facet_bright" x1="95" y1="60" x2="135" y2="125" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#a7f3d0"/>
+      <stop offset="40%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+
+    <linearGradient id="arrow_facet_dark" x1="90" y1="65" x2="145" y2="130" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="60%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#024e35"/>
+    </linearGradient>
+
+    <linearGradient id="arrowhead_specular" x1="110" y1="95" x2="145" y2="135" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#d1fae5"/>
+      <stop offset="40%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
   </defs>
 
-  <!-- Outer Glass Base Container -->
-  <rect x="4" y="4" width="72" height="72" rx="22" fill="url(#core_glow)" stroke="url(#gold_grad)" stroke-width="2" />
+  <!-- Ambient Emerald Reflection behind the mark -->
+  <circle cx="125" cy="95" r="55" fill="url(#emerald_ambient)" filter="url(#emerald_glow)"/>
 
-  <!-- Outer Cyber Orbit Ring Segment -->
-  <circle cx="40" cy="40" r="31" stroke="url(#cyber_grad)" stroke-width="3" stroke-dasharray="145 50" stroke-linecap="round" filter="url(#laser_glow)" opacity="0.95"/>
+  <!-- ==================== 3D OBSIDIAN BASE SHADOWS & GEOMETRY ==================== -->
+  <g filter="url(#shadow_deep)">
+    <!-- Bar 1 (Far Left - Lowest Chart Column) -->
+    <rect x="36" y="98" width="18" height="62" rx="3.5" fill="url(#obsidian_bar1)"/>
+    <!-- Bar 1 Top Bevel -->
+    <rect x="36" y="98" width="18" height="3" rx="1.5" fill="#3b485d" opacity="0.6"/>
 
-  <!-- Inner Gold Hexagonal Shield Face -->
-  <path d="M40 16L58 26V54L40 64L22 54V26L40 16Z" fill="#180d10" stroke="url(#gold_grad)" stroke-width="2.5" />
-  <path d="M40 20L54 28V52L40 60L26 52V28L40 20Z" fill="url(#gold_grad)" fill-opacity="0.12" />
+    <!-- Bar 2 (Middle - Mid-Height Chart Column) -->
+    <rect x="63" y="68" width="18" height="92" rx="3.5" fill="url(#obsidian_bar2)"/>
+    <!-- Bar 2 Top Bevel -->
+    <rect x="63" y="68" width="18" height="3" rx="1.5" fill="#3f4e64" opacity="0.65"/>
 
-  <!-- Center Dynamic Lightning & Trend Arrow Symbol -->
-  <path d="M42 22L27 41H39L36 58L53 37H40L42 22Z" fill="url(#gold_grad)" filter="url(#laser_glow)" />
+    <!-- Main 'P' 3D Body -->
+    <!-- Back 3D Bevel/Extrusion -->
+    <path d="M 90 38 
+             L 138 38 
+             C 165 38, 172 58, 172 78 
+             C 172 98, 163 116, 136 116 
+             L 116 116 
+             L 116 160 
+             L 90 160 
+             Z" 
+          fill="url(#obsidian_side)"/>
 
-  <!-- Live Pulse Beacon Point -->
-  <circle cx="60" cy="20" r="5" fill="#10b981" filter="url(#laser_glow)"/>
-  <circle cx="60" cy="20" r="9" stroke="#10b981" stroke-width="1.5" stroke-opacity="0.5"/>
+    <!-- Front Face of 'P' -->
+    <path d="M 88 36 
+             L 136 36 
+             C 162 36, 169 56, 169 76 
+             C 169 96, 160 114, 134 114 
+             L 114 114 
+             L 114 160 
+             L 88 160 
+             Z
+             M 114 58 
+             L 133 58 
+             C 146 58, 148 68, 148 76 
+             C 148 84, 145 92, 133 92 
+             L 114 92 
+             Z" 
+          fill="url(#obsidian_front)" 
+          fill-rule="evenodd"/>
+
+    <!-- Subtle rim bevel highlights on obsidian -->
+    <path d="M 88 160 L 88 36 L 136 36" stroke="#414f66" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.5"/>
+    <path d="M 114 114 L 114 160" stroke="#2a3547" stroke-width="1" fill="none" opacity="0.4"/>
+  </g>
+
+  <!-- Top Emerald Neon Rim Light (Signature Brand Glow across upper P edge) -->
+  <path d="M 90 36.5 L 140 36.5 C 158 36.5, 167 48, 168.5 62" 
+        stroke="url(#emerald_rim)" 
+        stroke-width="2.5" 
+        stroke-linecap="round" 
+        fill="none" 
+        filter="url(#emerald_glow)"/>
+
+  <!-- ==================== FACETED 3D EMERALD PRICE DROP ARROW ==================== -->
+  <g filter="url(#shadow_arrow)">
+    <!-- Arrow Ambient Glow Aura -->
+    <path d="M 96 55 L 142 101 L 126 142 L 85 96 Z" fill="none"/>
+
+    <!-- Shaft Top/Left High-Gloss Facet -->
+    <polygon points="98,54 124,78 116,92 90,68" fill="url(#arrow_facet_bright)"/>
+
+    <!-- Shaft Right/Bottom Shaded Facet -->
+    <polygon points="124,78 136,90 128,104 116,92" fill="url(#arrow_facet_dark)"/>
+
+    <!-- Arrowhead Top-Left Reflective Wing -->
+    <polygon points="114,84 148,84 134,116" fill="url(#arrow_facet_light)"/>
+
+    <!-- Arrowhead Main Dynamic Cutting Blade (Pointing Down-Right) -->
+    <!-- The head points sharply down-right toward (146, 142) -->
+    <polygon points="106,94 135,108 147,143" fill="url(#arrow_facet_dark)"/>
+    <polygon points="147,143 135,108 156,92" fill="url(#arrowhead_specular)"/>
+    
+    <!-- Razor Center Crease / Specular Highlight Spine -->
+    <line x1="102" y1="58" x2="135" y2="108" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.85"/>
+    <line x1="135" y1="108" x2="147" y2="143" stroke="#e6fffa" stroke-width="1.5" stroke-linecap="round" opacity="0.95"/>
+  </g>
+
+  <!-- Specular Glow Sparkle at Arrow Point -->
+  <circle cx="147" cy="143" r="2" fill="#ffffff" filter="url(#emerald_glow)"/>
 </svg>

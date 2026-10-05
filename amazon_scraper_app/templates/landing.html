@@ -1,56 +1,67 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Amazon Price Tracker & Scraper Intelligence Platform</title>
-  <!-- Google Fonts: Inter & Outfit -->
+  <title>PricePilot — Amazon Price Tracker & Arbitrage Intelligence Platform</title>
+  <meta name="description" content="Autonomous BS4 web scraper, cross-store arbitrage benchmarks, and real-time price drop alert engine for smart buyers and analysts.">
+  <!-- Google Fonts: Inter, Outfit, and JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- GSAP Animation Platform -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <!-- Landing Page Styles (Cache Buster v2.1) -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}?v=2.1">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}?v=5.0">
+  <!-- Landing Page Styles (Cache Buster v4.0 Minimalist Bauhaus) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}?v=4.0">
 </head>
 <body>
 
   <!-- Top Market Intelligence Telemetry Ticker -->
-  <div class="market-ticker-wrap">
+  <aside class="market-ticker-wrap" aria-label="Market Intelligence Ticker">
     <div class="ticker-badge"><i class="fa-solid fa-bolt-lightning"></i> MARKET INTEL</div>
     <div class="ticker-track">
-      <div class="ticker-item"><span class="ticker-dot pulse"></span> <strong>Global Sweep:</strong> 5 Amazon Regional Marketplaces Synchronized (US, IN, UK, CA, DE)</div>
-      <div class="ticker-item"><i class="fa-solid fa-fire text-amber"></i> <strong>Strong Signals:</strong> Multiple Buy-Now Price Trajectories Active</div>
-      <div class="ticker-item"><i class="fa-solid fa-piggy-bank text-emerald"></i> <strong>Peak Savings:</strong> Over $380 in Total Discounted Value Identified</div>
-      <div class="ticker-item"><i class="fa-solid fa-shield-halved text-sky"></i> <strong>Daemon Sentinel:</strong> Auto-Price Sweep Running Every 30m</div>
+      <div class="ticker-item"><span class="ticker-dot pulse"></span> <strong>Global Sweep:</strong> 5 Amazon Marketplaces Synchronized (US, IN, UK, CA, DE)</div>
+      <div class="ticker-item"><i class="fa-solid fa-fire" style="color: var(--accent-amber)"></i> <strong>Signals:</strong> Buy-Now Trajectories Detected</div>
+      <div class="ticker-item"><i class="fa-solid fa-piggy-bank" style="color: var(--accent-emerald)"></i> <strong>Peak Savings:</strong> Active Discount Trajectories Tracked</div>
+      <div class="ticker-item"><i class="fa-solid fa-shield-halved" style="color: var(--accent-primary)"></i> <strong>Daemon Sentinel:</strong> Auto-Price Sweep Active Every 30m</div>
+      <!-- Repetition for continuous smooth marquee slide -->
+      <div class="ticker-item"><span class="ticker-dot pulse"></span> <strong>Global Sweep:</strong> 5 Amazon Marketplaces Synchronized (US, IN, UK, CA, DE)</div>
+      <div class="ticker-item"><i class="fa-solid fa-fire" style="color: var(--accent-amber)"></i> <strong>Signals:</strong> Buy-Now Trajectories Detected</div>
+      <div class="ticker-item"><i class="fa-solid fa-piggy-bank" style="color: var(--accent-emerald)"></i> <strong>Peak Savings:</strong> Active Discount Trajectories Tracked</div>
+      <div class="ticker-item"><i class="fa-solid fa-shield-halved" style="color: var(--accent-primary)"></i> <strong>Daemon Sentinel:</strong> Auto-Price Sweep Active Every 30m</div>
     </div>
-  </div>
+  </aside>
 
   <!-- Top Header / Navigation -->
   <header class="landing-navbar">
     <div class="landing-nav-container">
-      <div class="brand">
-        <div class="brand-logo">
-          <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Amazon Tracker Logo" class="logo-img">
-        </div>
-        <div class="brand-text">
-          <h1>Amazon Tracker</h1>
-          <p>Autonomous Price Intelligence Engine</p>
-        </div>
-      </div>
+      <a href="/" class="brand-link" aria-label="PricePilot Home">
+        <img src="{{ url_for('static', filename='images/pricepilot_brand_dark.png') }}?v=5.0" alt="PricePilot — Track. Compare. Make The Move." class="brand-navbar-img brand-dark-img">
+        <img src="{{ url_for('static', filename='images/pricepilot_brand_light.png') }}" alt="PricePilot — Track. Compare. Make The Move." class="brand-navbar-img brand-light-img">
+      </a>
 
-      <nav class="nav-links">
-        <a href="#features"><i class="fa-solid fa-cubes"></i> Features</a>
-        <a href="#how-it-works"><i class="fa-solid fa-diagram-project"></i> How It Works</a>
-        <a href="#preview"><i class="fa-solid fa-chart-line"></i> Live Demo</a>
+      <nav class="nav-links" aria-label="Main Navigation">
+        <a href="#features"><i class="fa-solid fa-cubes"></i> Capabilities</a>
+        <a href="#how-it-works"><i class="fa-solid fa-diagram-project"></i> Pipeline</a>
+        <a href="#preview"><i class="fa-solid fa-chart-line"></i> Live Preview</a>
         <a href="#auth-section"><i class="fa-solid fa-user-lock"></i> Portal</a>
       </nav>
 
       <div class="landing-nav-actions">
-        <!-- Interactive Theme Toggle Button -->
-        <button id="landingThemeToggleBtn" class="btn btn-icon theme-toggle-btn" title="Toggle Light / Dark Mode" aria-label="Toggle Theme">
+        <!-- Social Profile Links -->
+        <a href="https://www.linkedin.com/in/jai-s-ramani-2948532bb" target="_blank" rel="noopener noreferrer" class="btn btn-icon" title="LinkedIn: Jai S Ramani" aria-label="LinkedIn Profile">
+          <i class="fa-brands fa-linkedin" style="color: #0a66c2;"></i>
+        </a>
+        <a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer" class="btn btn-icon" title="GitHub: Jai-S-Ramani" aria-label="GitHub Profile">
+          <i class="fa-brands fa-github"></i>
+        </a>
+
+        <!-- Theme Toggle Button -->
+        <button id="landingThemeToggleBtn" class="btn btn-icon" title="Toggle Light / Dark Mode" aria-label="Toggle Theme">
           <i class="fa-solid fa-moon"></i>
         </button>
 
@@ -65,301 +76,320 @@
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="hero-container">
-      <div class="hero-content">
-        <div class="hero-badge">
-          <i class="fa-solid fa-bolt-lightning"></i> ENTERPRISE PRICE INTELLIGENCE ENGINE
-        </div>
-        <h1 class="hero-title">
-          Automate Amazon Price Tracking & Capture Every <span class="gradient-text">Price Drop</span>
-        </h1>
-        <p class="hero-subtitle">
-          Autonomous web scraper, 7-currency converter, predictive price signals, and automated email alert dispatch engine built for smart shoppers and data analytics professionals.
-        </p>
+  <!-- Main Hero Section -->
+  <main>
+    <section class="hero-section">
+      <div class="hero-container">
+        <div class="hero-content">
+          <div class="hero-badge-group" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center;">
+            <div class="hero-badge">
+              <i class="fa-solid fa-bolt-lightning"></i> Autonomous Price Intelligence
+            </div>
+            <div class="hero-badge hero-author-badge" style="display: inline-flex; align-items: center; gap: 10px; border-color: rgba(16, 185, 129, 0.4); color: var(--text-main);">
+              <span><i class="fa-solid fa-code" style="color: var(--accent-emerald);"></i> By <strong>Jai S Ramani</strong></span>
+              <span style="opacity: 0.35;">•</span>
+              <a href="https://www.linkedin.com/in/jai-s-ramani-2948532bb" target="_blank" rel="noopener noreferrer" style="color: #0a66c2; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; font-weight: 500;" title="LinkedIn: Jai S Ramani"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+              <span style="opacity: 0.35;">•</span>
+              <a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer" style="color: var(--text-main); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; font-weight: 500;" title="GitHub: Jai-S-Ramani"><i class="fa-brands fa-github"></i> GitHub</a>
+              <span style="opacity: 0.35;">•</span>
+              <a href="mailto:jaisramani05@gmail.com" style="color: var(--accent-emerald); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Email: jaisramani05@gmail.com"><i class="fa-solid fa-envelope"></i></a>
+            </div>
+          </div>
+          <h1 class="hero-title">
+            Track Amazon Prices & Capture Every <span class="gradient-text">Price Drop</span>
+          </h1>
+          <p class="hero-subtitle">
+            Autonomous BS4 scraper, cross-store arbitrage benchmarks, and instant email alert engine built for smart buyers and analysts.
+          </p>
 
-        <div class="hero-ctas">
-          <button id="heroQuickDemoBtn" class="btn btn-primary btn-hero btn-pulse">
-            <i class="fa-solid fa-bolt"></i> 1-Click Instant Demo
-          </button>
-          <a href="/dashboard" class="btn btn-secondary btn-hero">
-            <i class="fa-solid fa-chart-pie"></i> Explore Live Dashboard
-          </a>
-          <a href="#how-it-works" class="btn btn-secondary btn-hero">
-            <i class="fa-solid fa-arrow-down"></i> Learn More
-          </a>
-        </div>
-
-        <div class="hero-stats">
-          <div class="stat-item">
-            <strong>100%</strong>
-            <span>Automated BS4 Scraping</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <strong>5 Regions</strong>
-            <span>US, IN, UK, CA, DE</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <strong>7 FX Currencies</strong>
-            <span>Real-Time Conversion</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <strong>30 Days</strong>
-            <span>Historical Analytics</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Integrated Email Auth Portal Card -->
-      <div id="auth-section" class="hero-auth-card glass">
-        <div class="auth-card-header">
-          <div class="landing-auth-tabs">
-            <button id="landingTabLogin" class="landing-tab active"><i class="fa-solid fa-right-to-bracket"></i> Log In</button>
-            <button id="landingTabRegister" class="landing-tab"><i class="fa-solid fa-user-plus"></i> Create Account</button>
-          </div>
-        </div>
-
-        <div class="auth-card-body">
-          <!-- 1-Click Quick Demo Fast Access Button -->
-          <div class="demo-fast-access">
-            <button type="button" id="quickDemoFillBtn" class="btn btn-secondary btn-block demo-btn">
-              <i class="fa-solid fa-wand-magic-sparkles text-amber"></i> <strong>1-Click Instant Guest Demo</strong>
+          <div class="hero-ctas">
+            <button id="heroQuickDemoBtn" class="btn btn-primary btn-hero">
+              <i class="fa-solid fa-bolt"></i> 1-Click Instant Demo
             </button>
-            <div class="auth-or-divider"><span>OR ENTER CREDENTIALS</span></div>
+            <a href="/dashboard" class="btn btn-secondary btn-hero">
+              <i class="fa-solid fa-chart-pie"></i> Open Dashboard
+            </a>
           </div>
 
-          <!-- Login Form -->
-          <form id="landingLoginForm" class="landing-auth-form">
-            <div class="form-group focus-glow-beam">
-              <label><i class="fa-solid fa-envelope"></i> Email Address</label>
-              <input type="email" id="landingLoginEmail" placeholder="alex.analyst@example.com" required>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <strong>100%</strong>
+              <span>Automated BS4</span>
             </div>
-            <div class="form-group focus-glow-beam">
-              <label><i class="fa-solid fa-lock"></i> Password</label>
-              <input type="password" id="landingLoginPassword" placeholder="••••••••" required>
+            <div class="stat-item">
+              <strong>5 Regions</strong>
+              <span>US, IN, UK, CA, DE</span>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">
-              <i class="fa-solid fa-right-to-bracket"></i> Log In to Dashboard
-            </button>
-          </form>
-
-          <!-- Registration Form -->
-          <form id="landingRegisterForm" class="landing-auth-form hidden">
-            <div class="form-group focus-glow-beam">
-              <label><i class="fa-solid fa-user"></i> Full Name (Optional)</label>
-              <input type="text" id="landingRegName" placeholder="Alex Analyst">
+            <div class="stat-item">
+              <strong>18 Stores</strong>
+              <span>Multi-Retailer Benchmark</span>
             </div>
-            <div class="form-group focus-glow-beam">
-              <label><i class="fa-solid fa-envelope"></i> Email Address</label>
-              <input type="email" id="landingRegEmail" placeholder="your.email@example.com" required>
-            </div>
-            <div class="form-group focus-glow-beam">
-              <label><i class="fa-solid fa-lock"></i> Create Password</label>
-              <input type="password" id="landingRegPassword" placeholder="At least 6 characters" required minlength="6">
-            </div>
-            <button type="submit" class="btn btn-accent btn-block">
-              <i class="fa-solid fa-user-plus"></i> Create Free Account
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works (3-Step Pipeline) -->
-  <section id="how-it-works" class="how-section">
-    <div class="section-header">
-      <span class="section-tag"><i class="fa-solid fa-diagram-project"></i> SYSTEM WORKFLOW</span>
-      <h2>How Price Intelligence Operates</h2>
-      <p>Three streamlined stages from raw product URL to automated price-drop capture.</p>
-    </div>
-
-    <div class="steps-grid">
-      <div class="step-card glass">
-        <div class="step-number">01</div>
-        <div class="step-icon"><i class="fa-solid fa-link"></i></div>
-        <h3>Paste Amazon Link or ASIN</h3>
-        <p>Input any Amazon product URL or ASIN. The scraper rotates User-Agents and parses multi-region DOMs (US, IN, UK, CA, DE) extracting real-time pricing.</p>
-      </div>
-
-      <div class="step-card glass">
-        <div class="step-number">02</div>
-        <div class="step-icon"><i class="fa-solid fa-bullseye"></i></div>
-        <h3>Set Target Goal & Daemon Sync</h3>
-        <p>Define your alert threshold in your preferred currency. The background daemon scheduler automatically executes scheduled sweeps every 30 minutes.</p>
-      </div>
-
-      <div class="step-card glass">
-        <div class="step-number">03</div>
-        <div class="step-icon"><i class="fa-solid fa-bell-concierge"></i></div>
-        <h3>Capture Drops & Save</h3>
-        <p>Receive rich HTML alert emails the moment prices cross below your threshold. Review 30-day volatility sparklines and export verified CSV records.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Feature Highlights Showcase Grid (6 Cards) -->
-  <section id="features" class="features-section">
-    <div class="section-header">
-      <span class="section-tag"><i class="fa-solid fa-cubes"></i> CORE CAPABILITIES</span>
-      <h2>Built for Precision Data Intelligence</h2>
-      <p>Enterprise-grade scraper and analytics tools designed to track, forecast, and automate savings.</p>
-    </div>
-
-    <div class="features-grid">
-      <div class="feature-card glass">
-        <div class="feature-icon icon-emerald"><i class="fa-solid fa-robot"></i></div>
-        <h3>Automated BS4 Web Scraper</h3>
-        <p>Rotates HTTP User-Agents and parses dynamic Amazon HTML structures for exact product titles, live prices, star ratings, and inventory status.</p>
-      </div>
-
-      <div class="feature-card glass">
-        <div class="feature-icon icon-biscuit"><i class="fa-solid fa-earth-americas"></i></div>
-        <h3>Multi-Region Coverage</h3>
-        <p>Native parsing across 5 international marketplaces: Amazon US (.com), India (.in), UK (.co.uk), Canada (.ca), and Germany (.de).</p>
-      </div>
-
-      <div class="feature-card glass">
-        <div class="feature-icon icon-sky"><i class="fa-solid fa-coins"></i></div>
-        <h3>7-Currency FX System</h3>
-        <p>Converts prices dynamically across USD ($), INR (₹), EUR (€), GBP (£), CAD (CA$), AUD (A$), and JPY (¥) with persistent user preference.</p>
-      </div>
-
-      <div class="feature-card glass">
-        <div class="feature-icon icon-rose"><i class="fa-solid fa-bolt"></i></div>
-        <h3>Predictive Price Signals</h3>
-        <p>Automated intelligence tags each product as <strong>Buy Now</strong> (Strong Deal), <strong>Fair Price</strong>, or <strong>Wait for Drop</strong> based on volatility analysis.</p>
-      </div>
-
-      <div class="feature-card glass">
-        <div class="feature-icon icon-purple"><i class="fa-solid fa-chart-line"></i></div>
-        <h3>30-Day Trendlines & Sparklines</h3>
-        <p>In-card SVG trajectory sparklines and Chart.js historical modal charts revealing price floors, ceilings, and historical fluctuations.</p>
-      </div>
-
-      <div class="feature-card glass">
-        <div class="feature-icon icon-amber"><i class="fa-solid fa-envelope-open-text"></i></div>
-        <h3>Autonomous Email Drop Alerts</h3>
-        <p>Integrated authentication portal arms personalized threshold watches. Dispatches styled HTML price-drop alert previews directly to your inbox.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Live Demo Preview Section with 3D Tilt Card -->
-  <section id="preview" class="preview-section">
-    <div class="preview-container glass">
-      <div class="preview-text">
-        <span class="section-tag"><i class="fa-solid fa-desktop"></i> LIVE PLATFORM PREVIEW</span>
-        <h2>Experience Real-Time Price Tracking</h2>
-        <p>Track your favorite Amazon products, monitor 30-day historical highs and lows, and export clean CSV datasets for analytical modeling.</p>
-        
-        <div class="preview-perks">
-          <div class="perk-item"><i class="fa-solid fa-circle-check text-emerald"></i> Instant 30-Day Price Trajectory Mini-Graphs</div>
-          <div class="perk-item"><i class="fa-solid fa-circle-check text-emerald"></i> Real-time 3D Card Hover & Specular Depth</div>
-          <div class="perk-item"><i class="fa-solid fa-circle-check text-emerald"></i> Automated CSV Analytics Dataset Export</div>
-        </div>
-
-        <div class="preview-actions">
-          <a href="/dashboard" class="btn btn-primary btn-hero">
-            <i class="fa-solid fa-arrow-right"></i> Launch Interactive Dashboard
-          </a>
-        </div>
-      </div>
-
-      <!-- Realistic Interactive 3D Mockup Card -->
-      <div class="preview-card-mockup glass deal-featured" id="landingPreviewCard">
-        <div class="card-glare"></div>
-        <div class="mockup-header">
-          <span class="rec-badge rec-buy-now"><i class="fa-solid fa-bolt"></i> Buy Now</span>
-          <span class="mockup-deal"><i class="fa-solid fa-fire"></i> Price Drop!</span>
-        </div>
-
-        <div class="mockup-body">
-          <div class="mockup-img-wrap">
-            <img src="https://images-na.ssl-images-amazon.com/images/I/61+Elbr8RIS._AC_SL1500_.jpg" alt="Sony Headphones" class="mockup-img" onerror="this.src='https://via.placeholder.com/100?text=Sony'">
-            <div class="mockup-rating"><i class="fa-solid fa-star"></i> 4.6</div>
-          </div>
-          <div class="mockup-info">
-            <span class="mockup-category">ELECTRONICS &bull; ASIN: B09B8V1LZ3</span>
-            <h4 class="mockup-title">Sony WH-1000XM5 Wireless Noise Canceling Headphones</h4>
-            <div class="mockup-price-row">
-              <span class="mockup-price">$348.00</span>
-              <span class="mockup-original">$399.99</span>
-              <span class="mockup-discount">-13% OFF</span>
+            <div class="stat-item">
+              <strong>30-Day</strong>
+              <span>Historical Volatility</span>
             </div>
           </div>
         </div>
 
-        <!-- Inline SVG Sparkline -->
-        <div class="card-sparkline-wrap">
-          <div class="sparkline-header">
-            <span class="sparkline-label"><i class="fa-solid fa-chart-line" style="color: var(--accent-biscuit)"></i> 30-Day Trajectory</span>
-            <span class="sparkline-delta-pill trend-down"><i class="fa-solid fa-arrow-trend-down"></i> -13.0% 30d</span>
+        <!-- Integrated Auth Portal Card -->
+        <div id="auth-section" class="hero-auth-card glass">
+          <div class="auth-card-header">
+            <div class="landing-auth-tabs">
+              <button id="landingTabLogin" class="landing-tab active"><i class="fa-solid fa-right-to-bracket"></i> Log In</button>
+              <button id="landingTabRegister" class="landing-tab"><i class="fa-solid fa-user-plus"></i> Create Account</button>
+            </div>
           </div>
-          <svg class="sparkline-svg" viewBox="0 0 280 36" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="landingSparkGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#10b981" stop-opacity="0.38"/>
-                <stop offset="100%" stop-color="#10b981" stop-opacity="0.0"/>
-              </linearGradient>
-            </defs>
-            <path d="M 4 8 L 59 14 L 114 10 L 170 20 L 225 28 L 276 28 L 276 36 L 4 36 Z" fill="url(#landingSparkGrad)" class="sparkline-area" />
-            <path d="M 4 8 L 59 14 L 114 10 L 170 20 L 225 28 L 276 28" fill="none" stroke="#10b981" class="sparkline-path" />
-            <circle cx="276" cy="28" r="3.5" fill="#10b981" class="sparkline-dot" />
-          </svg>
-        </div>
 
-        <div class="mockup-progress">
-          <div class="mockup-status">🔥 Deal Active! Price is $51.99 below target</div>
-          <div class="mockup-bar"><div class="mockup-bar-fill" style="width: 100%;"></div></div>
-        </div>
+          <div class="auth-card-body">
+            <!-- 1-Click Instant Guest Demo Button -->
+            <div class="demo-fast-access">
+              <button type="button" id="quickDemoFillBtn" class="btn btn-secondary btn-block demo-btn">
+                <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent-amber)"></i> <strong>1-Click Instant Guest Demo</strong>
+              </button>
+              <div class="auth-or-divider"><span>OR SIGN IN WITH EMAIL</span></div>
+            </div>
 
-        <div class="mockup-actions">
-          <a href="/dashboard" class="btn btn-sm btn-primary">
-            <i class="fa-solid fa-chart-line"></i> View Live Analytics
-          </a>
+            <!-- Login Form -->
+            <form id="landingLoginForm" class="landing-auth-form">
+              <div class="form-group">
+                <label for="landingLoginEmail"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                <input type="email" id="landingLoginEmail" placeholder="jaisramani05@gmail.com" required autocomplete="email">
+              </div>
+              <div class="form-group">
+                <label for="landingLoginPassword"><i class="fa-solid fa-lock"></i> Password</label>
+                <input type="password" id="landingLoginPassword" placeholder="••••••••" required autocomplete="current-password">
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">
+                <i class="fa-solid fa-right-to-bracket"></i> Log In to Dashboard
+              </button>
+            </form>
+
+            <!-- Registration Form -->
+            <form id="landingRegisterForm" class="landing-auth-form hidden">
+              <div class="form-group">
+                <label for="landingRegName"><i class="fa-solid fa-user"></i> Full Name</label>
+                <input type="text" id="landingRegName" placeholder="Jai S Ramani" autocomplete="name">
+              </div>
+              <div class="form-group">
+                <label for="landingRegEmail"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                <input type="email" id="landingRegEmail" placeholder="jaisramani05@gmail.com" required autocomplete="email">
+              </div>
+              <div class="form-group">
+                <label for="landingRegPassword"><i class="fa-solid fa-lock"></i> Create Password</label>
+                <input type="password" id="landingRegPassword" placeholder="At least 6 characters" required minlength="6" autocomplete="new-password">
+              </div>
+              <button type="submit" class="btn btn-accent btn-block">
+                <i class="fa-solid fa-user-plus"></i> Create Account
+              </button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Engineering Tech Stack Section -->
-  <section class="tech-stack-section">
-    <div class="tech-container">
-      <span class="tech-label">POWERED BY MODERN PYTHON & WEB TECHNOLOGIES:</span>
-      <div class="tech-badges">
-        <span class="tech-badge"><i class="fa-brands fa-python text-amber"></i> Python 3.14</span>
-        <span class="tech-badge"><i class="fa-solid fa-server text-emerald"></i> Flask 3.1</span>
-        <span class="tech-badge"><i class="fa-solid fa-spider text-rose"></i> BeautifulSoup4</span>
-        <span class="tech-badge"><i class="fa-solid fa-database text-sky"></i> SQLite3 WAL</span>
-        <span class="tech-badge"><i class="fa-solid fa-wand-magic-sparkles text-biscuit"></i> GSAP Animation Suite</span>
-        <span class="tech-badge"><i class="fa-solid fa-chart-pie text-emerald"></i> Chart.js</span>
+    <!-- How It Works (Pipeline) -->
+    <section id="how-it-works" class="how-section">
+      <div class="section-header">
+        <span class="section-tag"><i class="fa-solid fa-diagram-project"></i> ARCHITECTURE</span>
+        <h2>How Price Intelligence Operates</h2>
+        <p>Three streamlined stages from raw product URL to automated price-drop capture.</p>
       </div>
-    </div>
-  </section>
+
+      <div class="steps-grid">
+        <div class="step-card glass">
+          <div class="step-number">01</div>
+          <div class="step-icon"><i class="fa-solid fa-link"></i></div>
+          <h3>Paste Amazon Link or ASIN</h3>
+          <p>Input any Amazon product URL or ASIN. The scraper rotates User-Agents and parses multi-region DOMs extracting live pricing, ratings, and stock status.</p>
+        </div>
+
+        <div class="step-card glass">
+          <div class="step-number">02</div>
+          <div class="step-icon"><i class="fa-solid fa-bullseye"></i></div>
+          <h3>Set Target Price & Daemon Sync</h3>
+          <p>Define your alert threshold in your preferred currency. The background daemon scheduler automatically executes scheduled sweeps every 30 minutes.</p>
+        </div>
+
+        <div class="step-card glass">
+          <div class="step-number">03</div>
+          <div class="step-icon"><i class="fa-solid fa-bell-concierge"></i></div>
+          <h3>Capture Drops & Multi-Store Arbitrage</h3>
+          <p>Receive rich HTML alert emails the moment prices cross below your threshold, and benchmark prices across 18 leading competitor marketplaces.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature Highlights Showcase Grid -->
+    <section id="features" class="features-section">
+      <div class="section-header">
+        <span class="section-tag"><i class="fa-solid fa-cubes"></i> CAPABILITIES</span>
+        <h2>Built for Precision Market Intelligence</h2>
+        <p>Production-grade scraping and analytics tools designed to track, benchmark, and alert on savings.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card glass">
+          <div class="feature-icon icon-emerald"><i class="fa-solid fa-robot"></i></div>
+          <h3>Automated BS4 Web Scraper</h3>
+          <p>Rotates HTTP headers and parses dynamic HTML structures for accurate product titles, live prices, star ratings, and inventory status.</p>
+        </div>
+
+        <div class="feature-card glass">
+          <div class="feature-icon icon-biscuit"><i class="fa-solid fa-earth-americas"></i></div>
+          <h3>Multi-Region Coverage</h3>
+          <p>Native parsing across 5 international marketplaces: Amazon US (.com), India (.in), UK (.co.uk), Canada (.ca), and Germany (.de).</p>
+        </div>
+
+        <div class="feature-card glass">
+          <div class="feature-icon icon-sky"><i class="fa-solid fa-coins"></i></div>
+          <h3>7-Currency FX System</h3>
+          <p>Converts prices dynamically across USD, INR, EUR, GBP, CAD, AUD, and JPY with instant localized conversion.</p>
+        </div>
+
+        <div class="feature-card glass">
+          <div class="feature-icon icon-rose"><i class="fa-solid fa-bolt"></i></div>
+          <h3>Predictive Price Signals</h3>
+          <p>Intelligence engine tags items as Buy Now, Fair Price, or Wait for Drop based on statistical volatility analysis.</p>
+        </div>
+
+        <div class="feature-card glass">
+          <div class="feature-icon icon-purple"><i class="fa-solid fa-chart-line"></i></div>
+          <h3>30-Day Trendlines & Sparklines</h3>
+          <p>In-card SVG trajectory sparklines and Chart.js historical modal charts revealing price floors, ceilings, and historical fluctuations.</p>
+        </div>
+
+        <div class="feature-card glass">
+          <div class="feature-icon icon-amber"><i class="fa-solid fa-code-compare"></i></div>
+          <h3>Cross-Market Arbitrage</h3>
+          <p>Direct price benchmarking across 13 Indian retailers (Flipkart, Croma, Blinkit) and 5 Global retailers (Walmart, Best Buy, Target).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Demo Preview Section -->
+    <section id="preview" class="preview-section">
+      <div class="preview-container glass">
+        <div class="preview-text">
+          <span class="section-tag"><i class="fa-solid fa-desktop"></i> LIVE PLATFORM PREVIEW</span>
+          <h2>Real-Time Telemetry & Price Sparklines</h2>
+          <p>Track your target items, monitor 30-day historical highs and lows, and export clean CSV datasets for analytical modeling.</p>
+          
+          <div class="preview-perks">
+            <div class="perk-item"><i class="fa-solid fa-circle-check"></i> Instant 30-Day Price Trajectory Mini-Graphs</div>
+            <div class="perk-item"><i class="fa-solid fa-circle-check"></i> Real-time 3D Card Hover & Specular Depth</div>
+            <div class="perk-item"><i class="fa-solid fa-circle-check"></i> Automated CSV Analytics Dataset Export</div>
+          </div>
+
+          <div class="preview-actions">
+            <a href="/dashboard" class="btn btn-primary btn-hero">
+              <i class="fa-solid fa-arrow-right"></i> Launch Interactive Dashboard
+            </a>
+          </div>
+        </div>
+
+        <!-- Realistic Interactive Mockup Card -->
+        <div class="preview-card-mockup glass deal-featured" id="landingPreviewCard">
+          <div class="mockup-header">
+            <span class="rec-badge rec-buy-now"><i class="fa-solid fa-bolt"></i> Buy Now</span>
+            <span class="mockup-deal"><i class="fa-solid fa-fire"></i> Price Drop!</span>
+          </div>
+
+          <div class="mockup-body">
+            <div class="mockup-img-wrap">
+              <img src="https://images-na.ssl-images-amazon.com/images/I/61+Elbr8RIS._AC_SL1500_.jpg" alt="Sony Headphones" class="mockup-img" onerror="this.src='https://via.placeholder.com/100?text=Sony'">
+              <div class="mockup-rating"><i class="fa-solid fa-star"></i> 4.6</div>
+            </div>
+            <div class="mockup-info">
+              <span class="mockup-category">ELECTRONICS &bull; ASIN: B09B8V1LZ3</span>
+              <h4 class="mockup-title">Sony WH-1000XM5 Wireless Noise Canceling Headphones</h4>
+              <div class="mockup-price-row">
+                <span class="mockup-price">$348.00</span>
+                <span class="mockup-original">$399.99</span>
+                <span class="mockup-discount">-13% OFF</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inline SVG Sparkline -->
+          <div class="card-sparkline-wrap">
+            <div class="sparkline-header">
+              <span class="sparkline-label"><i class="fa-solid fa-chart-line" style="color: var(--accent-primary)"></i> 30-Day Trajectory</span>
+              <span class="sparkline-delta-pill"><i class="fa-solid fa-arrow-trend-down"></i> -13.0% 30d</span>
+            </div>
+            <svg class="sparkline-svg" viewBox="0 0 280 36" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="landingSparkGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#10b981" stop-opacity="0.38"/>
+                  <stop offset="100%" stop-color="#10b981" stop-opacity="0.0"/>
+                </linearGradient>
+              </defs>
+              <path d="M 4 8 L 59 14 L 114 10 L 170 20 L 225 28 L 276 28 L 276 36 L 4 36 Z" fill="url(#landingSparkGrad)" class="sparkline-area" />
+              <path d="M 4 8 L 59 14 L 114 10 L 170 20 L 225 28 L 276 28" fill="none" stroke="#10b981" stroke-width="2" class="sparkline-path" />
+              <circle cx="276" cy="28" r="3.5" fill="#10b981" class="sparkline-dot" />
+            </svg>
+          </div>
+
+          <div class="mockup-progress">
+            <div class="mockup-status">🔥 Deal Active! Price is $51.99 below target</div>
+            <div class="mockup-bar"><div class="mockup-bar-fill" style="width: 100%;"></div></div>
+          </div>
+
+          <div class="mockup-actions">
+            <a href="/dashboard" class="btn btn-sm btn-primary">
+              <i class="fa-solid fa-chart-line"></i> View Live Analytics
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Engineering Tech Stack Section -->
+    <section class="tech-stack-section">
+      <div class="tech-container">
+        <span class="tech-label">POWERED BY MODERN PYTHON & WEB TECHNOLOGIES:</span>
+        <div class="tech-badges">
+          <span class="tech-badge"><i class="fa-brands fa-python" style="color: var(--accent-amber)"></i> Python 3.14</span>
+          <span class="tech-badge"><i class="fa-solid fa-server" style="color: var(--accent-emerald)"></i> Flask 3.1</span>
+          <span class="tech-badge"><i class="fa-solid fa-spider" style="color: var(--accent-rose)"></i> BeautifulSoup4</span>
+          <span class="tech-badge"><i class="fa-solid fa-database" style="color: var(--accent-primary)"></i> SQLite3 WAL</span>
+          <span class="tech-badge"><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent-primary)"></i> GSAP Suite</span>
+          <span class="tech-badge"><i class="fa-solid fa-chart-pie" style="color: var(--accent-emerald)"></i> Chart.js</span>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <!-- Footer -->
   <footer class="landing-footer">
     <div class="footer-container">
       <div class="footer-brand">
-        <strong>Amazon Price Tracker & Scraper Intelligence Platform</strong>
-        <p>Enterprise Portfolio Analytics Project &bull; 2026</p>
+        <strong>PricePilot — Autonomous Price Tracker & Arbitrage Intelligence</strong>
+        <p>Architected & Developed by <strong>Jai S Ramani</strong></p>
+        <div class="footer-social-links" style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 8px;">
+          <a href="mailto:jaisramani05@gmail.com" class="footer-social-link" style="color: var(--accent-primary); text-decoration: none; font-size: 0.86rem; display: inline-flex; align-items: center; gap: 5px;" title="Email: jaisramani05@gmail.com">
+            <i class="fa-solid fa-envelope"></i> jaisramani05@gmail.com
+          </a>
+          <span style="opacity: 0.3;">•</span>
+          <a href="https://www.linkedin.com/in/jai-s-ramani-2948532bb" target="_blank" rel="noopener noreferrer" class="footer-social-link" style="color: #0a66c2; text-decoration: none; font-size: 0.86rem; display: inline-flex; align-items: center; gap: 5px;" title="LinkedIn: Jai S Ramani">
+            <i class="fa-brands fa-linkedin"></i> LinkedIn Profile
+          </a>
+          <span style="opacity: 0.3;">•</span>
+          <a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer" class="footer-social-link" style="color: var(--text-main); text-decoration: none; font-size: 0.86rem; display: inline-flex; align-items: center; gap: 5px;" title="GitHub: Jai-S-Ramani">
+            <i class="fa-brands fa-github"></i> GitHub Profile
+          </a>
+        </div>
       </div>
       <div class="footer-status">
-        <span class="status-indicator online"></span>
+        <span class="status-indicator"></span>
         <span>Daemon Sentinel: Online</span>
       </div>
     </div>
   </footer>
 
   <!-- Toast Container -->
-  <div id="toastContainer" class="toast-container"></div>
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-  <!-- Landing Page Script (Cache Buster v2.1) -->
-  <script src="{{ url_for('static', filename='js/landing.js') }}?v=2.1"></script>
+  <!-- Landing Page Script (Cache Buster v3.1) -->
+  <script src="{{ url_for('static', filename='js/landing.js') }}?v=3.1"></script>
 </body>
 </html>

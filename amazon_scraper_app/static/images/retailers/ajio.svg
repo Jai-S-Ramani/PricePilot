@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="26" fill="#2C4152"/>
+  <!-- AJIO Bold Minimal Wordmark -->
+  <text x="60" y="66" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="28" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">AJIO</text>
+  <!-- Sleek Accent Bar -->
+  <rect x="42" y="74" width="36" height="3" rx="1.5" fill="#E42529"/>
+  <text x="60" y="94" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="8" fill="#94A3B8" text-anchor="middle" letter-spacing="2">RELIANCE TRENDS</text>
+</svg>

@@ -89,13 +89,13 @@ def send_discord_alert(webhook_url: str, product_title: str, current_price: floa
                 {"name": "Alert Target", "value": f"${t_price:.2f}", "inline": True},
                 {"name": "Instant Savings", "value": f"${abs(diff):.2f}", "inline": True}
             ],
-            "footer": {"text": "Amazon Price Tracker & Market Intelligence"}
+            "footer": {"text": "PricePilot Market Intelligence"}
         }
         if image_url:
             embed["thumbnail"] = {"url": image_url}
 
         payload = {
-            "username": "Amazon Price Tracker Bot",
+            "username": "PricePilot Alert Bot",
             "embeds": [embed]
         }
         resp = requests.post(webhook_url, json=payload, timeout=8)

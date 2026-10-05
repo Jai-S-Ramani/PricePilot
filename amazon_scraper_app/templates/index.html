@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Amazon Price Tracker & Scraper Intelligence Dashboard</title>
-  <!-- Google Fonts: Inter & Outfit -->
+  <title>PricePilot — Amazon Price Tracker & Scraper Intelligence Dashboard</title>
+  <!-- Google Fonts: Inter, Outfit, and JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Chart.js -->
@@ -15,8 +15,10 @@
   <!-- GSAP Animation Platform & ScrollTrigger -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <!-- App Styles (Cache Buster v4.6 Live Search Autocomplete) -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}?v=4.6">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo.png') }}?v=5.0">
+  <!-- App Styles (Cache Buster v6.4 Minimalist Bauhaus) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}?v=6.8">
 </head>
 <body>
 
@@ -34,21 +36,29 @@
   <!-- Top Header / Navigation -->
   <header class="navbar">
     <div class="nav-container">
-      <div class="brand">
-        <div class="brand-logo">
-          <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Amazon Tracker Logo" class="logo-img">
-        </div>
-        <div class="brand-text">
-          <h1>Amazon Tracker</h1>
-          <p>Autonomous Price Intelligence & Scraper Engine</p>
-        </div>
-      </div>
+      <a href="/" class="brand-link" aria-label="PricePilot Home">
+        <img src="{{ url_for('static', filename='images/pricepilot_brand_dark.png') }}?v=5.0" alt="PricePilot — Track. Compare. Make The Move." class="brand-navbar-img brand-dark-img">
+        <img src="{{ url_for('static', filename='images/pricepilot_brand_light.png') }}" alt="PricePilot — Track. Compare. Make The Move." class="brand-navbar-img brand-light-img">
+      </a>
       <div class="nav-actions">
         <!-- Live Background Scheduler Status Pill -->
         <div id="schedulerStatusPill" class="scheduler-pill" title="Background Auto-Sync Status">
           <span class="scheduler-dot"></span>
           <span id="schedulerPillText">Sync: Active (30m)</span>
         </div>
+
+        <!-- Social Profile Links -->
+        <a href="https://www.linkedin.com/in/jai-s-ramani-2948532bb" target="_blank" rel="noopener noreferrer" class="btn btn-icon" title="LinkedIn: Jai S Ramani" aria-label="LinkedIn Profile">
+          <i class="fa-brands fa-linkedin" style="color: #0a66c2;"></i>
+        </a>
+        <a href="https://github.com/Jai-S-Ramani" target="_blank" rel="noopener noreferrer" class="btn btn-icon" title="GitHub: Jai-S-Ramani" aria-label="GitHub Profile">
+          <i class="fa-brands fa-github"></i>
+        </a>
+
+        <!-- Theme Toggle Button (1-Click Minimalist Toggle matching Landing Page) -->
+        <button id="themeToggleBtn" class="btn btn-icon" title="Toggle Light / Dark Mode" aria-label="Toggle Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
 
         <!-- User Authentication Badge / Home Link (Always Visible) -->
         <div id="userAuthContainer" class="nav-auth-container">
@@ -65,14 +75,6 @@
           
           <!-- 3-Dot Dropdown Popup -->
           <div id="headerMenuDropdown" class="menu-dropdown glass hidden">
-            <div class="menu-group">
-              <label class="menu-label"><i class="fa-solid fa-palette"></i> Theme Mode</label>
-              <select id="themeSelector" class="menu-select" title="Switch Theme Palette">
-                <option value="dark">🌙 Dark Ultra-Luxe (Obsidian & Biscuit)</option>
-                <option value="light">☀️ Light Sand Luxe (Sand & Copper)</option>
-              </select>
-            </div>
-
             <div class="menu-group">
               <label class="menu-label"><i class="fa-solid fa-coins"></i> Currency</label>
               <select id="currencySelector" class="menu-select" title="Select Display Currency">
@@ -180,15 +182,15 @@
     <!-- Quick Add Product & URL Input Bar with Focus Beam -->
     <section class="add-section glass">
       <div class="focus-glow-beam"></div>
-      <div class="section-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-        <div class="section-title" style="margin-bottom: 0;">
+      <div class="section-title-row">
+        <div class="section-title">
           <i class="fa-solid fa-magnifying-glass-chart"></i> Track New Amazon Product
         </div>
-        <div class="add-mode-toggle" style="display: flex; gap: 6px; background: rgba(0,0,0,0.25); padding: 4px; border-radius: 8px; border: 1px solid var(--border-color);">
-          <button id="tabModeUrl" type="button" class="btn-mode-tab active" style="padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: none; background: var(--accent-purple, #8b5cf6); color: white;">
+        <div class="add-mode-toggle">
+          <button id="tabModeUrl" type="button" class="btn-mode-tab active">
             <i class="fa-solid fa-link"></i> Paste URL / ASIN
           </button>
-          <button id="tabModeSearch" type="button" class="btn-mode-tab" style="padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: none; background: transparent; color: inherit;">
+          <button id="tabModeSearch" type="button" class="btn-mode-tab">
             <i class="fa-solid fa-magnifying-glass"></i> Live Amazon Search
           </button>
         </div>
@@ -210,30 +212,39 @@
       </form>
 
       <!-- Live Search Form & Results -->
-      <div id="searchAmazonContainer" class="search-amazon-box hidden" style="margin-top: 8px;">
-        <form id="searchAmazonForm" class="add-form" style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <div class="input-group" style="flex: 2; min-width: 250px;">
+      <div id="searchAmazonContainer" class="search-amazon-box hidden">
+        <form id="searchAmazonForm" class="add-form search-form-row">
+          <div class="input-group search-input-group">
             <i class="fa-brands fa-amazon input-icon"></i>
-            <input type="text" id="searchAmazonQueryInput" placeholder="Search Amazon India catalog (e.g. OnePlus Buds, MacBook Air, Samsung Galaxy, boAt, iPhone)..." autocomplete="off" required>
+            <input type="text" id="searchAmazonQueryInput" placeholder="Search Amazon catalog (e.g. OnePlus Buds, MacBook Air, Sony XM5, boAt, iPhone)..." autocomplete="off" required>
           </div>
-          <select id="searchAmazonRegionSelect" class="select-filter" style="width: auto; padding: 10px 14px; border-radius: 10px; background: rgba(0,0,0,0.25); color: inherit; border: 1px solid var(--border-color);">
+          <select id="searchAmazonRegionSelect" class="select-filter search-region-select" title="Amazon Marketplace Region">
             <option value="IN" selected>🇮🇳 India (₹)</option>
             <option value="US">🇺🇸 US ($)</option>
             <option value="UK">🇬🇧 UK (£)</option>
             <option value="CA">🇨🇦 Canada (CA$)</option>
             <option value="DE">🇩🇪 Germany (€)</option>
           </select>
-          <button type="submit" id="searchAmazonSubmitBtn" class="btn btn-accent" style="white-space: nowrap;">
+          <div class="search-target-preset-wrap" title="Default Target Alert Strategy">
+            <select id="searchAmazonTargetPreset" class="select-filter search-target-select">
+              <option value="0.90" selected>🎯 Alert at -10%</option>
+              <option value="0.85">🎯 Alert at -15%</option>
+              <option value="0.80">🎯 Alert at -20%</option>
+              <option value="0.75">🎯 Alert at -25%</option>
+              <option value="0.95">🎯 Alert at -5%</option>
+            </select>
+          </div>
+          <button type="submit" id="searchAmazonSubmitBtn" class="btn btn-accent search-submit-btn">
             <i class="fa-solid fa-magnifying-glass"></i> Search Products
           </button>
         </form>
 
         <!-- Real-Time Autocomplete Suggestion Pills -->
-        <div id="searchSuggestionsBox" class="search-suggestions-container hidden" style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;">
-          <span style="font-size: 0.74rem; color: #94a3b8; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
-            <i class="fa-solid fa-wand-magic-sparkles" style="color: #8b5cf6;"></i> Auto-complete:
+        <div id="searchSuggestionsBox" class="search-suggestions-container hidden">
+          <span class="suggestion-lead">
+            <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent-primary);"></i> Auto-complete:
           </span>
-          <div id="suggestionChipsWrap" style="display: inline-flex; flex-wrap: wrap; gap: 6px;"></div>
+          <div id="suggestionChipsWrap"></div>
         </div>
 
         <!-- Trending Popular Searches Row -->
@@ -256,7 +267,7 @@
       </div>
 
       <div class="sample-chips">
-        <span class="chip-label">Quick Add Portfolio Samples:</span>
+        <span class="chip-label">Quick Add Verified Samples:</span>
         <button class="chip" data-asin="B07FNW9FGJ">👕 Got Data MIS Analyst T-Shirt</button>
         <button class="chip" data-asin="B09B8V1LZ3">🎧 Sony WH-1000XM5</button>
         <button class="chip" data-asin="B0CX23VJP5">💻 Apple MacBook Air M3</button>
@@ -342,15 +353,15 @@
         </div>
 
         <!-- Chart Timeframe Bar & Deal Score Badge -->
-        <div class="chart-timeframe-bar" style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0 8px 0; gap: 8px; flex-wrap: wrap;">
-          <div class="timeframe-buttons" style="display: flex; gap: 6px;">
-            <button class="timeframe-btn active" data-range="ALL" style="padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--accent-purple, #8b5cf6); color: white;">ALL</button>
-            <button class="timeframe-btn" data-range="1Y" style="padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: inherit;">1Y</button>
-            <button class="timeframe-btn" data-range="3M" style="padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: inherit;">3M</button>
-            <button class="timeframe-btn" data-range="1M" style="padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: inherit;">1M</button>
-            <button class="timeframe-btn" data-range="7D" style="padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: inherit;">7D</button>
+        <div class="chart-timeframe-bar">
+          <div class="timeframe-buttons">
+            <button class="timeframe-btn active" data-range="ALL">ALL</button>
+            <button class="timeframe-btn" data-range="1Y">1Y</button>
+            <button class="timeframe-btn" data-range="3M">3M</button>
+            <button class="timeframe-btn" data-range="1M">1M</button>
+            <button class="timeframe-btn" data-range="7D">7D</button>
           </div>
-          <div id="chartDealScoreBadge" class="chart-deal-score-badge" style="font-size: 0.85rem; padding: 4px 12px; border-radius: 9999px; background: rgba(16, 185, 129, 0.2); color: #10b981; font-weight: bold; border: 1px solid rgba(16, 185, 129, 0.4);">
+          <div id="chartDealScoreBadge" class="chart-deal-score-badge">
             🔥 Deal Score: Calculating...
           </div>
         </div>
@@ -359,16 +370,16 @@
           <canvas id="priceChart"></canvas>
         </div>
 
-        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px;">
-          <div style="font-size: 0.8rem; color: #94a3b8; display: flex; align-items: center; gap: 6px;">
-            <i class="fa-solid fa-database text-sky" style="color: #38bdf8;"></i> Time-series data points synced to SQLite & CSV
+        <div class="modal-footer">
+          <div class="footer-meta-note">
+            <i class="fa-solid fa-database text-sky"></i> Time-series data points synced to SQLite & CSV
           </div>
-          <div style="display: flex; gap: 8px;">
-            <a id="modalDownloadCsvBtn" href="#" class="btn btn-secondary btn-sm" style="text-decoration: none; padding: 6px 12px; font-size: 0.82rem;">
-              <i class="fa-solid fa-file-csv" style="color: #10b981;"></i> Export CSV
+          <div class="modal-export-btns">
+            <a id="modalDownloadCsvBtn" href="#" class="btn btn-secondary btn-sm">
+              <i class="fa-solid fa-file-csv" style="color: var(--accent-emerald);"></i> Export CSV
             </a>
-            <a id="modalDownloadJsonBtn" href="#" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration: none; padding: 6px 12px; font-size: 0.82rem;">
-              <i class="fa-solid fa-file-code" style="color: #8b5cf6;"></i> Export JSON
+            <a id="modalDownloadJsonBtn" href="#" target="_blank" class="btn btn-secondary btn-sm">
+              <i class="fa-solid fa-file-code" style="color: var(--accent-primary);"></i> Export JSON
             </a>
           </div>
         </div>
@@ -386,7 +397,7 @@
       <div class="modal-body">
         <form id="sendTestAlertForm" class="alert-form">
           <label>Recipient Email Address</label>
-          <input type="email" id="alertEmailInput" value="alex.analyst@example.com" required>
+          <input type="email" id="alertEmailInput" value="jaisramani05@gmail.com" required>
           <input type="hidden" id="alertProductId">
           <button type="submit" class="btn btn-primary" style="margin-top: 12px; width: 100%;">
             <i class="fa-solid fa-paper-plane"></i> Generate & Send Alert Preview
@@ -441,7 +452,7 @@
         <form id="quickRegisterForm" class="quick-auth-form hidden">
           <div class="form-group">
             <label><i class="fa-solid fa-user"></i> Full Name (Optional)</label>
-            <input type="text" id="quickRegName" placeholder="Alex Analyst">
+            <input type="text" id="quickRegName" placeholder="Jai S Ramani">
           </div>
           <div class="form-group">
             <label><i class="fa-solid fa-envelope"></i> Email Address</label>
@@ -633,7 +644,7 @@
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <!-- App Script (Cache Buster v4.0 Full Feature Suite) -->
-  <script src="{{ url_for('static', filename='js/app.js') }}?v=4.0"></script>
+  <!-- App Script (Cache Buster v6.4 Minimalist Bauhaus) -->
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=6.7"></script>
 </body>
 </html>

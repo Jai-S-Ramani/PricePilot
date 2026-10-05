@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="26" fill="#3E006F"/>
+  <!-- Electric Coral Speed Z -->
+  <path d="M42 36h36l-26 30h28v9H38l26-30H42v-9z" fill="#FF5C39"/>
+  <!-- Zepto Text -->
+  <text x="60" y="96" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="16" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">zepto</text>
+  <circle cx="88" cy="91" r="2.5" fill="#FF5C39"/>
+</svg>

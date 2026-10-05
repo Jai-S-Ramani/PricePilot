@@ -128,7 +128,7 @@ class TestFlaskEndpoints(unittest.TestCase):
     def test_dashboard_page_loads(self):
         response = self.app.get('/dashboard')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Amazon Tracker', response.data)
+        self.assertTrue(b'PricePilot' in response.data or b'Amazon Tracker' in response.data)
 
     def test_api_products_endpoint(self):
         response = self.app.get('/api/products')

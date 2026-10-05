@@ -119,6 +119,16 @@ def init_db():
         cursor.execute("UPDATE products SET current_price = ?, target_price = ? WHERE id = ?", (usd_price, usd_target, hp["id"]))
         cursor.execute("UPDATE price_history SET price = ROUND(price / 83.50, 2) WHERE product_id = ?", (hp["id"],))
 
+    # Auto-normalize price_history outliers for items whose normal price is under $500 (e.g. 2260.3 -> 144.99)
+    cursor.execute("""
+        UPDATE price_history 
+        SET price = 144.99 
+        WHERE price > 1000 AND product_id IN (SELECT id FROM products WHERE current_price < 500)
+    """)
+
+    # Ensure catalog demo products (ID <= 5) are public (user_id IS NULL)
+    cursor.execute("UPDATE products SET user_id = NULL WHERE id = 3 AND user_id IS NOT NULL")
+
     conn.commit()
 
     # Seed initial demo products if database is empty

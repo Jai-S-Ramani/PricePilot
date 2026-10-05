@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="26" fill="#E42529"/>
+  <!-- Reliance Crest Emblem -->
+  <circle cx="60" cy="46" r="22" fill="#BA1418"/>
+  <polygon points="60,28 65,40 78,40 68,48 72,60 60,52 48,60 52,48 42,40 55,40" fill="#FFFFFF"/>
+  <circle cx="60" cy="46" r="5" fill="#E42529"/>
+  <!-- Typography -->
+  <text x="60" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="13" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">RELIANCE</text>
+  <rect x="25" y="91" width="70" height="14" rx="3" fill="#003B95"/>
+  <text x="60" y="102" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="9" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">DIGITAL</text>
+</svg>

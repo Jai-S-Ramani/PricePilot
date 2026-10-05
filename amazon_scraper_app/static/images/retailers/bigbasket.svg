@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="26" fill="#84C225"/>
+  <!-- Dark Basket Backdrop -->
+  <circle cx="60" cy="50" r="26" fill="#2C3E50"/>
+  <!-- Iconic Red 'bb' Leaf Badge -->
+  <circle cx="60" cy="50" r="17" fill="#E42529"/>
+  <text x="60" y="58" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="20" fill="#FFFFFF" text-anchor="middle" letter-spacing="-1">bb</text>
+  <!-- Bigbasket Name -->
+  <text x="60" y="94" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="13" fill="#FFFFFF" text-anchor="middle">bigbasket</text>
+  <text x="60" y="105" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="7.5" fill="#ECFCCB" text-anchor="middle" letter-spacing="1">A TATA ENTERPRISE</text>
+</svg>

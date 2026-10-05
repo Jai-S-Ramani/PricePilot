@@ -71,9 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1-Click Fast Guest Demo Login
   // -----------------------------------------------------------------
   async function triggerFastDemoLogin() {
-    showToast('⚡ Connecting guest demo credentials...', 'info');
+    showToast('⚡ Connecting as Jai S Ramani (Guest Demo)...', 'info');
 
-    const demoEmail = 'alex.analyst@example.com';
+    const demoEmail = 'jaisramani05@gmail.com';
     const demoPass = 'demo1234';
 
     try {
@@ -89,13 +89,13 @@ document.addEventListener('DOMContentLoaded', () => {
         res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: 'Alex Analyst', email: demoEmail, password: demoPass })
+          body: JSON.stringify({ name: 'Jai S Ramani', email: demoEmail, password: demoPass })
         });
         data = await res.json();
       }
 
       if (data.status === 'success') {
-        showToast('🎉 Demo authenticated! Launching Command Center...', 'success');
+        showToast('🎉 Welcome, Jai S Ramani! Launching Command Center...', 'success');
         setTimeout(() => {
           window.location.href = '/dashboard';
         }, 600);

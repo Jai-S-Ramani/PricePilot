@@ -1,22 +1,24 @@
-# ⚡ Amazon Product Web Scraper & Price Intelligence Command Center
+# ⚡ PricePilot — Amazon Price Tracker & Competitor Arbitrage Intelligence Platform
 
-> A production-grade, full-stack Data Analytics Web Application, Multi-Store Competitor Arbitrage Engine, Live Amazon Catalog Search, and Multi-Channel Notification Platform built with Python, Flask, BeautifulSoup4, SQLite3, Chart.js, and GSAP. Extended from the classic *Alex The Analyst Data Analytics Portfolio Project* into an enterprise-grade real-time price monitoring, competitor benchmarking, and predictive intelligence platform.
+> **TRACK. COMPARE. MAKE THE MOVE.**  
+> A production-grade, full-stack Data Analytics Web Application, Multi-Store Competitor Arbitrage Engine, Live Amazon Catalog Search, and Multi-Channel Notification Platform built with Python, Flask, BeautifulSoup4, SQLite3, Chart.js, and GSAP. Extended from the classic *Alex The Analyst Data Analytics Portfolio Project* into an enterprise-grade real-time price monitoring, competitor benchmarking, and predictive decision-support platform.
 
 ---
 
 ## 📌 Table of Contents
 
 - [Overview](#-overview)
+- [Official Brand Identity](#-official-brand-identity)
 - [Key Features](#-key-features)
-  - [1. Real-Time Amazon Catalog Search & Predictive Autocomplete](#1-real-time-amazon-catalog-search--predictive-autocomplete)
-  - [2. Multi-Store Competitor Comparison & Arbitrage Engine (18 Stores)](#2-multi-store-competitor-comparison--arbitrage-engine-18-stores)
+  - [1. Real-Time Amazon Catalog Search & Predictive Autocomplete with Target Price Setting](#1-real-time-amazon-catalog-search--predictive-autocomplete-with-target-price-setting)
+  - [2. Multi-Store Competitor Arbitrage Engine (18 Stores with Official Logos)](#2-multi-store-competitor-arbitrage-engine-18-stores-with-official-logos)
   - [3. Intelligent Dealer Catalog Availability Filter](#3-intelligent-dealer-catalog-availability-filter)
   - [4. Multi-Channel Alert Dispatcher (Email, Discord & Telegram)](#4-multi-channel-alert-dispatcher-email-discord--telegram)
-  - [5. Autonomous Background Price Scheduler](#5-autonomous-background-price-scheduler)
+  - [5. Autonomous Background Price Scheduler Daemon](#5-autonomous-background-price-scheduler-daemon)
   - [6. Multi-Currency FX Engine & Exact Price Normalization (7 Currencies)](#6-multi-currency-fx-engine--exact-price-normalization-7-currencies)
   - [7. Predictive Analytics & Volatility Scoring](#7-predictive-analytics--volatility-scoring)
   - [8. Interactive 30-Day Time-Series & Inline Sparklines](#8-interactive-30-day-time-series--inline-sparklines)
-- [Design System: Obsidian Briar Mahogany & Warm Biscuit](#-design-system-obsidian-briar-mahogany--warm-biscuit)
+- [Design System & Theme Switcher](#-design-system--theme-switcher)
 - [Project Architecture](#-project-architecture)
 - [Database Schema & Data Pipeline](#-database-schema--data-pipeline)
 - [REST API Reference](#-rest-api-reference)
@@ -29,30 +31,46 @@
 
 ## 📖 Overview
 
-The **Amazon Price Tracker & Scraper Intelligence Dashboard** elevates static web scraping scripts into an autonomous monitoring, competitor arbitrage, live catalog search, and decision-support command center. It tracks products across 5 international Amazon regions (defaulting to Amazon India `IN`), benchmarks real-time prices across **18 leading Indian and Global retailer marketplaces**, filters out non-carrying dealers dynamically, computes historical price volatility, dispatches alerts across Email, Discord, and Telegram, and automatically executes price drop tracking.
+**PricePilot** transforms static web scraping scripts into an autonomous monitoring, competitor arbitrage, live catalog search, and decision-support command center. It tracks products across 5 international Amazon regions (defaulting to Amazon India `IN`), benchmarks real-time prices across **18 leading Indian and Global retailer marketplaces**, filters out non-carrying dealers dynamically, computes historical price volatility, dispatches alerts across Email, Discord, and Telegram, and automatically executes price drop tracking.
 
 ### Core Highlights:
-1. **Live Amazon Catalog Search & Suggestions**: Real-time Amazon product search with predictive autocomplete suggestions, regional marketplace selection (🇮🇳 India by default), and 1-click tracking directly from search cards.
-2. **Multi-Retailer Competitor Comparison**: Benchmarks Amazon against 13 leading Indian marketplaces (Flipkart, Croma, Reliance Digital, Tata CLiQ, JioMart, Meesho, Blinkit, Zepto, Swiggy Instamart, BigBasket, Myntra, AJIO, Nykaa) and 5 global retailers (Walmart, Best Buy, eBay, Target, B&H Photo).
-3. **Catalog Availability Engine**: Dynamically identifies whether a dealer actually stocks a given product vertical (e.g. Nykaa does not sell OnePlus Buds; Croma does not sell fashion dresses) with an interactive UI toggle.
+1. **Live Amazon Catalog Search & Suggestions**: Real-time Amazon product search with predictive autocomplete suggestions, regional marketplace selection (🇮🇳 India by default), direct target alert price configuration, and 1-click tracking directly from search cards.
+2. **Multi-Retailer Competitor Comparison**: Benchmarks Amazon against 13 leading Indian marketplaces (Flipkart, Croma, Reliance Digital, Tata CLiQ, JioMart, Meesho, Blinkit, Zepto, Swiggy Instamart, BigBasket, Myntra, AJIO, Nykaa) and 5 global retailers (Walmart, Best Buy, eBay, Target, B&H Photo) with official vector branding.
+3. **Catalog Availability Engine**: Dynamically identifies whether a dealer actually stocks a given product vertical (e.g., Nykaa does not sell OnePlus Buds; Croma does not sell fashion dresses) with an interactive UI toggle.
 4. **Multi-Channel Alerts**: Automated notification engine dispatching rich HTML emails, Discord webhook embeds, and Telegram bot messages when target prices are reached.
 5. **Multi-Currency System (7 Currencies)**: Full support for INR (`₹`), USD (`$`), EUR (`€`), GBP (`£`), CAD (`CA$`), AUD (`A$`), and JPY (`¥`), preserving exact native prices (`₹83,416.50`) and preventing multi-currency conversion discrepancies.
 6. **Autonomous Daemon Scheduler**: Thread-safe background worker sweeps monitored products, calculates volatility, logs time-series records to SQLite, and maintains an exportable dataset (`AmazonWebScraperDataset.csv`).
 7. **Predictive Recommendation Engine**: Analyzes 30-day moving averages and historical lows to output real-time `BUY_NOW`, `FAIR_PRICE`, or `WAIT` decision signals.
-8. **Obsidian Briar Mahogany & Warm Biscuit Luxe UI**: Premium dark glassmorphic design featuring rolling GSAP numeric counters, pure spring pop-up card physics, top telemetry ticker marquee, and 7-currency FX conversion.
+8. **Minimalist Dual-Theme UI**: Obsidian Dark & Light Sand themes with 1-click instant toggle on both the landing page and dashboard.
+
+---
+
+## 💎 Official Brand Identity
+
+**PricePilot** is defined by a bold, high-tech visual identity:
+
+- **The 3D Emblem**: A precision obsidian capital **'P'** unified with a dual-bar volume chart and sliced diagonally by a faceted, luminous emerald-green price drop arrow.
+- **Wordmark & Typography**: **Price<span style="color:#10b981">Pilot</span>** featuring obsidian/white primary typography and a radiant emerald gradient (`#10b981` &rarr; `#00e676`).
+- **Tagline**: `TRACK. COMPARE. MAKE THE MOVE.`
+- **Theme-Adaptive Delivery**:
+  - `static/images/pricepilot_brand_dark.png`: Optimized for dark themes with crisp silver "Price", vibrant emerald "Pilot", and a soft emerald aura.
+  - `static/images/pricepilot_brand_light.png`: Optimized for light themes with obsidian "Price" and vibrant emerald "Pilot".
+  - `static/images/logo.png`: 1024×1024 high-resolution master asset.
+  - `static/images/logo.svg`: Scalable vector asset.
 
 ---
 
 ## ✨ Key Features
 
-### 1. Real-Time Amazon Catalog Search & Predictive Autocomplete
+### 1. Real-Time Amazon Catalog Search & Predictive Autocomplete with Target Price Setting
 - **Live Search Modal**: Search Amazon's live catalog directly without manually finding product URLs or ASINs.
-- **Predictive Autocomplete**: Instant search suggestions as you type with debounced querying (220ms), keyboard navigation (Up/Down arrows + Enter), and outside click dismiss.
+- **Direct Target Alert Price Input**: Set your desired alert price directly within the live search interface before tracking, instantly establishing your threshold.
+- **Predictive Autocomplete**: Instant search suggestions as you type with debounced querying (220ms), keyboard navigation (Up/Down arrows + Enter), and outside-click dismiss.
 - **Indian Marketplace Default**: Configured to default to Amazon India (`IN`) and Indian Rupee (`₹` / `INR`) with quick regional switching (US, UK, CA, DE).
-- **1-Click Track Item**: Search result cards include pricing, thumbnail images, category tags, ratings, and a 1-click `+ Track Item` button that seamlessly registers the product into SQLite monitoring.
+- **1-Click Track Item**: Search result cards include verified imagery, ratings, pricing, and a 1-click `+ Track Item` button that seamlessly registers the product into SQLite monitoring.
 
-### 2. Multi-Store Competitor Comparison & Arbitrage Engine (18 Stores)
-- **18 Marketplaces Benchmarked**:
+### 2. Multi-Store Competitor Arbitrage Engine (18 Stores with Official Logos)
+- **18 Marketplaces Benchmarked with Official Brand Logos**:
   - **Indian Mega & Tech**: Flipkart, Croma (Tata Group), Reliance Digital, Tata CLiQ, JioMart, Meesho
   - **10-Min Quick Commerce**: Blinkit, Zepto, Swiggy Instamart, BigBasket (Tata)
   - **Fashion & Beauty**: Myntra, AJIO (Reliance), Nykaa
@@ -80,7 +98,7 @@ The **Amazon Price Tracker & Scraper Intelligence Dashboard** elevates static we
 - **Multi-Channel Dispatcher (`dispatch_multi_channel_alert`)**: Automatically triggers across all enabled channels when automated sweeps detect a price below target.
 - **User Settings Modal**: Configure custom Discord Webhook URLs and Telegram Chat IDs directly from the dashboard 3-dot menu with live test buttons.
 
-### 5. Autonomous Background Price Scheduler
+### 5. Autonomous Background Price Scheduler Daemon
 - **Thread-Safe Daemon (`scheduler.py`)**: Continuously monitors tracked products in an isolated worker thread.
 - **Configurable Cadence**: Adjust sweep intervals on the fly (15m, 30m, 45m, 60m) via REST API or the header dropdown.
 - **Live Status Header Pill**: Real-time pulsing radar indicator (`Sync: Active (30m)`) with pause, resume, and immediate manual sweep capabilities.
@@ -104,24 +122,20 @@ The **Amazon Price Tracker & Scraper Intelligence Dashboard** elevates static we
 
 ---
 
-## 🎨 Design System: Obsidian Briar Mahogany & Warm Biscuit
+## 🎨 Design System & Theme Switcher
 
-The interface is engineered with Vanilla CSS adhering to the **Obsidian Briar Mahogany & Warm Biscuit** palette:
+The interface is engineered with Vanilla CSS adhering to a modern dual-theme architecture:
 
-| Token | 🌙 Dark Ultra-Luxe (Default) | ☀️ Light Sand Luxe | Usage |
+| Token | 🌙 Obsidian Dark (Default) | ☀️ Light Sand Luxe | Usage |
 | :--- | :--- | :--- | :--- |
-| **Deep Background** | Obsidian Briar (`#0e0809` → `#180e10`) | Warm Sand Pearl (`#f6efe7` → `#ffffff`) | Multi-layer ambient radial canvas |
-| **Primary Accent** | Warm Biscuit (`#e8caae` / `#f5e4d3`) | Rich Copper Bronze (`#b87333` / `#945318`) | Primary buttons, active tabs, glowing borders |
-| **Flame Gold / Deals** | Amber Gold (`#f59e0b` / `#fbbf24`) | Amber Bronze (`#d97706`) | Target price triggers, quick add CTA, deal tags |
-| **Growth / Savings** | Mint Emerald (`#10b981` / `#34d399`) | Mint Forest (`#059669`) | Price drops, arbitrage savings, success states |
-| **Briar Rose** | Briar Rose (`#e06d75`) | Deep Briar Crimson (`#b91c1c`) | Upward price warnings, excluded catalog badges |
-| **Glass Surfaces** | Translucent Obsidian (`rgba(26, 16, 18, 0.88)`)| Crisp Snow Glass (`rgba(255, 255, 255, 0.95)`)| 24px backdrop-blur with warm biscuit hairline borders |
+| **Deep Background** | `#090d16` &rarr; `#0f172a` | `#f8fafc` &rarr; `#ffffff` | Canvas background |
+| **Primary Accent** | Emerald Neon (`#10b981` / `#00e676`) | Forest Emerald (`#059669`) | Brand highlights, price drop signals, active tabs |
+| **Flame Amber** | Amber Gold (`#f59e0b` / `#fbbf24`) | Amber Bronze (`#d97706`) | Target alerts, deals, quick add buttons |
+| **Surface Cards** | `#131b2e` (24px backdrop blur) | `#ffffff` (elevated shadow) | Product cards, modals, table headers |
+| **Borders** | `rgba(255, 255, 255, 0.08)` | `rgba(0, 0, 0, 0.08)` | Subdued container dividers |
 
-### Micro-Interactions & Animation Highlights:
-- **Telemetry Ticker**: Glowing emerald telemetry dot with a continuous linear marquee ticker across the viewport header.
-- **GSAP Roll-Up Counters**: Numeric interpolations on KPI cards during page load, filter changes, and currency conversions.
-- **Pure Spring Pop-Up Cards**: Cards pop directly upward on hover (`scale(1.03)`, `translateY(-10px)`) with spring physics (`cubic-bezier(0.34, 1.56, 0.64, 1)`) and zero seesaw tilt.
-- **Conic Deal Border Sweep**: Active deals rotate a 4-stop conic gradient border sweep continuously around the perimeter.
+### Theme Toggle:
+A dedicated 1-click **Light / Dark Mode** button is positioned right in the top navigation bar across both the Landing Page (`#landingThemeToggleBtn`) and Dashboard (`#themeToggleBtn`), synchronizing seamlessly across views and preserving user preferences in `localStorage`.
 
 ---
 
@@ -143,16 +157,21 @@ PortfolioProjects/
     ├── README.md                    # Detailed application documentation
     ├── tests/
     │   ├── test_all_features.py     # Base test suite (24 passing unit & integration tests)
-    │   └── test_advanced_features.py# Search & notification tests (15 passing tests)
+    │   └── test_advanced_features.py# Search & notification tests (19 passing tests)
     ├── static/
     │   ├── css/
-    │   │   └── styles.css           # Obsidian Briar & Warm Biscuit design system
+    │   │   ├── styles.css           # Dashboard design system & theme variables
+    │   │   └── landing.css          # Landing page styles & animation rules
     │   ├── js/
     │   │   ├── app.js               # Client controller, search autocomplete, GSAP & Chart.js
     │   │   └── landing.js           # Landing page animations, fast demo login & theme toggle
     │   └── images/
-    │       ├── logo.svg             # Application vector brand mark
-    │       └── product-placeholder.svg # Self-hosted luxury 3D isometric SVG fallback
+    │       ├── logo.png             # Official PricePilot 1024x1024 master emblem
+    │       ├── pricepilot_brand_dark.png  # Transparent dark-mode brand lockup
+    │       ├── pricepilot_brand_light.png # Transparent light-mode brand lockup
+    │       ├── logo.svg             # Scalable vector emblem
+    │       ├── product-placeholder.svg    # Self-hosted product placeholder fallback
+    │       └── retailers/           # 18 official SVG brand logos for competitor stores
     └── templates/
         ├── index.html               # Main dashboard with live search & competitor modals
         └── landing.html             # High-conversion landing page & authentication portal
@@ -235,7 +254,7 @@ PortfolioProjects/
 | `GET /` | `GET` | Renders high-conversion landing page |
 | `GET /dashboard` | `GET` | Renders main Price Intelligence Dashboard |
 | `GET /api/products` | `GET` | Returns all monitored products with signals, sparklines & volatility |
-| `POST /api/products/add` | `POST` | Scrapes Amazon URL/ASIN or accepts search payload and tracks item |
+| `POST /api/products/add` | `POST` | Scrapes Amazon URL/ASIN or accepts search payload with `target_price` |
 | `DELETE /api/products/<id>` | `DELETE` | Purges tracked item and its historical time-series data |
 | `POST /api/products/<id>/target-price` | `POST` | Updates target alert threshold price |
 | `POST /api/products/<id>/refresh` | `POST` | Re-scrapes and refreshes price for an individual product |
@@ -277,55 +296,26 @@ PortfolioProjects/
 
 ## 🧪 Automated Test Suite (43 Tests)
 
-The repository features **43 automated unit and integration tests** organized in two test suites:
+The repository features **43 automated unit and integration tests** organized into two test suites:
 - [`tests/test_all_features.py`](tests/test_all_features.py) (24 tests): Scraper parsing, 18-store competitor benchmarking, catalog availability engine, predictive signals, background scheduler, and Flask endpoints.
-- [`tests/test_advanced_features.py`](tests/test_advanced_features.py) (19 tests): Live Amazon catalog search, suggestion autocompletion, Discord webhook embeds, Telegram push alerts, multi-channel dispatch, single-product live refresh, and multi-format CSV/JSON exports.
+- [`tests/test_advanced_features.py`](tests/test_advanced_features.py) (19 tests): Live Amazon catalog search, suggestion autocompletion, target price setting, Discord webhook embeds, Telegram push alerts, multi-channel dispatch, single-product live refresh, and multi-format CSV/JSON exports.
 
 ### Running the Full Test Suite:
 ```bash
-python -m unittest discover -s tests -p "test_*.py" -v
+python -m pytest tests/ -v
 ```
 
 ```
-test_scheduler_interval_change (test_all_features.TestBackgroundScheduler) ... ok
-test_scheduler_status (test_all_features.TestBackgroundScheduler) ... ok
-test_scheduler_stop_start (test_all_features.TestBackgroundScheduler) ... ok
-test_competitor_global_stores (test_all_features.TestCompetitorComparisonEngine) ... ok
-test_competitor_indian_stores_all_channels (test_all_features.TestCompetitorComparisonEngine) ... ok
-test_fashion_and_quick_commerce_channel_detection (test_all_features.TestCompetitorComparisonEngine) ... ok
-test_oneplus_buds_availability_nykaa_not_carried (test_all_features.TestCompetitorComparisonEngine) ... ok
-test_api_competitors_endpoint (test_all_features.TestFlaskEndpoints) ... ok
-test_api_kpis_endpoint (test_all_features.TestFlaskEndpoints) ... ok
-test_api_products_endpoint (test_all_features.TestFlaskEndpoints) ... ok
-test_api_scheduler_interval_endpoint (test_all_features.TestFlaskEndpoints) ... ok
-test_api_scheduler_status_endpoint (test_all_features.TestFlaskEndpoints) ... ok
-test_api_scheduler_toggle_endpoint (test_all_features.TestFlaskEndpoints) ... ok
-test_dashboard_page_loads (test_all_features.TestFlaskEndpoints) ... ok
-test_export_csv_endpoint (test_all_features.TestFlaskEndpoints) ... ok
-test_home_page_loads (test_all_features.TestFlaskEndpoints) ... ok
-test_detect_regions (test_all_features.TestMultiRegionScraper) ... ok
-test_extract_asin_gp_product (test_all_features.TestMultiRegionScraper) ... ok
-test_extract_asin_raw (test_all_features.TestMultiRegionScraper) ... ok
-test_extract_asin_standard (test_all_features.TestMultiRegionScraper) ... ok
-test_parse_price_various_currencies (test_all_features.TestMultiRegionScraper) ... ok
-test_portfolio_kpis (test_all_features.TestPredictiveEngineAndAnalytics) ... ok
-test_product_stats_buy_now_target_met (test_all_features.TestPredictiveEngineAndAnalytics) ... ok
-test_product_stats_for_seeded_products (test_all_features.TestPredictiveEngineAndAnalytics) ... ok
-test_api_search_endpoint (test_advanced_features.TestLiveSearchAndSuggestions) ... ok
-test_api_search_suggestions_endpoint (test_advanced_features.TestLiveSearchAndSuggestions) ... ok
-test_fetch_amazon_suggestions_multi_region (test_advanced_features.TestLiveSearchAndSuggestions) ... ok
-test_search_amazon_products_fallback_and_structure (test_advanced_features.TestLiveSearchAndSuggestions) ... ok
-test_dispatch_multi_channel_alert (test_advanced_features.TestMultiChannelAlerts) ... ok
-test_send_discord_alert_payload_formatting (test_advanced_features.TestMultiChannelAlerts) ... ok
-test_send_telegram_alert_formatting (test_advanced_features.TestMultiChannelAlerts) ... ok
-test_api_test_discord_endpoint (test_advanced_features.TestNotificationEndpoints) ... ok
-test_api_test_telegram_endpoint (test_advanced_features.TestNotificationEndpoints) ... ok
-test_update_notification_settings_endpoint (test_advanced_features.TestNotificationEndpoints) ... ok
+============================= test session starts =============================
+platform win32 -- Python 3.14.4, pytest-9.1.1, pluggy-1.6.0
+rootdir: E:\DATA ANALYTICS\PortfolioProjects\amazon_scraper_app
+plugins: anyio-4.14.2, shiny-1.7.0
+collected 43 items
 
-----------------------------------------------------------------------
-Ran 39 tests in 3.842s
+tests\test_advanced_features.py ...................                      [ 44%]
+tests\test_all_features.py ........................                      [100%]
 
-OK
+============================= 43 passed in 9.10s ==============================
 ```
 
 ---
@@ -337,7 +327,7 @@ OK
 
 ### 2. Install Dependencies
 ```bash
-python -m pip install flask beautifulsoup4 requests pandas
+python -m pip install flask beautifulsoup4 requests pandas pillow
 ```
 
 ### 3. Launch the Application
@@ -380,3 +370,4 @@ To configure live Gmail SMTP email notifications:
 
 - **Original Inspiration**: Alex The Analyst's *Amazon Web Scraper Project*.
 - **Tech Stack**: Python 3, Flask, BeautifulSoup4, SQLite3, Chart.js, GSAP 3, FontAwesome 6, Google Fonts (Outfit & Inter).
+- **Brand Identity**: PricePilot — *TRACK. COMPARE. MAKE THE MOVE.*

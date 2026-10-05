@@ -46,3 +46,7 @@ graphify-out/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Playwright MCP and empty local temp DB
+.playwright-mcp/
+database.db

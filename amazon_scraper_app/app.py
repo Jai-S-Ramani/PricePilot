@@ -319,7 +319,7 @@ def api_test_alert():
 
     data = request.json or {}
     user = get_user_by_id(user_id)
-    default_email = user["email"] if user else (session.get("user_email") or "alex.analyst@example.com")
+    default_email = user["email"] if user else (session.get("user_email") or "jaisramani05@gmail.com")
     email = data.get("email", default_email)
     product_id = data.get("product_id")
 
