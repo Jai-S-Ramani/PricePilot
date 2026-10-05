@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "PricePilot System Architecture",
+    "output": "architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "full-topology",
+        "label": "Complete System Flow",
+        "focus": ["client", "flask_app", "scraper_engine", "arbitrage_engine", "scheduler_daemon", "sqlite_db", "notifier"],
+        "note": "End-to-end pipeline from client interactions to scraping, arbitrage, database persistence, and multi-channel alerting."
+      },
+      {
+        "id": "arbitrage-flow",
+        "label": "Competitor Arbitrage & Pricing",
+        "focus": ["flask_app", "scraper_engine", "arbitrage_engine", "sqlite_db"],
+        "note": "18-store catalog comparison and availability filtering against Amazon benchmarks."
+      },
+      {
+        "id": "alerting-pipeline",
+        "label": "Autonomous Daemon & Notifications",
+        "focus": ["scheduler_daemon", "sqlite_db", "notifier", "csv_sync"],
+        "note": "Background monitoring daemon, volatility tracking, and multi-channel dispatch."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "client",
+      "type": "external",
+      "label": "Client Interface",
+      "sublabel": "Browser / GSAP UI",
+      "pos": [40, 280],
+      "size": [130, 60]
+    },
+    {
+      "id": "auth_engine",
+      "type": "security",
+      "label": "Session & Auth",
+      "sublabel": "Demo & Auth Guard",
+      "pos": [240, 110],
+      "size": [140, 60],
+      "tag": "SHA-256"
+    },
+    {
+      "id": "flask_app",
+      "type": "frontend",
+      "label": "Flask Application",
+      "sublabel": "REST API :5000",
+      "pos": [240, 280],
+      "size": [140, 60]
+    },
+    {
+      "id": "scraper_engine",
+      "type": "backend",
+      "label": "Scraper Engine",
+      "sublabel": "BS4 & Regional Search",
+      "pos": [480, 150],
+      "size": [150, 60],
+      "tag": "5 Amazon Locales"
+    },
+    {
+      "id": "arbitrage_engine",
+      "type": "backend",
+      "label": "Arbitrage Engine",
+      "sublabel": "18-Store Competitors",
+      "pos": [480, 400],
+      "size": [150, 60],
+      "tag": "Catalog Filter"
+    },
+    {
+      "id": "scheduler_daemon",
+      "type": "backend",
+      "label": "Background Daemon",
+      "sublabel": "Autonomous Scheduler",
+      "pos": [720, 150],
+      "size": [150, 60],
+      "tag": "30m Sweep"
+    },
+    {
+      "id": "sqlite_db",
+      "type": "database",
+      "label": "SQLite Database",
+      "sublabel": "amazon_tracker.db",
+      "pos": [720, 400],
+      "size": [150, 60],
+      "tag": "Time-Series"
+    },
+    {
+      "id": "notifier",
+      "type": "messagebus",
+      "label": "Notification Dispatcher",
+      "sublabel": "Discord / Telegram / Email",
+      "pos": [960, 150],
+      "size": [160, 60],
+      "tag": "Multi-Channel"
+    },
+    {
+      "id": "csv_sync",
+      "type": "database",
+      "label": "CSV Export Sync",
+      "sublabel": "Dataset Exporter",
+      "pos": [960, 400],
+      "size": [160, 60],
+      "tag": "Auto-Sync"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "PricePilot Core Platform Ecosystem",
+      "wraps": ["auth_engine", "flask_app", "scraper_engine", "arbitrage_engine", "scheduler_daemon", "sqlite_db", "notifier", "csv_sync"]
+    }
+  ],
+  "connections": [
+    { "id": "client-to-flask", "from": "client", "to": "flask_app", "label": "HTTP / JSON", "variant": "emphasis" },
+    { "id": "auth-to-flask", "from": "auth_engine", "to": "flask_app", "fromSide": "bottom", "toSide": "top" },
+    { "id": "flask-to-scraper", "from": "flask_app", "to": "scraper_engine", "label": "Scrape API" },
+    { "id": "flask-to-arbitrage", "from": "flask_app", "to": "arbitrage_engine", "label": "Arbitrage" },
+    { "id": "scraper-to-db", "from": "scraper_engine", "to": "sqlite_db", "fromSide": "bottom", "toSide": "top", "label": "Price History" },
+    { "id": "arbitrage-to-db", "from": "arbitrage_engine", "to": "sqlite_db", "label": "Store Quotes" },
+    { "id": "scheduler-to-scraper", "from": "scheduler_daemon", "to": "scraper_engine", "label": "Periodic Sweep" },
+    { "id": "scheduler-to-notifier", "from": "scheduler_daemon", "to": "notifier", "label": "Alert Webhooks", "variant": "emphasis" },
+    { "id": "db-to-csv", "from": "sqlite_db", "to": "csv_sync", "label": "Sync Dataset" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Ingestion & Discovery",
+      "items": [
+        "Live Amazon catalog scraper with real-time suggestion autocomplete",
+        "Multi-regional support across 5 international marketplaces (India, US, UK, DE, JP)"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Intelligence & Arbitrage",
+      "items": [
+        "18-store multi-retailer arbitrage engine with catalog availability filtering",
+        "Predictive buy/wait recommendations and 30-day volatility scoring"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Automation & Delivery",
+      "items": [
+        "Autonomous background thread daemon executing periodic sweeps",
+        "Instant multi-channel notifications via Discord webhooks, Telegram bots, and SMTP email"
+      ]
+    }
+  ]
+}
