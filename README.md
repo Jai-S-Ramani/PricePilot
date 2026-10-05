@@ -1,6 +1,9 @@
 # ⚡ Amazon Price Intelligence & Multi-Store Arbitrage Command Center
 
 > An enterprise-grade, full-stack Data Analytics Web Application, Competitor Arbitrage Engine, Live Amazon Catalog Search, and Multi-Channel Notification Platform built with Python, Flask, BeautifulSoup4, SQLite3, Chart.js, and GSAP. Extended from the foundational *Alex The Analyst Data Analytics Portfolio Project* into a real-time price monitoring, predictive intelligence, and multi-channel alerting ecosystem.
+>
+> **Architect & Lead Engineer**: **Jai S Ramani**  
+> 📧 **Email**: [jaisramani05@gmail.com](mailto:jaisramani05@gmail.com) | 💼 **LinkedIn**: [jai-s-ramani-2948532bb](https://www.linkedin.com/in/jai-s-ramani-2948532bb) | 🐙 **GitHub**: [Jai-S-Ramani](https://github.com/Jai-S-Ramani)
 
 ---
 
@@ -89,6 +92,10 @@ This logs scraped product entries directly into [`AmazonWebScraperDataset.csv`](
 
 ## 📜 Attribution & Credits
 
+- **Architect & Lead Developer**: **Jai S Ramani**
+  - 📧 **Email**: [jaisramani05@gmail.com](mailto:jaisramani05@gmail.com)
+  - 💼 **LinkedIn**: [https://www.linkedin.com/in/jai-s-ramani-2948532bb](https://www.linkedin.com/in/jai-s-ramani-2948532bb)
+  - 🐙 **GitHub**: [https://github.com/Jai-S-Ramani](https://github.com/Jai-S-Ramani)
 - **Original Project Inspiration**: Alex The Analyst (*Data Analyst Portfolio Project - Amazon Web Scraper*).
-- **Modern Enhancements**: Extended into a production-grade application featuring real-time Amazon catalog search, multi-store competitor arbitrage, catalog availability filtering, multi-channel alerting, and predictive analytics.
+- **Modern Enhancements**: Extended into a production-grade application featuring real-time Amazon catalog search, multi-store competitor arbitrage, catalog availability filtering, multi-channel alerting, predictive analytics, custom dark mode branding, and 5-column navigation architecture.
 - **Tech Stack**: Python 3, Flask, BeautifulSoup4, SQLite3, Chart.js, GSAP 3, FontAwesome 6, Google Fonts.

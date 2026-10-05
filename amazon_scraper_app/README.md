@@ -2,6 +2,9 @@
 
 > **TRACK. COMPARE. MAKE THE MOVE.**  
 > A production-grade, full-stack Data Analytics Web Application, Multi-Store Competitor Arbitrage Engine, Live Amazon Catalog Search, and Multi-Channel Notification Platform built with Python, Flask, BeautifulSoup4, SQLite3, Chart.js, and GSAP. Extended from the classic *Alex The Analyst Data Analytics Portfolio Project* into an enterprise-grade real-time price monitoring, competitor benchmarking, and predictive decision-support platform.
+>
+> **Architect & Lead Engineer**: **Jai S Ramani**  
+> 📧 **Email**: [jaisramani05@gmail.com](mailto:jaisramani05@gmail.com) | 💼 **LinkedIn**: [jai-s-ramani-2948532bb](https://www.linkedin.com/in/jai-s-ramani-2948532bb) | 🐙 **GitHub**: [Jai-S-Ramani](https://github.com/Jai-S-Ramani)
 
 ---
 
@@ -53,9 +56,10 @@
 - **Wordmark & Typography**: **Price<span style="color:#10b981">Pilot</span>** featuring obsidian/white primary typography and a radiant emerald gradient (`#10b981` &rarr; `#00e676`).
 - **Tagline**: `TRACK. COMPARE. MAKE THE MOVE.`
 - **Theme-Adaptive Delivery**:
-  - `static/images/pricepilot_brand_dark.png`: Optimized for dark themes with crisp silver "Price", vibrant emerald "Pilot", and a soft emerald aura.
+  - `static/images/pricepilot_brand_dark.png`: Custom dark mode logo with metallic chrome specular reflections, glowing emerald aura, and translucent luminance alpha blending.
   - `static/images/pricepilot_brand_light.png`: Optimized for light themes with obsidian "Price" and vibrant emerald "Pilot".
-  - `static/images/logo.png`: 1024×1024 high-resolution master asset.
+  - `static/images/pricepilot_exact_square.png`: 1024×1024 master square dark-mode brand asset.
+  - `static/images/logo.png`: 1024×1024 high-resolution master asset & favicon.
   - `static/images/logo.svg`: Scalable vector asset.
 
 ---
@@ -368,6 +372,10 @@ To configure live Gmail SMTP email notifications:
 
 ## 📜 Attribution & Credits
 
-- **Original Inspiration**: Alex The Analyst's *Amazon Web Scraper Project*.
+- **Architect & Lead Developer**: **Jai S Ramani**
+  - 📧 **Email**: [jaisramani05@gmail.com](mailto:jaisramani05@gmail.com)
+  - 💼 **LinkedIn**: [https://www.linkedin.com/in/jai-s-ramani-2948532bb](https://www.linkedin.com/in/jai-s-ramani-2948532bb)
+  - 🐙 **GitHub**: [https://github.com/Jai-S-Ramani](https://github.com/Jai-S-Ramani)
+- **Original Project Inspiration**: Alex The Analyst (*Data Analyst Portfolio Project - Amazon Web Scraper*).
+- **Brand Identity & Dark Mode Logo**: PricePilot — *TRACK. COMPARE. MAKE THE MOVE.* Built with custom 3D chrome emerald dark mode identity, high-res vector branding, and 5-column navigation architecture.
 - **Tech Stack**: Python 3, Flask, BeautifulSoup4, SQLite3, Chart.js, GSAP 3, FontAwesome 6, Google Fonts (Outfit & Inter).
-- **Brand Identity**: PricePilot — *TRACK. COMPARE. MAKE THE MOVE.*
