@@ -73,38 +73,23 @@ document.addEventListener('DOMContentLoaded', () => {
   async function triggerFastDemoLogin() {
     showToast('⚡ Connecting as Jai S Ramani (Guest Demo)...', 'info');
 
-    const demoEmail = 'jaisramani05@gmail.com';
-    const demoPass = 'demo1234';
-
     try {
-      let res = await fetch('/api/auth/login', {
+      const res = await fetch('/api/auth/demo', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: demoEmail, password: demoPass })
+        headers: { 'Content-Type': 'application/json' }
       });
-      let data = await res.json();
-
-      // If user not yet created in SQLite, auto-register first
-      if (res.status === 401 || data.status === 'error') {
-        res = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: 'Jai S Ramani', email: demoEmail, password: demoPass })
-        });
-        data = await res.json();
-      }
+      const data = await res.json();
 
       if (data.status === 'success') {
         showToast('🎉 Welcome, Jai S Ramani! Launching Command Center...', 'success');
         setTimeout(() => {
-          window.location.href = '/dashboard';
-        }, 600);
+          window.location.href = data.redirect || '/dashboard';
+        }, 500);
       } else {
-        // Fallback: direct redirect to dashboard
         window.location.href = '/dashboard';
       }
     } catch (err) {
-      window.location.href = '/dashboard';
+      window.location.href = '/api/auth/demo';
     }
   }
 

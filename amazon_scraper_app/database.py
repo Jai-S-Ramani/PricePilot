@@ -764,16 +764,29 @@ def save_or_update_product(data: dict, user_id: int = None):
 
     if existing:
         product_id = existing["id"]
+        # Safeguard: do not overwrite established price if scraper returned 0 or null
+        if norm_price <= 0:
+            cursor.execute("SELECT current_price, original_price, native_price FROM products WHERE id = ?", (product_id,))
+            ex_row = cursor.fetchone()
+            if ex_row and ex_row["current_price"] and float(ex_row["current_price"]) > 0:
+                norm_price = float(ex_row["current_price"])
+                norm_orig = float(ex_row["original_price"] or (norm_price * 1.15))
+                native_price = float(ex_row["native_price"] or norm_price)
+
         target_price = norm_target or existing["target_price"] or round(norm_price * 0.9, 2)
         cursor.execute("""
             UPDATE products
-            SET title = ?, current_price = ?, original_price = ?, url = ?, image_url = ?, 
-                rating = ?, reviews_count = ?, availability = ?, category = ?, last_scraped = ?, 
+            SET title = COALESCE(NULLIF(?, ''), title),
+                current_price = ?, original_price = ?, url = ?, 
+                image_url = COALESCE(NULLIF(?, ''), image_url), 
+                rating = COALESCE(?, rating), reviews_count = COALESCE(?, reviews_count), 
+                availability = COALESCE(NULLIF(?, ''), availability), 
+                category = COALESCE(NULLIF(?, ''), category), last_scraped = ?, 
                 user_id = COALESCE(?, user_id), region = ?, currency = ?, symbol = ?, native_price = ?,
                 target_price = ?
             WHERE id = ?
         """, (
-            data["title"], norm_price, norm_orig, data["url"],
+            data.get("title"), norm_price, norm_orig, data["url"],
             data.get("image_url"), data.get("rating"), data.get("reviews_count"),
             data.get("availability"), data.get("category"), now_str, user_id,
             region, currency, symbol, native_price, target_price, product_id

@@ -124,6 +124,25 @@ def api_auth_logout():
     return jsonify({"status": "success", "message": "Logged out successfully"})
 
 
+@app.route("/api/auth/demo", methods=["GET", "POST"])
+def api_auth_demo():
+    email = "jaisramani05@gmail.com"
+    user = get_user_by_email(email)
+    if not user:
+        user_id = create_user(email, generate_password_hash("demo1234"), name="Jai S Ramani")
+        user = get_user_by_id(user_id)
+    session["user_id"] = user["id"]
+    session["user_email"] = user["email"]
+    if request.method == "GET":
+        return redirect(url_for("dashboard"))
+    return jsonify({
+        "status": "success",
+        "message": f"Welcome, {user.get('name') or user['email']}! Demo session active.",
+        "user": user,
+        "redirect": "/dashboard"
+    })
+
+
 @app.route("/api/auth/me", methods=["GET"])
 def api_auth_me():
     user_id = session.get("user_id")
@@ -139,8 +158,10 @@ def api_auth_me():
 # Product Intelligence & Tracker API Routes
 # -----------------------------------------------------------------
 
-@app.route("/api/products", methods=["GET"])
+@app.route("/api/products", methods=["GET", "POST"])
 def api_get_products():
+    if request.method == "POST":
+        return api_add_product()
     user_id = session.get("user_id")
     products = get_all_products(user_id)
     return jsonify({"status": "success", "products": products})

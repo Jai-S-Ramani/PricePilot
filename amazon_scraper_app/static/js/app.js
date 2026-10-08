@@ -1110,7 +1110,8 @@ document.addEventListener('DOMContentLoaded', () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            url: `https://www.amazon.com/dp/${asin}`,
+            url: chip.dataset.url || `https://www.amazon.com/dp/${asin}`,
+            title: title,
             target_price: presetTarget
           })
         });
@@ -1196,36 +1197,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (timeframe === '1Y') return history.slice(-365);
     return history;
   }
-
-  async function openChartModal(id) {
-    chartModal.classList.remove('hidden');
-    if (typeof gsap !== 'undefined') {
-      gsap.fromTo('#chartModal .modal-content', { scale: 0.75, opacity: 0, y: 20 }, { scale: 1, opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.4)' });
-    }
-
-    // Reset timeframe buttons
-    currentActiveTimeframe = 'ALL';
-    document.querySelectorAll('.timeframe-btn').forEach(b => {
-      if (b.dataset.range === 'ALL') {
-        b.classList.add('active');
-        b.style.background = 'var(--accent-purple, #8b5cf6)';
-        b.style.color = 'white';
-      } else {
-        b.classList.remove('active');
-        b.style.background = 'rgba(0,0,0,0.2)';
-        b.style.color = 'inherit';
-      }
-    });
-
-    const badge = document.getElementById('chartDealScoreBadge');
-    if (badge) badge.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Calculating Deal Score...`;
-
-    try {
-      // Fetch history & deal intelligence in parallel
-      const [histRes, dealRes] = await Promise.all([
-        fetch(`/api/products/${id}/history`),
-        fetch(`/api/products/${id}/deal-analysis`).catch(() => null)
-      ]);
 
   let currentModalForecast = null;
 
