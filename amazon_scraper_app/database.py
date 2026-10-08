@@ -335,6 +335,93 @@ def process_auto_alerts_for_user(user_id: int):
     return triggered
 
 
+def calculate_price_forecast(price_rows: list, current_price: float = None) -> dict:
+    """
+    Time-Series & Statistical Regression Forecasting Model:
+    Calculates 7-day Simple Moving Average (SMA-7), Linear Regression Slope,
+    Predicted 7-day target range, Drop Probability %, and 7 daily forward projection points.
+    """
+    if not price_rows or len(price_rows) < 2:
+        cur = float(current_price or 100.0)
+        return {
+            "sma_7": cur,
+            "trend_slope": 0.0,
+            "trajectory": "STABLE",
+            "predicted_7d_price": cur,
+            "predicted_range_min": round(cur * 0.98, 2),
+            "predicted_range_max": round(cur * 1.02, 2),
+            "drop_probability": 50,
+            "drop_signal": "Neutral Trading Channel",
+            "forecast_points": [cur] * 7,
+            "forecast_labels": [f"Day +{i}" for i in range(1, 8)]
+        }
+
+    prices = [float(p) for p in price_rows if p is not None]
+    n = len(prices)
+    cur = float(current_price) if current_price is not None else prices[-1]
+
+    # 1. 7-Day Simple Moving Average
+    window = min(7, n)
+    sma_7 = round(sum(prices[-window:]) / window, 2)
+
+    # 2. Linear Regression Slope (dy/dx)
+    x = list(range(n))
+    mean_x = sum(x) / n
+    mean_y = sum(prices) / n
+    denom = sum((x[i] - mean_x) ** 2 for i in range(n))
+    slope = round(sum((x[i] - mean_x) * (prices[i] - mean_y) for i in range(n)) / denom, 4) if denom != 0 else 0.0
+
+    # 3. 7-Day Projections bounded within realistic corridors
+    lowest = min(prices)
+    highest = max(prices)
+    damped_slope = slope * 0.75
+    raw_projected = cur + (damped_slope * 7)
+    bounded_proj = round(max(lowest * 0.85, min(highest * 1.15, raw_projected)), 2)
+
+    range_min = round(bounded_proj * 0.975, 2)
+    range_max = round(bounded_proj * 1.025, 2)
+
+    forecast_points = []
+    for i in range(1, 8):
+        pt = round(cur + (damped_slope * i), 2)
+        pt = round(max(lowest * 0.85, min(highest * 1.15, pt)), 2)
+        forecast_points.append(pt)
+
+    # 4. Statistical Drop Likelihood Score (0 - 100%)
+    if slope < -0.05:
+        drop_prob = min(95, int(65 + abs(slope) * 20))
+        drop_signal = "High Drop Probability (Bearish Price Trajectory)"
+        trajectory = "DROPPING"
+    elif slope > 0.05:
+        drop_prob = max(10, int(40 - slope * 15))
+        drop_signal = "Low Drop Probability (Rising Price Trend)"
+        trajectory = "RISING"
+    else:
+        if cur >= (lowest + highest) / 2:
+            drop_prob = 60
+            drop_signal = "Moderate Drop Likelihood (Upper Channel)"
+        else:
+            drop_prob = 35
+            drop_signal = "Low Drop Likelihood (Historical Floor)"
+        trajectory = "STABLE"
+
+    today_dt = datetime.date.today()
+    forecast_labels = [(today_dt + datetime.timedelta(days=i)).strftime("%b %d") for i in range(1, 8)]
+
+    return {
+        "sma_7": sma_7,
+        "trend_slope": slope,
+        "trajectory": trajectory,
+        "predicted_7d_price": bounded_proj,
+        "predicted_range_min": range_min,
+        "predicted_range_max": range_max,
+        "drop_probability": drop_prob,
+        "drop_signal": drop_signal,
+        "forecast_points": forecast_points,
+        "forecast_labels": forecast_labels
+    }
+
+
 def compute_stats_from_price_list(price_rows: list, current_price: float = None, original_price: float = None, target_price: float = None) -> dict:
     """Computes pricing metrics, volatility, deal scores, and recommendations from a list of price history floats."""
     if not price_rows:
@@ -355,7 +442,13 @@ def compute_stats_from_price_list(price_rows: list, current_price: float = None,
             "price_trend": "STABLE",
             "trend_pct": 0.0,
             "trend_label": "Stable",
-            "best_time_to_buy": bool(target_price and cur <= target_price)
+            "best_time_to_buy": bool(target_price and cur <= target_price),
+            "sma_7": cur,
+            "predicted_7d_price": cur,
+            "predicted_range_min": round(cur * 0.98, 2),
+            "predicted_range_max": round(cur * 1.02, 2),
+            "drop_probability": 50,
+            "drop_signal": "Neutral Channel"
         }
 
     lowest = round(min(price_rows), 2)
@@ -452,6 +545,7 @@ def compute_stats_from_price_list(price_rows: list, current_price: float = None,
         trend_label = "Stable"
 
     best_time_to_buy = bool(deal_score >= 75 or recommendation == "BUY_NOW")
+    forecast = calculate_price_forecast(price_rows, current_price=cur)
 
     return {
         "lowest_price": lowest,
@@ -469,7 +563,13 @@ def compute_stats_from_price_list(price_rows: list, current_price: float = None,
         "price_trend": price_trend,
         "trend_pct": trend_pct,
         "trend_label": trend_label,
-        "best_time_to_buy": best_time_to_buy
+        "best_time_to_buy": best_time_to_buy,
+        "sma_7": forecast["sma_7"],
+        "predicted_7d_price": forecast["predicted_7d_price"],
+        "predicted_range_min": forecast["predicted_range_min"],
+        "predicted_range_max": forecast["predicted_range_max"],
+        "drop_probability": forecast["drop_probability"],
+        "drop_signal": forecast["drop_signal"]
     }
 
 

@@ -10,7 +10,8 @@ from database import (
     delete_product, update_target_price, get_price_history, CSV_PATH,
     create_user, get_user_by_email, get_user_by_id,
     get_alert_logs_for_user, toggle_user_auto_alerts, process_auto_alerts_for_user,
-    get_portfolio_kpis, calculate_deal_score, update_user_notification_settings
+    get_portfolio_kpis, calculate_deal_score, update_user_notification_settings,
+    calculate_price_forecast
 )
 from scraper import scrape_amazon_product, extract_asin, SAMPLE_PRODUCTS, search_amazon_products, fetch_amazon_suggestions
 from notifier import build_alert_email_template, send_mail, send_discord_alert, dispatch_multi_channel_alert
@@ -299,10 +300,14 @@ def api_toggle_auto_alerts():
 def api_get_history(product_id):
     history = get_price_history(product_id)
     product = get_product_by_id(product_id)
+    prices = [float(h["price"]) for h in history if h.get("price") is not None]
+    cur_p = float(product["current_price"]) if product and product.get("current_price") else None
+    forecast = calculate_price_forecast(prices, current_price=cur_p)
     return jsonify({
         "status": "success",
         "product": product,
-        "history": history
+        "history": history,
+        "forecast": forecast
     })
 
 
@@ -598,6 +603,71 @@ def api_test_discord():
         "message": "Discord test alert sent successfully!" if sent else "Failed to send Discord alert",
         "simulated": "discord.com/api/webhooks" not in webhook_url
     })
+
+
+@app.route("/api/notifications", methods=["GET"])
+def api_get_notifications():
+    user_id = session.get("user_id")
+    # Fetch user logs if authenticated
+    db_logs = get_alert_logs_for_user(user_id, limit=20) if user_id else []
+    notifications = []
+
+    for l in db_logs:
+        notifications.append({
+            "id": l["id"],
+            "product_id": l["product_id"],
+            "product_title": l["product_title"],
+            "current_price": l["current_price"],
+            "target_price": l["target_price"],
+            "recipient": l["recipient_email"],
+            "created_at": l["created_at"],
+            "status": "ALERT_TRIGGERED",
+            "image_url": l.get("image_url") or "",
+            "product_url": l.get("product_url") or ""
+        })
+
+    # If no logs exist or guest mode, populate active deal signals so demo visitors see live intelligence immediately
+    if len(notifications) < 3:
+        all_prods = get_all_products(user_id)
+        for p in all_prods:
+            cur = float(p.get("current_price") or 0)
+            tgt = float(p.get("target_price") or 0)
+            rec = p.get("recommendation", "")
+            if (tgt > 0 and cur <= tgt) or rec == "BUY_NOW":
+                notifications.append({
+                    "id": f"deal-{p['id']}",
+                    "product_id": p["id"],
+                    "product_title": p["title"],
+                    "current_price": cur,
+                    "target_price": tgt if tgt > 0 else round(cur * 1.1, 2),
+                    "recipient": "In-App Telemetry",
+                    "created_at": p.get("last_scraped") or "Live Now",
+                    "status": "BUY_SIGNAL",
+                    "image_url": p.get("image_url") or "",
+                    "product_url": p.get("url") or "",
+                    "drop_amount": round(abs(tgt - cur), 2) if tgt > 0 else round(cur * 0.1, 2)
+                })
+
+    read_ids = session.get("read_notifications", [])
+    unread_count = max(0, len([n for n in notifications if str(n["id"]) not in read_ids]))
+
+    return jsonify({
+        "status": "success",
+        "unread_count": unread_count,
+        "notifications": notifications[:15]
+    })
+
+
+@app.route("/api/notifications/mark-read", methods=["POST"])
+def api_mark_notifications_read():
+    data = request.json or {}
+    all_read = data.get("all", True)
+    if all_read:
+        user_id = session.get("user_id")
+        db_logs = get_alert_logs_for_user(user_id, limit=20) if user_id else []
+        all_ids = [str(l["id"]) for l in db_logs] + [f"deal-{i}" for i in range(1, 25)]
+        session["read_notifications"] = all_ids
+    return jsonify({"status": "success", "message": "Notifications marked as read", "unread_count": 0})
 
 
 if __name__ == "__main__":

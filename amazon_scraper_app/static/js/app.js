@@ -1090,23 +1090,56 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  document.querySelectorAll('.chip').forEach(chip => {
-    chip.addEventListener('click', () => {
+  // -----------------------------------------------------------------
+  // 1-Click Track Popular Presets Handler
+  // -----------------------------------------------------------------
+  document.querySelectorAll('.quick-add-chip').forEach(chip => {
+    chip.addEventListener('click', async () => {
       if (typeof gsap !== 'undefined') {
         gsap.fromTo(chip, { scale: 0.92 }, { scale: 1, duration: 0.25, ease: 'elastic.out(1, 0.4)' });
       }
       const asin = chip.dataset.asin;
-      if (tabModeUrl && !tabModeUrl.classList.contains('active')) {
-        tabModeUrl.click();
+      const title = chip.dataset.title || 'Product';
+      const presetTarget = chip.dataset.target || null;
+
+      showToast(`Quick Tracking ${title}...`, 'info');
+      chip.disabled = true;
+
+      try {
+        const res = await fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: `https://www.amazon.com/dp/${asin}`,
+            target_price: presetTarget
+          })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(`⚡ Successfully tracked ${title}!`, 'success');
+          await fetchProducts();
+          fetchNotifications();
+          setTimeout(() => {
+            const card = document.querySelector(`[data-asin="${asin}"]`) || (data.product ? document.querySelector(`[data-id="${data.product.id}"]`) : null);
+            if (card) {
+              card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              card.style.transition = 'box-shadow 0.4s ease, border-color 0.4s ease';
+              card.style.boxShadow = '0 0 25px var(--accent-primary)';
+              card.style.borderColor = 'var(--accent-primary)';
+              setTimeout(() => {
+                card.style.boxShadow = '';
+                card.style.borderColor = '';
+              }, 2200);
+            }
+          }, 350);
+        } else {
+          showToast(data.message || 'Could not track product', 'error');
+        }
+      } catch (err) {
+        showToast('Network error tracking preset', 'error');
+      } finally {
+        chip.disabled = false;
       }
-      if (asin === 'B0BY8MCQ9S') {
-        productUrlInput.value = `https://www.amazon.in/dp/${asin}`;
-      } else if (asin === 'B09B8V1UK1') {
-        productUrlInput.value = `https://www.amazon.co.uk/dp/${asin}`;
-      } else {
-        productUrlInput.value = `https://www.amazon.com/dp/${asin}`;
-      }
-      productUrlInput.focus();
     });
   });
 
@@ -1194,17 +1227,76 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(`/api/products/${id}/deal-analysis`).catch(() => null)
       ]);
 
+  let currentModalForecast = null;
+
+  function updateModalForecastBanner(forecast) {
+    if (!forecast) return;
+    const badge = document.getElementById('forecastSignalBadge');
+    const predPrice = document.getElementById('forecastPredictedPrice');
+    const range = document.getElementById('forecastPriceRange');
+    const sma = document.getElementById('forecastSma7');
+    const prob = document.getElementById('forecastDropProb');
+
+    if (badge) {
+      badge.textContent = forecast.drop_signal || 'Neutral Channel';
+      const isHighDrop = forecast.drop_probability >= 60;
+      badge.style.background = isHighDrop ? 'rgba(16, 185, 129, 0.2)' : 'rgba(56, 189, 248, 0.2)';
+      badge.style.color = isHighDrop ? 'var(--accent-emerald)' : 'var(--accent-primary)';
+      badge.style.borderColor = isHighDrop ? 'rgba(16, 185, 129, 0.4)' : 'rgba(56, 189, 248, 0.4)';
+    }
+    if (predPrice) predPrice.textContent = formatMoney(forecast.predicted_7d_price);
+    if (range) range.textContent = `${formatMoney(forecast.predicted_range_min)} – ${formatMoney(forecast.predicted_range_max)}`;
+    if (sma) sma.textContent = formatMoney(forecast.sma_7);
+    if (prob) {
+      prob.textContent = `${forecast.drop_probability}%`;
+      prob.style.color = forecast.drop_probability >= 60 ? 'var(--accent-emerald)' : (forecast.drop_probability >= 40 ? 'var(--accent-amber)' : 'var(--accent-rose)');
+    }
+  }
+
+  async function openChartModal(id) {
+    chartModal.classList.remove('hidden');
+    if (typeof gsap !== 'undefined') {
+      gsap.fromTo('#chartModal .modal-content', { scale: 0.75, opacity: 0, y: 20 }, { scale: 1, opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.4)' });
+    }
+
+    // Reset timeframe buttons
+    currentActiveTimeframe = 'ALL';
+    document.querySelectorAll('.timeframe-btn').forEach(b => {
+      if (b.dataset.range === 'ALL') {
+        b.classList.add('active');
+        b.style.background = 'var(--accent-purple, #8b5cf6)';
+        b.style.color = 'white';
+      } else {
+        b.classList.remove('active');
+        b.style.background = 'rgba(0,0,0,0.2)';
+        b.style.color = 'inherit';
+      }
+    });
+
+    const badge = document.getElementById('chartDealScoreBadge');
+    if (badge) badge.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Calculating Deal Score...`;
+
+    try {
+      // Fetch history & deal intelligence in parallel
+      const [histRes, dealRes] = await Promise.all([
+        fetch(`/api/products/${id}/history`),
+        fetch(`/api/products/${id}/deal-analysis`).catch(() => null)
+      ]);
+
       const data = await histRes.json();
       if (data.status === 'success') {
         const prod = data.product;
         currentModalHistory = data.history || [];
         currentModalTargetUSD = prod.target_price || (prod.current_price * 0.9);
+        currentModalForecast = data.forecast || null;
 
         modalProductTitle.textContent = prod.title;
         modalCurrentPrice.textContent = formatMoney(prod.current_price);
         modalTargetPrice.textContent = formatMoney(currentModalTargetUSD);
         modalLowestPrice.textContent = formatMoney(prod.lowest_price || prod.current_price);
         modalHighestPrice.textContent = formatMoney(prod.highest_price || prod.current_price);
+
+        updateModalForecastBanner(currentModalForecast);
 
         const downloadCsvBtn = document.getElementById('modalDownloadCsvBtn');
         const downloadJsonBtn = document.getElementById('modalDownloadJsonBtn');
@@ -1216,7 +1308,7 @@ document.addEventListener('DOMContentLoaded', () => {
           downloadJsonBtn.href = `/api/products/${id}/export/json`;
         }
 
-        renderChart(currentModalHistory, currentModalTargetUSD);
+        renderChart(currentModalHistory, currentModalTargetUSD, currentModalForecast);
       }
 
       if (dealRes && dealRes.ok) {
@@ -1231,7 +1323,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function renderChart(history, targetPriceUSD) {
+  function renderChart(history, targetPriceUSD, forecast = null) {
     const ctx = document.getElementById('priceChart').getContext('2d');
     const curr = CURRENCIES[currentCurrency] || CURRENCIES.USD;
 
@@ -1243,6 +1335,58 @@ document.addEventListener('DOMContentLoaded', () => {
     gradient.addColorStop(0, 'rgba(255, 119, 0, 0.35)');
     gradient.addColorStop(1, 'rgba(255, 119, 0, 0.0)');
 
+    const datasets = [
+      {
+        label: `Tracked Price (${curr.symbol})`,
+        data: [...prices],
+        borderColor: '#ff7700',
+        backgroundColor: gradient,
+        borderWidth: 2.5,
+        fill: true,
+        tension: 0.35,
+        pointRadius: 4,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#ff7700',
+        pointBorderColor: '#0a0a0c',
+        pointBorderWidth: 2
+      },
+      {
+        label: `Target Alert Threshold (${curr.symbol})`,
+        data: new Array(labels.length).fill(targetPriceConverted),
+        borderColor: '#00d68f',
+        borderWidth: 2,
+        borderDash: [6, 6],
+        pointRadius: 0,
+        fill: false
+      }
+    ];
+
+    let chartLabels = [...labels];
+
+    // If forecast exists and viewing full history, append statistical 7-day projection line
+    if (forecast && forecast.forecast_points && forecast.forecast_points.length > 0 && currentActiveTimeframe === 'ALL' && prices.length > 0) {
+      chartLabels = [...labels, ...forecast.forecast_labels];
+      datasets[0].data = [...prices, ...new Array(forecast.forecast_points.length).fill(null)];
+      datasets[1].data = new Array(chartLabels.length).fill(targetPriceConverted);
+
+      const lastPrice = prices[prices.length - 1];
+      const projConverted = forecast.forecast_points.map(p => p * curr.rate);
+      const projPadded = [...new Array(prices.length - 1).fill(null), lastPrice, ...projConverted];
+
+      datasets.push({
+        label: `7-Day Statistical Projection (${curr.symbol})`,
+        data: projPadded,
+        borderColor: '#38bdf8',
+        borderWidth: 2.2,
+        borderDash: [5, 4],
+        pointRadius: 3.5,
+        pointBackgroundColor: '#38bdf8',
+        pointHoverRadius: 6,
+        fill: false,
+        tension: 0.25
+      });
+    }
+
     if (priceChartInstance) {
       priceChartInstance.destroy();
     }
@@ -1250,32 +1394,8 @@ document.addEventListener('DOMContentLoaded', () => {
     priceChartInstance = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: labels,
-        datasets: [
-          {
-            label: `Tracked Price (${curr.symbol})`,
-            data: prices,
-            borderColor: '#ff7700',
-            backgroundColor: gradient,
-            borderWidth: 2.5,
-            fill: true,
-            tension: 0.35,
-            pointRadius: 4,
-            pointHoverRadius: 7,
-            pointBackgroundColor: '#ff7700',
-            pointBorderColor: '#0a0a0c',
-            pointBorderWidth: 2
-          },
-          {
-            label: `Target Alert Threshold (${curr.symbol})`,
-            data: new Array(labels.length).fill(targetPriceConverted),
-            borderColor: '#00d68f',
-            borderWidth: 2,
-            borderDash: [6, 6],
-            pointRadius: 0,
-            fill: false
-          }
-        ]
+        labels: chartLabels,
+        datasets: datasets
       },
       options: {
         responsive: true,
@@ -1292,7 +1412,7 @@ document.addEventListener('DOMContentLoaded', () => {
             bodyFont: { family: 'JetBrains Mono', size: 13 },
             padding: 12,
             callbacks: {
-              label: (context) => `${context.dataset.label}: ${curr.symbol}${context.parsed.y.toLocaleString(undefined, { minimumFractionDigits: currentCurrency === 'JPY' ? 0 : 2 })}`
+              label: (context) => `${context.dataset.label}: ${curr.symbol}${context.parsed.y != null ? context.parsed.y.toLocaleString(undefined, { minimumFractionDigits: currentCurrency === 'JPY' ? 0 : 2 }) : ''}`
             }
           }
         },
@@ -1324,7 +1444,7 @@ document.addEventListener('DOMContentLoaded', () => {
       e.currentTarget.classList.add('active');
       currentActiveTimeframe = e.currentTarget.dataset.range;
       const filtered = filterHistoryByTimeframe(currentModalHistory, currentActiveTimeframe);
-      renderChart(filtered, currentModalTargetUSD);
+      renderChart(filtered, currentModalTargetUSD, currentModalForecast);
     });
   });
 
@@ -2180,6 +2300,114 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // -----------------------------------------------------------------
+  // In-App Notification Center & Alert Bell
+  // -----------------------------------------------------------------
+  const notifBellBtn = document.getElementById('notifBellBtn');
+  const notifDropdown = document.getElementById('notifDropdown');
+  const notifBadge = document.getElementById('notifBadge');
+  const notifList = document.getElementById('notifList');
+  const clearNotifsBtn = document.getElementById('clearNotifsBtn');
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  async function fetchNotifications() {
+    try {
+      const res = await fetch('/api/notifications');
+      const data = await res.json();
+      if (data.status === 'success') {
+        const unread = data.unread_count || 0;
+        if (notifBadge) {
+          notifBadge.textContent = unread;
+          if (unread > 0) {
+            notifBadge.classList.remove('hidden');
+          } else {
+            notifBadge.classList.add('hidden');
+          }
+        }
+
+        if (notifList) {
+          if (!data.notifications || data.notifications.length === 0) {
+            notifList.innerHTML = `<div class="notif-empty"><i class="fa-solid fa-bell-slash"></i> No active price drop alerts</div>`;
+            return;
+          }
+
+          notifList.innerHTML = data.notifications.map(n => {
+            const drop = n.drop_amount ? formatMoney(n.drop_amount) : '';
+            return `
+              <div class="notif-card-item" data-prod-id="${n.product_id}">
+                <div class="notif-card-icon"><i class="fa-solid fa-bolt"></i></div>
+                <div class="notif-card-body">
+                  <div class="notif-card-title">${escapeHtml(n.product_title)}</div>
+                  <div class="notif-card-desc">
+                    ${n.status === 'BUY_SIGNAL' ? '🔥 Buy Signal' : '⚡ Alert Triggered'}: Now ${formatMoney(n.current_price)}
+                    ${drop ? `<span style="color: var(--accent-emerald); font-weight: 700;">(Met target by ${drop})</span>` : ''}
+                  </div>
+                  <div class="notif-card-time"><i class="fa-regular fa-clock"></i> ${n.created_at || 'Just now'}</div>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          // Click on notif card item highlights product in grid
+          notifList.querySelectorAll('.notif-card-item').forEach(item => {
+            item.addEventListener('click', () => {
+              const pid = item.dataset.prodId;
+              if (notifDropdown) notifDropdown.classList.add('hidden');
+              const card = document.querySelector(`[data-id="${pid}"]`);
+              if (card) {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                card.style.transition = 'box-shadow 0.4s ease, border-color 0.4s ease';
+                card.style.boxShadow = '0 0 25px var(--accent-emerald)';
+                card.style.borderColor = 'var(--accent-emerald)';
+                setTimeout(() => {
+                  card.style.boxShadow = '';
+                  card.style.borderColor = '';
+                }, 2400);
+              }
+            });
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('Error fetching notifications:', e);
+    }
+  }
+
+  if (notifBellBtn) {
+    notifBellBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (notifDropdown) notifDropdown.classList.toggle('hidden');
+    });
+  }
+
+  if (clearNotifsBtn) {
+    clearNotifsBtn.addEventListener('click', async () => {
+      try {
+        await fetch('/api/notifications/mark-read', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ all: true })
+        });
+        if (notifBadge) notifBadge.classList.add('hidden');
+        showToast('All notifications marked as read', 'info');
+      } catch (err) {
+        showToast('Error marking notifications read', 'error');
+      }
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    if (notifDropdown && !notifDropdown.classList.contains('hidden')) {
+      if (!notifDropdown.contains(e.target) && !notifBellBtn.contains(e.target)) {
+        notifDropdown.classList.add('hidden');
+      }
+    }
+  });
+
   // Toast Helper & GSAP Slide
   function showToast(msg, type = 'info') {
     const container = document.getElementById('toastContainer');
@@ -2207,6 +2435,8 @@ document.addEventListener('DOMContentLoaded', () => {
   checkAuthStatus();
   fetchProducts();
   fetchSchedulerStatus();
-  // Periodic background check of scheduler status
+  fetchNotifications();
+  // Periodic background check of scheduler & notifications
   setInterval(fetchSchedulerStatus, 30000);
+  setInterval(fetchNotifications, 45000);
 });

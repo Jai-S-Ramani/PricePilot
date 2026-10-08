@@ -47,6 +47,23 @@
           <span id="schedulerPillText">Sync: Active (30m)</span>
         </div>
 
+        <!-- In-App Notification Center Bell & Dropdown -->
+        <div class="nav-notif-wrapper">
+          <button id="notifBellBtn" class="btn btn-icon notif-bell-btn" title="Price Drop Notifications" aria-label="Notifications">
+            <i class="fa-solid fa-bell"></i>
+            <span id="notifBadge" class="notif-badge hidden">0</span>
+          </button>
+          
+          <div id="notifDropdown" class="notif-dropdown glass hidden">
+            <div class="notif-dropdown-header">
+              <span class="notif-title"><i class="fa-solid fa-bolt text-emerald"></i> Deal & Drop Signals</span>
+              <button type="button" id="clearNotifsBtn" class="notif-clear-btn">Mark read</button>
+            </div>
+            <div id="notifList" class="notif-list">
+              <div class="notif-empty"><i class="fa-solid fa-bell-slash"></i> No active notifications</div>
+            </div>
+          </div>
+        </div>
 
         <!-- Theme Toggle Button (1-Click Minimalist Toggle matching Landing Page) -->
         <button id="themeToggleBtn" class="btn btn-icon" title="Toggle Light / Dark Mode" aria-label="Toggle Theme">
@@ -259,15 +276,16 @@
         </div>
       </div>
 
-      <div class="sample-chips">
-        <span class="chip-label">Quick Add Verified Samples:</span>
-        <button class="chip" data-asin="B07FNW9FGJ">👕 Got Data MIS Analyst T-Shirt</button>
-        <button class="chip" data-asin="B09B8V1LZ3">🎧 Sony WH-1000XM5</button>
-        <button class="chip" data-asin="B0CX23VJP5">💻 Apple MacBook Air M3</button>
-        <button class="chip" data-asin="B08N5WRWNW">🖱️ Logitech MX Master 3S</button>
-        <button class="chip" data-asin="B0BY8MCQ9S">🇮🇳 OnePlus Buds 2 (India)</button>
-        <button class="chip" data-asin="B09B8V1UK1">🇬🇧 Raspberry Pi 5 (UK)</button>
-        <button class="chip" data-asin="B07W5JK7B9">⚡ Anker 577 Dock</button>
+      <div class="sample-chips-wrap">
+        <span class="chip-label"><i class="fa-solid fa-wand-magic-sparkles text-amber"></i> 1-Click Track Popular Presets:</span>
+        <div class="sample-chips">
+          <button type="button" class="chip quick-add-chip" data-asin="B0CX23VJP5" data-title="MacBook Air M3" title="1-Click Track Apple MacBook Air M3">💻 MacBook Air M3 ($999)</button>
+          <button type="button" class="chip quick-add-chip" data-asin="B09B8V1LZ3" data-title="Sony WH-1000XM5" title="1-Click Track Sony WH-1000XM5">🎧 Sony XM5 ($326)</button>
+          <button type="button" class="chip quick-add-chip" data-asin="B0CQV8S67T" data-title="Galaxy S24 Ultra" title="1-Click Track Samsung Galaxy S24 Ultra">📱 Galaxy S24 Ultra ($1,149)</button>
+          <button type="button" class="chip quick-add-chip" data-asin="B08N5WRWNW" data-title="Logitech MX Master 3S" title="1-Click Track Logitech MX Master 3S">🖱️ Logitech MX 3S ($87.99)</button>
+          <button type="button" class="chip quick-add-chip" data-asin="B0BY8MCQ9S" data-title="OnePlus Buds 2" title="1-Click Track OnePlus Buds 2 (India)">🇮🇳 OnePlus Buds 2 (₹2,499)</button>
+          <button type="button" class="chip quick-add-chip" data-asin="B07W5JK7B9" data-title="Anker 577 Dock" title="1-Click Track Anker 577 Dock">⚡ Anker 577 Dock ($180)</button>
+        </div>
       </div>
     </section>
 
@@ -356,6 +374,32 @@
           </div>
           <div id="chartDealScoreBadge" class="chart-deal-score-badge">
             🔥 Deal Score: Calculating...
+          </div>
+        </div>
+
+        <!-- 7-Day Statistical Predictive Forecast Ribbon -->
+        <div id="modalForecastBanner" class="modal-forecast-banner glass">
+          <div class="forecast-banner-left">
+            <div class="forecast-icon-circle"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <div class="forecast-details">
+              <div class="forecast-title-row">
+                <span class="forecast-label">7-Day Statistical Price Forecast</span>
+                <span id="forecastSignalBadge" class="forecast-signal-badge">Calculating...</span>
+              </div>
+              <div class="forecast-sub-row">
+                <span>Predicted 7-Day Target: <strong id="forecastPredictedPrice" class="text-emerald">$0.00</strong></span>
+                <span class="forecast-sep">•</span>
+                <span>Expected Channel: <strong id="forecastPriceRange">$0.00 – $0.00</strong></span>
+                <span class="forecast-sep">•</span>
+                <span>SMA-7: <strong id="forecastSma7">$0.00</strong></span>
+              </div>
+            </div>
+          </div>
+          <div class="forecast-banner-right">
+            <div class="forecast-prob-meter">
+              <span class="prob-label">Drop Likelihood</span>
+              <span id="forecastDropProb" class="prob-val">0%</span>
+            </div>
           </div>
         </div>
 

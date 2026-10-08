@@ -22,7 +22,8 @@ from competitor import detect_price_match_guarantee, get_competitor_prices
 from database import (
     get_all_products, get_product_by_id, get_product_stats,
     calculate_deal_score, create_user, get_user_by_email,
-    update_user_notification_settings, get_db_connection
+    update_user_notification_settings, get_db_connection,
+    calculate_price_forecast
 )
 from app import app
 
@@ -326,6 +327,48 @@ class TestAdvancedFeatures(unittest.TestCase):
         global_stores_cable = {s["id"]: s for s in cable_res["global_stores"]}
         # Walmart charges standard shipping on under $35 orders
         self.assertIn("$35+", global_stores_cable["walmart"]["delivery_info"])
+
+    def test_calculate_price_forecast(self):
+        """Test AI time-series forecast calculation and linear regression slope."""
+        # 1. Decreasing price sequence
+        history = [100.0, 98.0, 96.0, 95.0, 94.0, 92.0, 90.0]
+        forecast = calculate_price_forecast(history, current_price=90.0)
+        self.assertIsInstance(forecast, dict)
+        self.assertIn("sma_7", forecast)
+        self.assertIn("predicted_7d_price", forecast)
+        self.assertIn("forecast_points", forecast)
+        self.assertEqual(len(forecast["forecast_points"]), 7)
+        self.assertLess(forecast["trend_slope"], 0)
+        self.assertGreaterEqual(forecast["drop_probability"], 50)
+        self.assertLessEqual(forecast["predicted_range_min"], forecast["predicted_7d_price"])
+        self.assertGreaterEqual(forecast["predicted_range_max"], forecast["predicted_7d_price"])
+
+        # 2. Empty history fallback
+        empty_forecast = calculate_price_forecast([], current_price=None)
+        self.assertEqual(empty_forecast["trend_slope"], 0.0)
+        self.assertEqual(len(empty_forecast["forecast_points"]), 7)
+
+    def test_notifications_center_api(self):
+        """Test GET /api/notifications and POST /api/notifications/mark-read."""
+        # Test fetching active notifications
+        res = self.client.get('/api/notifications')
+        self.assertEqual(res.status_code, 200)
+        data = json.loads(res.data)
+        self.assertEqual(data.get("status"), "success")
+        self.assertIn("notifications", data)
+        self.assertIn("unread_count", data)
+        self.assertIsInstance(data["notifications"], list)
+
+        # Test marking all as read
+        mark_res = self.client.post(
+            '/api/notifications/mark-read',
+            data=json.dumps({"notification_ids": ["all"]}),
+            content_type='application/json'
+        )
+        self.assertEqual(mark_res.status_code, 200)
+        mark_data = json.loads(mark_res.data)
+        self.assertEqual(mark_data.get("status"), "success")
+        self.assertEqual(mark_data.get("unread_count"), 0)
 
 
 if __name__ == '__main__':
