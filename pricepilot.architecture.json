@@ -14,9 +14,9 @@
       },
       {
         "id": "arbitrage-flow",
-        "label": "Competitor Arbitrage & Pricing",
+        "label": "Competitor Arbitrage & Delivery Intelligence",
         "focus": ["flask_app", "scraper_engine", "arbitrage_engine", "sqlite_db"],
-        "note": "18-store catalog comparison and availability filtering against Amazon benchmarks."
+        "note": "18-store catalog comparison, dynamic product-dependent delivery speeds, and price match guarantee."
       },
       {
         "id": "alerting-pipeline",
@@ -56,19 +56,19 @@
       "id": "scraper_engine",
       "type": "backend",
       "label": "Scraper Engine",
-      "sublabel": "BS4 & Regional Search",
+      "sublabel": "BS4 & 5-Region Sweep",
       "pos": [480, 150],
       "size": [150, 60],
-      "tag": "5 Amazon Locales"
+      "tag": "US, IN, UK, DE, CA"
     },
     {
       "id": "arbitrage_engine",
       "type": "backend",
-      "label": "Arbitrage Engine",
-      "sublabel": "18-Store Competitors",
+      "label": "Arbitrage & Delivery",
+      "sublabel": "18 Stores & Delivery",
       "pos": [480, 400],
       "size": [150, 60],
-      "tag": "Catalog Filter"
+      "tag": "Dynamic Logistics"
     },
     {
       "id": "scheduler_daemon",
@@ -86,16 +86,16 @@
       "sublabel": "amazon_tracker.db",
       "pos": [720, 400],
       "size": [150, 60],
-      "tag": "Time-Series"
+      "tag": "SQLite WAL Mode"
     },
     {
       "id": "notifier",
       "type": "messagebus",
-      "label": "Notification Dispatcher",
-      "sublabel": "Discord / Telegram / Email",
+      "label": "Alert Dispatcher",
+      "sublabel": "Multi-Channel Push",
       "pos": [960, 150],
       "size": [160, 60],
-      "tag": "Multi-Channel"
+      "tag": "Discord/TG/Email"
     },
     {
       "id": "csv_sync",
@@ -128,26 +128,26 @@
   "cards": [
     {
       "dot": "cyan",
-      "title": "Ingestion & Discovery",
+      "title": "Ingestion & Multi-Region",
       "items": [
-        "Live Amazon catalog scraper with real-time suggestion autocomplete",
-        "Multi-regional support across 5 international marketplaces (India, US, UK, DE, JP)"
+        "Live Amazon catalog scraper with real-time suggestion autocomplete across 5 global stores (US, IN, UK, DE, CA)",
+        "Dynamic 7-currency FX conversion pipeline normalizing multi-locale prices"
       ]
     },
     {
       "dot": "emerald",
-      "title": "Intelligence & Arbitrage",
+      "title": "Arbitrage & Delivery Engine",
       "items": [
-        "18-store multi-retailer arbitrage engine with catalog availability filtering",
-        "Predictive buy/wait recommendations and 30-day volatility scoring"
+        "18-store competitor comparison with catalog availability filtering & Price Match Guarantee",
+        "Product-dependent dynamic delivery intelligence (10-min quick commerce, freight unboxing, try-and-buy)"
       ]
     },
     {
       "dot": "amber",
-      "title": "Automation & Delivery",
+      "title": "Persistence, Daemon & Alerts",
       "items": [
-        "Autonomous background thread daemon executing periodic sweeps",
-        "Instant multi-channel notifications via Discord webhooks, Telegram bots, and SMTP email"
+        "High-concurrency SQLite WAL engine persisting time-series historical data and deal scores",
+        "Autonomous 30m scheduler with multi-channel push alerts across Discord, Telegram, and HTML Email"
       ]
     }
   ]

@@ -50,3 +50,9 @@ Thumbs.db
 # Playwright MCP and empty local temp DB
 .playwright-mcp/
 database.db
+
+# Archify build receipts
+*.finalize.json
+*.finalize-summary.json
+*.delivery.json
+*.browser-check.json

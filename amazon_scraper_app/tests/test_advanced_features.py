@@ -260,6 +260,72 @@ class TestAdvancedFeatures(unittest.TestCase):
             self.assertEqual(data["status"], "success")
             self.assertIn("deal_intelligence", data)
             self.assertIn("history", data)
+    def test_product_dependent_delivery_info(self):
+        """Test that competitor delivery info dynamically depends on product category, size, and price."""
+        from competitor import get_competitor_prices, calculate_product_delivery_info, calculate_amazon_delivery_info
+
+        # 1. Bulky Appliance (e.g. 55-Inch 4K TV)
+        tv_prod = {
+            "id": 501,
+            "asin": "B0TV123456",
+            "title": "Sony Bravia 55-Inch 4K Ultra HD Smart LED Google TV",
+            "category": "Television & Home Theater",
+            "current_price": 54990.0,
+            "region": "IN"
+        }
+        tv_res = get_competitor_prices(tv_prod)
+        indian_stores_tv = {s["id"]: s for s in tv_res["indian_stores"]}
+        
+        # Quick commerce dark stores cannot carry large bulky TVs
+        self.assertIn("Exceeds Dark Store Bag Limit", indian_stores_tv["blinkit"]["delivery_info"])
+        # Croma / Reliance Digital / Flipkart provide scheduled installation/delivery
+        self.assertIn("Scheduled", indian_stores_tv["croma"]["delivery_info"])
+        self.assertIn("Scheduled", indian_stores_tv["flipkart"]["delivery_info"])
+        # Amazon itself schedules heavy delivery
+        self.assertIn("Scheduled", tv_res["amazon_delivery_info"])
+
+        # 2. Quick Tech / Small Gadget (e.g. boAt earbuds)
+        buds_prod = {
+            "id": 502,
+            "asin": "B0BUDS1234",
+            "title": "boAt Airdopes 141 Bluetooth Truly Wireless Earbuds",
+            "category": "Audio & Headphones",
+            "current_price": 1299.0,
+            "region": "IN"
+        }
+        buds_res = get_competitor_prices(buds_prod)
+        indian_stores_buds = {s["id"]: s for s in buds_res["indian_stores"]}
+        # Quick commerce delivers tech earbuds in 10-15 minutes
+        self.assertIn("Instant", indian_stores_buds["blinkit"]["delivery_info"])
+        self.assertIn("Instant", indian_stores_buds["zepto"]["delivery_info"])
+
+        # 3. Fashion & Apparel (e.g. Levi's Jeans)
+        jeans_prod = {
+            "id": 503,
+            "asin": "B0JEAN1234",
+            "title": "Levi's Men's 511 Slim Fit Stretch Denim Jeans",
+            "category": "Clothing & Fashion",
+            "current_price": 2499.0,
+            "region": "IN"
+        }
+        jeans_res = get_competitor_prices(jeans_prod)
+        indian_stores_jeans = {s["id"]: s for s in jeans_res["indian_stores"]}
+        # Myntra offers Try & Buy and easy exchange for fashion
+        self.assertIn("Try & Buy", indian_stores_jeans["myntra"]["delivery_info"])
+
+        # 4. Global Low-Value (< $35) vs High-Value (iPhone / Laptop)
+        cable_prod = {
+            "id": 504,
+            "asin": "B0CABLE123",
+            "title": "Anker USB C Charger Cable 6ft Braided",
+            "category": "Electronics Accessories",
+            "current_price": 12.99,
+            "region": "US"
+        }
+        cable_res = get_competitor_prices(cable_prod)
+        global_stores_cable = {s["id"]: s for s in cable_res["global_stores"]}
+        # Walmart charges standard shipping on under $35 orders
+        self.assertIn("$35+", global_stores_cable["walmart"]["delivery_info"])
 
 
 if __name__ == '__main__':

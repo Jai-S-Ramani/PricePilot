@@ -10,6 +10,7 @@ with intelligent catalog availability matching:
 
 import urllib.parse
 import hashlib
+import re
 
 # Retailer configurations with vertical catalog specialization
 STORE_VERTICALS = {
@@ -378,10 +379,262 @@ def generate_deterministic_price_offset(product_id_or_asin, store_id):
     return variance
 
 
+def calculate_product_delivery_info(retailer_config: dict, product: dict, product_vertical: str, is_carried: bool) -> str:
+    """
+    Computes realistic, product-dependent delivery info based on:
+    - Product vertical (electronics, audio, grocery, fashion, beauty, general)
+    - Bulky / Heavy appliance characteristics (TV, fridge, washing machine, monitor, AC)
+    - Product value / price tiers (low-value shipping thresholds vs high-value insured/OTP)
+    - Specific retailer fulfillment capabilities (Quick-commerce 10-min, electronics stores 3-hr pickup, fashion try-and-buy, etc.)
+    """
+    if not is_carried:
+        return f"Catalog Not Carried by {retailer_config.get('name', 'Store')}"
+
+    store_id = retailer_config.get("id", "")
+    title = (product.get("title") or "").lower()
+    category = (product.get("category") or "").lower()
+    full_text = f"{title} {category}"
+    price = float(product.get("current_price") or product.get("price") or 0.0)
+    region = (product.get("region") or "US").upper()
+    is_inr = (region == "IN") or (product.get("currency") == "INR")
+
+    # Detect bulky / heavy items
+    bulky_keywords = [
+        "tv", "television", "refrigerator", "fridge", "washing machine",
+        "air conditioner", "ac", "microwave", "dishwasher", "treadmill",
+        "furniture", "sofa", "bed", "mattress", "cooler", "desktop"
+    ]
+    is_bulky = any(re.search(r'\b' + re.escape(k) + r'\b', full_text) for k in bulky_keywords) or any(
+        k in full_text for k in ["refrigerator", "washing machine", "air conditioner", "television"]
+    )
+
+    # Price thresholds:
+    if is_inr:
+        is_low_value = price < 499.0
+        is_high_value = price >= 20000.0
+    else:
+        is_low_value = price < 35.0
+        is_high_value = price >= 350.0
+
+    # 1. Quick-commerce stores (Blinkit, Zepto, Swiggy Instamart)
+    if store_id in ["blinkit", "zepto", "instamart"]:
+        if is_bulky:
+            return "Not Available (Exceeds Dark Store Bag Limit)"
+        if product_vertical == "grocery":
+            if store_id == "blinkit":
+                return "⚡ 8-12 Mins Instant Delivery"
+            elif store_id == "zepto":
+                return "⚡ 10-Minute Dark Store Delivery"
+            else:
+                return "⚡ 10-15 Mins Lightning Delivery"
+        elif product_vertical in ["audio", "electronics"]:
+            if is_high_value:
+                return "⚡ 15-20 Mins High-Value Courier Delivery"
+            return "⚡ 10-15 Mins Instant Tech Dispatch"
+        elif product_vertical == "beauty":
+            return "⚡ 10-15 Mins Instant Grooming Dispatch"
+        else:
+            return "⚡ 10-15 Mins Quick Commerce Delivery"
+
+    # 2. BigBasket
+    if store_id == "bigbasket":
+        if is_bulky:
+            return "Slotted Courier Delivery (2-3 Days)"
+        if product_vertical == "grocery":
+            return "⚡ BB Instant (15-Min) or Morning Slot (6-9 AM)" if not is_low_value else "BB Instant (₹30 Fee or Free on ₹499+)"
+        elif product_vertical in ["audio", "electronics", "beauty"]:
+            return "BB Now (15-25 Mins Express Delivery)"
+        return "Slotted Home Delivery (Next-Day)"
+
+    # 3. Croma (Tata Group)
+    if store_id == "croma":
+        if is_bulky:
+            return "Free Scheduled Delivery & Demo (2-3 Business Days)"
+        if is_high_value:
+            return "Free Insured Express Delivery & 3-Hr Store Pickup"
+        if product_vertical in ["electronics", "audio"]:
+            return "Free Next-Day Delivery or Express 3-Hr Store Pickup"
+        return "Free In-Store Pickup or Express 2-Day Delivery"
+
+    # 4. Reliance Digital
+    if store_id == "reliance_digital":
+        if is_bulky:
+            return "Scheduled White-Glove Delivery & Installation"
+        if is_high_value:
+            return "Express 24-Hr Delivery (Technician Demo Included)"
+        if product_vertical in ["electronics", "audio"]:
+            return "Free Next-Day Delivery or 2-Hour Store Pickup"
+        return "Standard 2-3 Day Delivery"
+
+    # 5. Vijay Sales
+    if store_id == "vijaysales":
+        if is_bulky:
+            return "Free Scheduled Installation & Delivery (2-3 Days)"
+        if is_high_value:
+            return "Free 24-Hr Express Home Delivery"
+        return "Free Standard 2-Day Home Delivery"
+
+    # 6. Flipkart
+    if store_id == "flipkart":
+        if is_bulky:
+            return "Scheduled Delivery & Installation (3-4 Days)"
+        if is_high_value:
+            return "Flipkart Assured (Next-Day Delivery & OTP Verification)"
+        if product_vertical == "fashion":
+            return "Assured 2-3 Days Delivery (7-Day Free Return)"
+        if product_vertical == "grocery":
+            return "Flipkart Minutes (15-Min Delivery) / Slotted Slot"
+        if is_low_value:
+            return "Standard Delivery (₹40 or Free with Flipkart Plus)"
+        return "Flipkart Assured Free 1-2 Day Delivery"
+
+    # 7. Tata CLiQ
+    if store_id == "tatacliq":
+        if is_high_value or "luxury" in full_text:
+            return "Tata CLiQ Luxury Insured White-Glove Delivery"
+        if product_vertical == "beauty":
+            return "Express Delivery in Luxury Tamper-Proof Packaging"
+        if product_vertical == "fashion":
+            return "2-3 Days Delivery (Free 15-Day Return)"
+        return "Standard 2-4 Days Insured Delivery"
+
+    # 8. Myntra
+    if store_id == "myntra":
+        if product_vertical == "fashion":
+            if is_high_value:
+                return "M-Express Next-Day Delivery (Try & Buy Enabled)"
+            if is_low_value:
+                return "Standard Delivery (₹99 or Free on ₹1199+)"
+            return "2-3 Days Delivery (Try & Buy & 14-Day Free Exchange)"
+        return "Standard 3-5 Days Delivery"
+
+    # 9. AJIO (Reliance)
+    if store_id == "ajio":
+        if is_low_value:
+            return "Standard Delivery (₹99 or Free on ₹999+)"
+        if product_vertical == "fashion":
+            return "3-4 Days Delivery (10-Day Free Return & Exchange)"
+        return "Standard 3-5 Days Delivery"
+
+    # 10. Nykaa
+    if store_id == "nykaa":
+        if is_low_value:
+            return "Standard Delivery (₹70 or Free on ₹299+)"
+        if is_high_value:
+            return "Free 2-Day Delivery (Temperature-Controlled & Insured)"
+        return "Free 2-3 Days Delivery (Tamper-Proof Authentic Packaging)"
+
+    # 11. Meesho
+    if store_id == "meesho":
+        return "Free 4-6 Days Delivery (Cash on Delivery Available)"
+
+    # 12. JioMart
+    if store_id == "jiomart":
+        if product_vertical == "grocery":
+            return "Free Neighborhood Store Delivery (Same-Day Slot)"
+        if is_bulky:
+            return "Scheduled 3-4 Day Delivery & Installation"
+        return "Free 2-3 Days Home Delivery"
+
+    # Global Stores:
+    # 13. Walmart
+    if store_id == "walmart":
+        if is_bulky:
+            return "Freight Delivery (Scheduled Room-of-Choice Drop)"
+        if product_vertical == "grocery":
+            return "Free Same-Day Delivery or 1-Hr Pickup with Walmart+"
+        if is_high_value:
+            return "Free 2-Day Insured Shipping (Signature Required)"
+        if is_low_value:
+            return "Standard Shipping ($6.99 or Free on $35+ / Walmart+)"
+        return "Free 2-Day Shipping on $35+"
+
+    # 14. Best Buy
+    if store_id == "bestbuy":
+        if is_bulky:
+            return "Scheduled Freight Delivery & Haul-Away Available"
+        if is_high_value:
+            return "Free Next-Day Delivery or 1-Hour Curbside Pickup"
+        if is_low_value:
+            return "Standard Shipping ($5.99 or Free with My Best Buy)"
+        return "Free 2-Day Shipping & 1-Hour In-Store Pickup"
+
+    # 15. Target
+    if store_id == "target":
+        if is_bulky:
+            return "Scheduled Freight Delivery"
+        if product_vertical == "grocery":
+            return "Same-Day Delivery via Shipt or Free Drive Up"
+        if is_low_value:
+            return "Standard Shipping (Free on $35+ or Circle 360)"
+        return "Free 2-Day Shipping on $35+ or Free Drive Up"
+
+    # 16. eBay
+    if store_id == "ebay":
+        if is_bulky:
+            return "Freight / Local Pickup Available"
+        if is_high_value:
+            return "Authenticity Guarantee & Insured Priority Shipping"
+        if is_low_value:
+            return "Standard Economy Shipping ($3-$5 or Free by Seller)"
+        return "Top Rated Plus Fast 'N Free Delivery (2-3 Days)"
+
+    # 17. B&H Photo
+    if store_id == "bhphoto":
+        if is_bulky:
+            return "Freight Curbside Delivery"
+        if is_high_value:
+            return "Free Expedited Insured Shipping (Adult Signature Required)"
+        if is_low_value:
+            return "Standard Ground ($4.99 or Free on $49+)"
+        return "Free Expedited 1-2 Day Shipping on $49+"
+
+    # Default fallback to configured string
+    return retailer_config.get("delivery_info", "Standard 2-3 Day Delivery")
+
+
+def calculate_amazon_delivery_info(product: dict, product_vertical: str) -> str:
+    """
+    Computes realistic Amazon delivery info based on product category, bulkiness, and price.
+    """
+    title = (product.get("title") or "").lower()
+    category = (product.get("category") or "").lower()
+    full_text = f"{title} {category}"
+    price = float(product.get("current_price") or product.get("price") or 0.0)
+    region = (product.get("region") or "US").upper()
+    is_inr = (region == "IN") or (product.get("currency") == "INR")
+
+    bulky_keywords = [
+        "tv", "television", "refrigerator", "fridge", "washing machine",
+        "air conditioner", "ac", "microwave", "dishwasher", "treadmill",
+        "furniture", "sofa", "bed", "mattress", "cooler", "desktop"
+    ]
+    is_bulky = any(re.search(r'\b' + re.escape(k) + r'\b', full_text) for k in bulky_keywords) or any(
+        k in full_text for k in ["refrigerator", "washing machine", "air conditioner", "television"]
+    )
+
+    if is_inr:
+        is_low_value = price < 499.0
+        is_high_value = price >= 20000.0
+    else:
+        is_low_value = price < 35.0
+        is_high_value = price >= 350.0
+
+    if is_bulky:
+        return "Scheduled Delivery & Installation (Prime Scheduled)"
+    if product_vertical == "grocery":
+        return "Amazon Fresh (2-Hour Slotted Delivery)"
+    if is_high_value:
+        return "FREE One-Day / Same-Day Delivery with Prime (OTP Required)"
+    if is_low_value:
+        return "Standard Delivery (FREE on orders over $35 / ₹499 or with Prime)"
+    return "FREE Two-Day Delivery with Amazon Prime"
+
+
 def build_store_comparison(product, retailer_config, product_vertical):
     """
     Builds a single competitor store entry with calibrated price, deep link,
-    difference, and catalog availability flags.
+    difference, dynamic product-dependent delivery info, and catalog availability flags.
     """
     amazon_price = float(product.get("current_price") or product.get("price") or 0.0)
     title = product.get("title", "")
@@ -417,6 +670,8 @@ def build_store_comparison(product, retailer_config, product_vertical):
             badge_text = "Price Matched"
             badge_status = "matched"
 
+    delivery_info = calculate_product_delivery_info(retailer_config, product, product_vertical, is_carried)
+
     return {
         "id": retailer_config["id"],
         "name": retailer_config["name"],
@@ -434,7 +689,7 @@ def build_store_comparison(product, retailer_config, product_vertical):
         "is_available": is_carried,
         "availability_status": availability_status,
         "is_cheaper_than_amazon": diff < 0 and is_carried,
-        "delivery_info": retailer_config["delivery_info"] if is_carried else "Catalog Not Supported",
+        "delivery_info": delivery_info,
         "search_url": search_url,
         "availability": availability
     }
@@ -503,11 +758,14 @@ def get_competitor_prices(product):
     # Price Match Guarantee Intelligence
     price_match = detect_price_match_guarantee(amazon_price, available_stores)
 
+    amazon_delivery_info = calculate_amazon_delivery_info(product, product_vertical)
+
     return {
         "product_id": product.get("id"),
         "asin": product.get("asin"),
         "title": product.get("title"),
         "amazon_price": amazon_price,
+        "amazon_delivery_info": amazon_delivery_info,
         "region": region,
         "product_vertical": product_vertical,
         "detected_channel": detected_channel,

@@ -37,6 +37,14 @@ def dashboard():
     return render_template("index.html")
 
 
+@app.route("/architecture")
+def architecture():
+    arch_file = Path(__file__).resolve().parent.parent / "architecture.html"
+    if arch_file.exists():
+        return send_file(arch_file)
+    return "Architecture diagram not found", 404
+
+
 # -----------------------------------------------------------------
 # Authentication API Routes
 # -----------------------------------------------------------------

@@ -1394,7 +1394,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     compVerdictText.textContent = comp.summary.verdict;
-    compVerdictSub.textContent = `Benchmarked against ${comp.summary.total_stores_compared} verified Indian & Global retailer marketplaces`;
+    if (comp.amazon_delivery_info) {
+      compVerdictSub.innerHTML = `<i class="fa-brands fa-amazon" style="color: #f59e0b;"></i> Amazon: <strong>${comp.amazon_delivery_info}</strong> &bull; Benchmarked across ${comp.summary.total_stores_compared} store networks`;
+    } else {
+      compVerdictSub.textContent = `Benchmarked against ${comp.summary.total_stores_compared} verified Indian & Global retailer marketplaces`;
+    }
     compMaxSavings.textContent = formatMoney(comp.summary.max_savings);
     compPriceSpreadVal.textContent = `Market Spread: ${formatMoney(comp.summary.price_spread)}`;
 
