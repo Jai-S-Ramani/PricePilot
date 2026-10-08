@@ -4,7 +4,7 @@ from email.mime.multipart import MIMEMultipart
 
 def send_mail(to_email: str, subject: str, body: str, smtp_user: str = "", smtp_pass: str = "") -> bool:
     """
-    Sends email alert using smtplib matching Alex's portfolio project script.
+    Sends email alert using smtplib with automated fallback simulator.
     """
     if not smtp_user or not smtp_pass:
         try:

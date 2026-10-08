@@ -741,7 +741,7 @@ def get_price_history(product_id: int):
 
 
 def export_to_csv():
-    """Exports dataset to CSV matching Alex's tutorial format."""
+    """Exports dataset to clean CSV format."""
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""

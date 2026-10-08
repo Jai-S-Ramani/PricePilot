@@ -1,7 +1,7 @@
 # ⚡ PricePilot — Amazon Price Tracker & Competitor Arbitrage Intelligence Platform
 
 > **TRACK. COMPARE. MAKE THE MOVE.**  
-> A production-grade, full-stack Data Analytics Web Application, Multi-Store Competitor Arbitrage Engine, Live Amazon Catalog Search, and Multi-Channel Notification Platform built with Python, Flask, BeautifulSoup4, SQLite3, Chart.js, and GSAP. Extended from the classic *Alex The Analyst Data Analytics Portfolio Project* into an enterprise-grade real-time price monitoring, competitor benchmarking, and predictive decision-support platform.
+> A production-grade, full-stack Data Analytics Web Application, Multi-Store Competitor Arbitrage Engine, Live Amazon Catalog Search, and Multi-Channel Notification Platform built with Python, Flask, BeautifulSoup4, SQLite3, Chart.js, and GSAP. An enterprise-grade real-time price monitoring, competitor benchmarking, and predictive decision-support platform.
 >
 > **Architect & Lead Engineer**: **Jai S Ramani**  
 > 📧 **Email**: [jaisramani05@gmail.com](mailto:jaisramani05@gmail.com) | 💼 **LinkedIn**: [jai-s-ramani-2948532bb](https://www.linkedin.com/in/jai-s-ramani-2948532bb) | 🐙 **GitHub**: [Jai-S-Ramani](https://github.com/Jai-S-Ramani)
@@ -147,9 +147,10 @@ A dedicated 1-click **Light / Dark Mode** button is positioned right in the top 
 
 ```
 PortfolioProjects/
-├── AmazonWebScraperDataset.csv       # Live synchronized CSV export adhering to tutorial schema
-├── Amazon Web Scraper Project.ipynb # Original Portfolio Project Jupyter Notebook
-├── run_original_scraper.py          # Standalone runner for original notebook scraper
+├── AmazonWebScraperDataset.csv       # Live synchronized CSV export
+├── run_original_scraper.py          # Standalone runner for single-item command-line scraper
+├── architecture.html                # Interactive system architecture diagram
+├── pricepilot.architecture.json     # Architecture specification model
 └── amazon_scraper_app/
     ├── app.py                       # Flask application, routing & REST API controllers
     ├── scheduler.py                 # Thread-safe BackgroundPriceScheduler daemon
@@ -376,6 +377,5 @@ To configure live Gmail SMTP email notifications:
   - 📧 **Email**: [jaisramani05@gmail.com](mailto:jaisramani05@gmail.com)
   - 💼 **LinkedIn**: [https://www.linkedin.com/in/jai-s-ramani-2948532bb](https://www.linkedin.com/in/jai-s-ramani-2948532bb)
   - 🐙 **GitHub**: [https://github.com/Jai-S-Ramani](https://github.com/Jai-S-Ramani)
-- **Original Project Inspiration**: Alex The Analyst (*Data Analyst Portfolio Project - Amazon Web Scraper*).
-- **Brand Identity & Dark Mode Logo**: PricePilot — *TRACK. COMPARE. MAKE THE MOVE.* Built with custom 3D chrome emerald dark mode identity, high-res vector branding, and 5-column navigation architecture.
+- **Brand Identity & Dark Mode Logo**: PricePilot — *TRACK. COMPARE. MAKE THE MOVE.* Built with custom 3D chrome emerald dark mode identity, high-res vector branding, and modern architecture.
 - **Tech Stack**: Python 3, Flask, BeautifulSoup4, SQLite3, Chart.js, GSAP 3, FontAwesome 6, Google Fonts (Outfit & Inter).

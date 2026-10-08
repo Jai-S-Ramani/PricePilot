@@ -109,7 +109,7 @@ class TestAdvancedFeatures(unittest.TestCase):
     def test_dispatch_multi_channel_alert(self):
         """Test multi-channel dispatcher triggers email, discord, and telegram."""
         user = {
-            "email": "alex.test@example.com",
+            "email": "demo.user@example.com",
             "discord_webhook": "simulated_webhook",
             "telegram_chat_id": "999888777"
         }

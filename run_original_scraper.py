@@ -1,4 +1,4 @@
-# Original Amazon Web Scraper from Amazon Web Scraper Project.ipynb
+# Standalone Amazon Web Scraper Tool
 import csv
 import datetime
 import time
