@@ -4,7 +4,22 @@ import datetime
 import urllib.parse
 import hashlib
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
+
+_http_session = None
+
+def get_http_session():
+    """Returns a shared, pooled requests.Session with keep-alive and retry capabilities."""
+    global _http_session
+    if _http_session is None:
+        _http_session = requests.Session()
+        retries = Retry(total=2, backoff_factor=0.2, status_forcelist=[500, 502, 503, 504], raise_on_status=False)
+        adapter = HTTPAdapter(pool_connections=20, pool_maxsize=40, max_retries=retries)
+        _http_session.mount("https://", adapter)
+        _http_session.mount("http://", adapter)
+    return _http_session
 
 # Rotated User-Agents to bypass simple scraping blocks
 USER_AGENTS = [
@@ -646,12 +661,13 @@ def scrape_amazon_product(url: str) -> dict:
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
         "DNT": "1",
-        "Connection": "close",
+        "Connection": "keep-alive",
         "Upgrade-Insecure-Requests": "1"
     }
 
     try:
-        response = requests.get(url, headers=headers, timeout=10)
+        session = get_http_session()
+        response = session.get(url, headers=headers, timeout=10)
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, "html.parser")
             
@@ -876,7 +892,8 @@ def fetch_amazon_suggestions(query: str, region: str = "IN") -> list:
     }
 
     try:
-        resp = requests.get(api_url, headers=headers, timeout=1.8)
+        session = get_http_session()
+        resp = session.get(api_url, headers=headers, timeout=1.8)
         if resp.status_code == 200:
             data = resp.json()
             suggestions = []
@@ -942,7 +959,8 @@ def search_amazon_products(query: str, region: str = "IN", limit: int = 5) -> li
             "Accept-Encoding": "gzip, deflate, br",
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
         }
-        res = requests.get(search_url, headers=headers, timeout=1.5)
+        session = get_http_session()
+        res = session.get(search_url, headers=headers, timeout=1.5)
         if res.status_code == 200 and "api-services-support@amazon.com" not in res.text:
             soup = BeautifulSoup(res.content, "html.parser")
             items = soup.select('div[data-component-type="s-search-result"]')

@@ -14,6 +14,10 @@ def get_db_connection():
     try:
         conn.execute("PRAGMA journal_mode=WAL;")
         conn.execute("PRAGMA busy_timeout=5000;")
+        conn.execute("PRAGMA synchronous=NORMAL;")
+        conn.execute("PRAGMA cache_size=-64000;")
+        conn.execute("PRAGMA temp_store=MEMORY;")
+        conn.execute("PRAGMA mmap_size=268435456;")
     except Exception:
         pass
     conn.row_factory = sqlite3.Row
@@ -105,6 +109,15 @@ def init_db():
             FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
         );
     """)
+
+    # High-performance indexes for fast queries, joins, and aggregations
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_price_history_product_id ON price_history(product_id);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_price_history_prod_date ON price_history(product_id, date);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_products_user_id ON products(user_id);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_products_region ON products(region);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_products_asin ON products(asin);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_alert_logs_user_id ON alert_logs(user_id);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_alert_logs_user_prod ON alert_logs(user_id, product_id, created_at);")
 
     # Auto-correct any existing inflated 900000 prices in DB (e.g. 900000 -> 9000)
     cursor.execute("UPDATE products SET current_price = current_price / 100.0 WHERE current_price >= 100000 AND (current_price % 100) = 0")
@@ -322,56 +335,8 @@ def process_auto_alerts_for_user(user_id: int):
     return triggered
 
 
-def get_all_products(user_id: int = None):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    if user_id:
-        cursor.execute("SELECT * FROM products WHERE user_id = ? OR user_id IS NULL ORDER BY id DESC", (user_id,))
-    else:
-        cursor.execute("SELECT * FROM products ORDER BY id DESC")
-    rows = cursor.fetchall()
-    conn.close()
-    
-    products = []
-    for r in rows:
-        p = dict(r)
-        stats = get_product_stats(
-            p["id"],
-            current_price=p.get("current_price"),
-            original_price=p.get("original_price"),
-            target_price=p.get("target_price")
-        )
-        p.update(stats)
-        products.append(p)
-    return products
-
-
-def get_product_by_id(product_id: int):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM products WHERE id = ?", (product_id,))
-    row = cursor.fetchone()
-    conn.close()
-    if row:
-        p = dict(row)
-        stats = get_product_stats(
-            product_id,
-            current_price=p.get("current_price"),
-            original_price=p.get("original_price"),
-            target_price=p.get("target_price")
-        )
-        p.update(stats)
-        return p
-    return None
-
-
-def get_product_stats(product_id: int, current_price: float = None, original_price: float = None, target_price: float = None):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT price FROM price_history WHERE product_id = ?", (product_id,))
-    price_rows = [float(r[0]) for r in cursor.fetchall() if r[0] is not None]
-    conn.close()
-
+def compute_stats_from_price_list(price_rows: list, current_price: float = None, original_price: float = None, target_price: float = None) -> dict:
+    """Computes pricing metrics, volatility, deal scores, and recommendations from a list of price history floats."""
     if not price_rows:
         cur = float(current_price or 0.0)
         return {
@@ -383,7 +348,14 @@ def get_product_stats(product_id: int, current_price: float = None, original_pri
             "recommendation": "BUY_NOW" if target_price and cur <= target_price else "FAIR_PRICE",
             "recommendation_label": "Buy Now (Target Met)" if target_price and cur <= target_price else "Fair Price",
             "discount_pct": 0.0,
-            "potential_savings": 0.0
+            "potential_savings": 0.0,
+            "deal_score": 80 if (target_price and cur <= target_price) else 50,
+            "deal_grade": "FAIR",
+            "deal_label": "🟡 Fair Value",
+            "price_trend": "STABLE",
+            "trend_pct": 0.0,
+            "trend_label": "Stable",
+            "best_time_to_buy": bool(target_price and cur <= target_price)
         }
 
     lowest = round(min(price_rows), 2)
@@ -499,6 +471,83 @@ def get_product_stats(product_id: int, current_price: float = None, original_pri
         "trend_label": trend_label,
         "best_time_to_buy": best_time_to_buy
     }
+
+
+def get_all_products(user_id: int = None):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if user_id:
+        cursor.execute("SELECT * FROM products WHERE user_id = ? OR user_id IS NULL ORDER BY id DESC", (user_id,))
+    else:
+        cursor.execute("SELECT * FROM products ORDER BY id DESC")
+    rows = cursor.fetchall()
+    
+    if not rows:
+        conn.close()
+        return []
+
+    product_dicts = [dict(r) for r in rows]
+    prod_ids = [p["id"] for p in product_dicts]
+
+    # Optimized batch query: fetch price history across ALL requested products in 1 roundtrip
+    placeholders = ",".join("?" for _ in prod_ids)
+    cursor.execute(f"SELECT product_id, price FROM price_history WHERE product_id IN ({placeholders}) ORDER BY id ASC", prod_ids)
+    
+    prices_by_product = {pid: [] for pid in prod_ids}
+    for row in cursor.fetchall():
+        if row[1] is not None:
+            prices_by_product[row[0]].append(float(row[1]))
+
+    conn.close()
+
+    for p in product_dicts:
+        price_list = prices_by_product.get(p["id"], [])
+        stats = compute_stats_from_price_list(
+            price_list,
+            current_price=p.get("current_price"),
+            original_price=p.get("original_price"),
+            target_price=p.get("target_price")
+        )
+        p.update(stats)
+
+    return product_dicts
+
+
+def get_product_by_id(product_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM products WHERE id = ?", (product_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return None
+    p = dict(row)
+    cursor.execute("SELECT price FROM price_history WHERE product_id = ? ORDER BY id ASC", (product_id,))
+    price_rows = [float(r[0]) for r in cursor.fetchall() if r[0] is not None]
+    conn.close()
+    
+    stats = compute_stats_from_price_list(
+        price_rows,
+        current_price=p.get("current_price"),
+        original_price=p.get("original_price"),
+        target_price=p.get("target_price")
+    )
+    p.update(stats)
+    return p
+
+
+def get_product_stats(product_id: int, current_price: float = None, original_price: float = None, target_price: float = None):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT price FROM price_history WHERE product_id = ? ORDER BY id ASC", (product_id,))
+    price_rows = [float(r[0]) for r in cursor.fetchall() if r[0] is not None]
+    conn.close()
+    return compute_stats_from_price_list(
+        price_rows,
+        current_price=current_price,
+        original_price=original_price,
+        target_price=target_price
+    )
 
 
 def calculate_deal_score(product_id: int):
