@@ -105,6 +105,174 @@ document.addEventListener('DOMContentLoaded', () => {
   const alertLogsContainer = document.getElementById('alertLogsContainer');
   const activityBannerText = document.getElementById('activityBannerText');
 
+  // 6-Feature Intelligence Suite Elements
+  let currentModalProductId = null;
+  let basketSelectedIds = new Set();
+  const basketFloatingBar = document.getElementById('basketFloatingBar');
+  const basketCountBadge = document.getElementById('basketCountBadge');
+  const basketSummaryText = document.getElementById('basketSummaryText');
+  const basketClearBtn = document.getElementById('basketClearBtn');
+  const basketOptimizeBtn = document.getElementById('basketOptimizeBtn');
+  const basketModal = document.getElementById('basketModal');
+  const closeBasketModal = document.getElementById('closeBasketModal');
+
+  // Amazon Clip-and-Save Coupons (persisted in localStorage)
+  let appliedCouponIds = new Set();
+  try {
+    const savedCoupons = JSON.parse(localStorage.getItem('pricepilot_clipped_coupons') || '[]');
+    if (Array.isArray(savedCoupons)) {
+      appliedCouponIds = new Set(savedCoupons);
+    }
+  } catch (e) {
+    appliedCouponIds = new Set();
+  }
+
+  // Amazon Coupon Terms Modal
+  const couponTermsModal = document.getElementById('couponTermsModal');
+  const closeCouponTermsModal = document.getElementById('closeCouponTermsModal');
+  const dismissCouponTermsBtn = document.getElementById('dismissCouponTermsBtn');
+
+  function openCouponTermsModal() {
+    if (couponTermsModal) couponTermsModal.classList.remove('hidden');
+  }
+  function hideCouponTermsModal() {
+    if (couponTermsModal) couponTermsModal.classList.add('hidden');
+  }
+  if (closeCouponTermsModal) closeCouponTermsModal.addEventListener('click', hideCouponTermsModal);
+  if (dismissCouponTermsBtn) dismissCouponTermsBtn.addEventListener('click', hideCouponTermsModal);
+  if (couponTermsModal) {
+    couponTermsModal.addEventListener('click', (e) => {
+      if (e.target === couponTermsModal) hideCouponTermsModal();
+    });
+  }
+
+  // Amazon Partner Bank Cards Selection (persisted in localStorage)
+  let appliedBankCards = {};
+  try {
+    const savedBankCards = JSON.parse(localStorage.getItem('pricepilot_selected_bank_cards') || '{}');
+    if (typeof savedBankCards === 'object' && savedBankCards !== null) {
+      appliedBankCards = savedBankCards;
+    }
+  } catch (e) {
+    appliedBankCards = {};
+  }
+
+  // Amazon Bank Card Offers Modal Elements
+  const bankOffersModal = document.getElementById('bankOffersModal');
+  const closeBankOffersModal = document.getElementById('closeBankOffersModal');
+  const bankOffersModalList = document.getElementById('bankOffersModalList');
+  const bankOffersModalSubtitle = document.getElementById('bankOffersModalSubtitle');
+
+  function openBankOffersModal(productId) {
+    const prod = allProducts.find(p => p.id === parseInt(productId, 10));
+    if (!prod || !bankOffersModal) return;
+    
+    const net = prod.net_pricing || {};
+    const offers = net.bank_offers || [];
+    const currentSelectedCardId = appliedBankCards[prod.id] || '';
+
+    if (bankOffersModalList) {
+      if (offers.length === 0) {
+        bankOffersModalList.innerHTML = `<div class="text-subtle" style="padding: 20px; text-align: center;">No partner bank card discounts available for this item.</div>`;
+      } else {
+        bankOffersModalList.innerHTML = offers.map(b => {
+          const isSelected = currentSelectedCardId === b.id;
+          const offerTitle = b.offer_title || `Offer ${b.offer_num || 1}`;
+
+          return `
+            <div class="amazon-offer-entry" data-offer-id="${b.id}">
+              <div class="amazon-offer-header-row">
+                <span class="amazon-offer-num-title">${escapeHtml(offerTitle)}</span>
+                <button type="button" class="btn-apply-bank-offer ${isSelected ? 'applied' : ''}" data-prod-id="${prod.id}" data-card-id="${b.id}">
+                  ${isSelected ? '<i class="fa-solid fa-check"></i> Applied' : 'Apply'}
+                </button>
+              </div>
+              <p class="amazon-offer-desc-text">${escapeHtml(b.offer_desc)}</p>
+              <div>
+                <a href="#" class="amazon-see-details-link" data-toggle="terms_${prod.id}_${b.id}">See details &gt;</a>
+                <div class="amazon-offer-terms-inline hidden" id="terms_${prod.id}_${b.id}">
+                  ${escapeHtml(b.terms || 'Standard bank terms and conditions apply.')}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Attach apply button listeners
+        bankOffersModalList.querySelectorAll('.btn-apply-bank-offer').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const pid = parseInt(btn.dataset.prodId, 10);
+            const cid = btn.dataset.cardId;
+            if (appliedBankCards[pid] === cid) {
+              clearBankCardOffer(pid);
+            } else {
+              applyBankCardOffer(pid, cid);
+            }
+            openBankOffersModal(pid);
+          });
+        });
+
+        // Attach inline "See details >" toggle listeners
+        bankOffersModalList.querySelectorAll('.amazon-see-details-link').forEach(link => {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const targetId = link.getAttribute('data-toggle');
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              const isHidden = targetEl.classList.contains('hidden');
+              targetEl.classList.toggle('hidden');
+              link.textContent = isHidden ? 'Hide details ▴' : 'See details >';
+            }
+          });
+        });
+      }
+    }
+
+    bankOffersModal.classList.remove('hidden');
+    if (typeof gsap !== 'undefined') {
+      gsap.fromTo('#bankOffersModal .modal-content', { scale: 0.9, opacity: 0, y: 15 }, { scale: 1, opacity: 1, y: 0, duration: 0.25, ease: 'power2.out' });
+    }
+  }
+
+  function hideBankOffersModal() {
+    if (bankOffersModal) bankOffersModal.classList.add('hidden');
+  }
+  if (closeBankOffersModal) closeBankOffersModal.addEventListener('click', hideBankOffersModal);
+  if (bankOffersModal) {
+    bankOffersModal.addEventListener('click', (e) => {
+      if (e.target === bankOffersModal) hideBankOffersModal();
+    });
+  }
+
+  function applyBankCardOffer(productId, cardId) {
+    const prod = allProducts.find(p => p.id === productId);
+    if (!prod) return;
+    const offers = prod.net_pricing?.bank_offers || [];
+    const card = offers.find(o => o.id === cardId);
+    if (!card) return;
+
+    appliedBankCards[productId] = cardId;
+    try {
+      localStorage.setItem('pricepilot_selected_bank_cards', JSON.stringify(appliedBankCards));
+    } catch (e) {}
+
+    const discText = formatMoney(card.discount_val, card.discount_val_native, prod.currency);
+    showToast(`💳 ${card.bank_name} applied! Saved ${discText} at checkout`, 'success');
+    renderProducts();
+  }
+
+  function clearBankCardOffer(productId) {
+    delete appliedBankCards[productId];
+    try {
+      localStorage.setItem('pricepilot_selected_bank_cards', JSON.stringify(appliedBankCards));
+    } catch (e) {}
+
+    showToast('💳 Bank card offer removed', 'info');
+    renderProducts();
+  }
+
   let allProducts = [];
   let currentUser = null;
 
@@ -475,41 +643,47 @@ document.addEventListener('DOMContentLoaded', () => {
   // Intelligent Product DP (Display Picture) Resolver
   // -----------------------------------------------------------------
   function getProductDP(p) {
-    if (p.image_url && !p.image_url.includes('placeholder.svg')) {
+    if (p.image_url && !p.image_url.includes('placeholder.svg') && !p.image_url.includes('unsplash.com')) {
       return p.image_url;
     }
     const text = ((p.title || '') + ' ' + (p.category || '') + ' ' + (p.asin || '')).toLowerCase();
     if (text.includes('keyboard') || text.includes('mechanical') || text.includes('keychron') || text.includes('typing')) {
-      return 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80';
+      return '/static/images/products/mechanical_keyboard.jpg';
     }
     if (text.includes('mouse') || text.includes('trackball') || text.includes('mx master') || text.includes('logitech')) {
-      return 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=600&auto=format&fit=crop&q=80';
+      return '/static/images/products/mx_master_3s.jpg';
     }
-    if (text.includes('headphone') || text.includes('earbud') || text.includes('audio') || text.includes('sony') || text.includes('airpod') || text.includes('buds') || text.includes('wh-')) {
-      return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80';
+    if (text.includes('dock') || text.includes('thunderbolt') || text.includes('anker 577') || text.includes('docking')) {
+      return '/static/images/products/anker_dock.jpg';
+    }
+    if (text.includes('power bank') || text.includes('xiaomi') || text.includes('20000mah') || text.includes('charger')) {
+      return '/static/images/products/xiaomi_powerbank.jpg';
+    }
+    if (text.includes('bose') || text.includes('qc45') || text.includes('quietcomfort')) {
+      return '/static/images/products/bose_qc45.jpg';
+    }
+    if (text.includes('oneplus') || text.includes('nord') || text.includes('earbud') || text.includes('tws')) {
+      return '/static/images/products/oneplus_buds_2.jpg';
+    }
+    if (text.includes('airpod')) {
+      return '/static/images/products/airpods_pro_2.jpg';
+    }
+    if (text.includes('ch720n') || text.includes('wh-ch')) {
+      return '/static/images/products/sony_whch720n.jpg';
+    }
+    if (text.includes('headphone') || text.includes('audio') || text.includes('sony') || text.includes('wh-1000')) {
+      return '/static/images/products/sony_wh1000xm5.jpg';
+    }
+    if (text.includes('macbook pro') || text.includes('m4')) {
+      return '/static/images/products/macbook_pro_m4.jpg';
     }
     if (text.includes('laptop') || text.includes('macbook') || text.includes('notebook') || text.includes('computer') || text.includes('pc') || text.includes('dell') || text.includes('asus') || text.includes('m3')) {
-      return 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&auto=format&fit=crop&q=80';
+      return '/static/images/products/macbook_air_m3.jpg';
     }
-    if (text.includes('phone') || text.includes('iphone') || text.includes('pixel') || text.includes('samsung') || text.includes('smartphone') || text.includes('mobile')) {
-      return 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&auto=format&fit=crop&q=80';
+    if (text.includes('shirt') || text.includes('apparel') || text.includes('clothing') || text.includes('analyst') || text.includes('data')) {
+      return '/static/images/products/data_tshirt.jpg';
     }
-    if (text.includes('watch') || text.includes('smartwatch') || text.includes('wearable') || text.includes('apple watch')) {
-      return 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80';
-    }
-    if (text.includes('power bank') || text.includes('dock') || text.includes('charger') || text.includes('cable') || text.includes('anker') || text.includes('xiaomi')) {
-      return 'https://images.unsplash.com/photo-1544652478-6653e09f18a2?w=600&auto=format&fit=crop&q=80';
-    }
-    if (text.includes('coffee') || text.includes('espresso') || text.includes('maker') || text.includes('kitchen') || text.includes('nespresso')) {
-      return 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=600&auto=format&fit=crop&q=80';
-    }
-    if (text.includes('camera') || text.includes('lens') || text.includes('dslr') || text.includes('mirrorless') || text.includes('photography')) {
-      return 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&auto=format&fit=crop&q=80';
-    }
-    if (text.includes('shirt') || text.includes('apparel') || text.includes('clothing') || text.includes('analyst')) {
-      return 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80';
-    }
-    return 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=80';
+    return '/static/images/products/sony_wh1000xm5.jpg';
   }
 
   // -----------------------------------------------------------------
@@ -563,15 +737,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     emptyState.classList.add('hidden');
     productsGrid.innerHTML = filtered.map(p => {
+      const net = p.net_pricing || {};
+      const couponVal = net.coupon_discount || 0;
+      const isCouponClipped = appliedCouponIds.has(p.id) && couponVal > 0;
+      
+      const bankOffers = net.bank_offers || [];
+      const selectedBankCardId = appliedBankCards[p.id] || '';
+      const activeBankCard = bankOffers.find(b => b.id === selectedBankCardId) || null;
+      const bankDiscountVal = activeBankCard ? activeBankCard.discount_val : 0;
+      const bankDiscountNative = activeBankCard ? activeBankCard.discount_val_native : null;
+
+      const totalAppliedDiscount = (isCouponClipped ? couponVal : 0) + bankDiscountVal;
+      const effectivePrice = Math.max(1, p.current_price - totalAppliedDiscount);
+      const effectiveNativePrice = (p.native_price && p.current_price) 
+        ? Math.max(1, p.native_price - (totalAppliedDiscount * (p.native_price / p.current_price))) 
+        : null;
+
       const target = p.target_price || (p.current_price * 0.9);
-      const diff = p.current_price - target;
+      const diff = effectivePrice - target;
       const isDeal = diff <= 0;
       
       const targetNative = (p.native_price && p.current_price) 
         ? (target * (p.native_price / p.current_price)) 
         : null;
-      const diffNative = (p.native_price && p.current_price) 
-        ? (p.native_price - (targetNative || target)) 
+      const diffNative = (effectiveNativePrice != null && effectivePrice) 
+        ? (effectiveNativePrice - (targetNative || target)) 
         : null;
 
       let statusText = '';
@@ -579,13 +769,17 @@ document.addEventListener('DOMContentLoaded', () => {
       let barClass = 'deal-pending';
 
       if (isDeal) {
-        statusText = `🔥 Deal Active! Price is ${formatMoney(Math.abs(diff), diffNative != null ? Math.abs(diffNative) : null, p.currency)} below target`;
+        const dealNotes = [];
+        if (isCouponClipped) dealNotes.push('Coupon');
+        if (activeBankCard) dealNotes.push(activeBankCard.bank_code || 'Card Offer');
+        const noteText = dealNotes.length > 0 ? ` (${dealNotes.join(' + ')} Applied)` : '';
+        statusText = `🔥 Deal Active! Price is ${formatMoney(Math.abs(diff), diffNative != null ? Math.abs(diffNative) : null, p.currency)} below target${noteText}`;
         fillWidth = 100;
         barClass = 'deal-active';
       } else {
         statusText = `🎯 Target Goal: Needs ${formatMoney(diff, diffNative, p.currency)} drop to trigger alert`;
         const basePrice = Math.max(p.original_price || p.current_price, p.current_price * 1.25);
-        const progressPct = Math.max(15, Math.min(95, Math.round(((basePrice - p.current_price) / (basePrice - target)) * 100)));
+        const progressPct = Math.max(15, Math.min(95, Math.round(((basePrice - effectivePrice) / (basePrice - target)) * 100)));
         fillWidth = isNaN(progressPct) ? 50 : progressPct;
         barClass = 'deal-pending';
       }
@@ -617,14 +811,48 @@ document.addEventListener('DOMContentLoaded', () => {
       const dealLabel = p.deal_label || `🔥 ${dealScore}% Deal`;
       const dealScoreBadge = `<span class="deal-score-pill" title="${p.deal_label || 'Deal Score'}" style="font-size: 0.72rem; padding: 2px 8px; border-radius: 9999px; background: rgba(16, 185, 129, 0.2); color: #10b981; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.4);"><i class="fa-solid fa-fire"></i> ${dealLabel}</span>`;
 
+      // 1. Deceptive Pricing & Fake Sale Detector Badge
+      const dec = p.deceptive_pricing || {};
+      const deceptiveBadge = dec.is_deceptive 
+        ? `<span class="badge-deceptive" title="${dec.summary || 'Artificial Price Hike'}"><i class="fa-solid fa-triangle-exclamation"></i> Fake Sale +${dec.inflation_pct || 0}%</span>`
+        : (discountPct > 0 ? `<span class="badge-authentic-deal" title="${dec.summary || 'Verified Baseline Discount'}"><i class="fa-solid fa-shield-check"></i> Authentic Deal</span>` : '');
+
+      // 2. Review Authenticity Trust Badge
+      const rev = p.review_intelligence || {};
+      const trustBadge = rev.trust_grade 
+        ? `<span class="trust-badge grade-${rev.trust_grade}" title="Authenticity: ${rev.authenticity_score || 90}% (${rev.trust_grade} Grade)"><i class="fa-solid fa-shield"></i> Trust: ${rev.trust_grade}</span>`
+        : '';
+
+      // 3. 7-Day ML Price Drop Predictor Probability Badge
+      const dropPred = p.drop_prediction || {};
+      const dropProbBadge = dropPred.probability_pct 
+        ? `<span class="drop-prob-badge prob-${(dropPred.likelihood_tier || 'moderate').toLowerCase()}" title="${dropPred.rationale || 'Price Drop Probability'}"><i class="fa-solid fa-chart-line-down"></i> ${dropPred.probability_pct}% Drop</span>`
+        : '';
+
+      // 5. Multi-Item Basket Arbitrage Selector
+      const isBasketChecked = basketSelectedIds.has(p.id);
+      const basketCheckbox = `
+        <label class="basket-checkbox-label ${isBasketChecked ? 'basket-checked' : ''}" title="Select item for multi-store basket arbitrage comparison">
+          <input type="checkbox" class="basket-item-check" data-id="${p.id}" ${isBasketChecked ? 'checked' : ''}>
+          <i class="fa-solid ${isBasketChecked ? 'fa-cart-shopping' : 'fa-cart-plus'}"></i>
+          <span>Cart</span>
+        </label>
+      `;
+
       const resolvedImage = getProductDP(p);
 
       return `
         <div class="product-card glass ${isDeal ? 'deal-featured' : ''}" data-id="${p.id}">
           <div class="card-glare"></div>
           <div class="card-badges-header">
-            <span class="rec-badge ${recClass}"><i class="fa-solid ${recIcon}"></i> ${recLabel}</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="rec-badge ${recClass}"><i class="fa-solid ${recIcon}"></i> ${recLabel}</span>
+              ${basketCheckbox}
+            </div>
             <div class="card-meta-tags">
+              ${deceptiveBadge}
+              ${trustBadge}
+              ${dropProbBadge}
               ${dealScoreBadge}
               ${regionBadge}
               ${volTag}
@@ -634,18 +862,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
           <div class="card-top">
             <div class="product-img-wrapper">
-              <img src="${resolvedImage}" alt="${p.title}" class="product-img" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=80';">
+              <img src="${resolvedImage}" alt="${p.title}" class="product-img" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='/static/images/products/sony_wh1000xm5.jpg';">
               <div class="rating-badge"><i class="fa-solid fa-star"></i> ${p.rating || '4.5'}</div>
             </div>
             <div class="card-details">
               <span class="product-category">${p.category || 'Electronics'} &bull; ASIN: ${p.asin}</span>
               <h4 class="product-title" title="${p.title}">${p.title}</h4>
               <div class="price-row">
-                <span class="current-price">${formatMoney(p.current_price, p.native_price, p.currency)}</span>
-                ${p.original_price ? `<span class="original-price">${formatMoney(p.original_price, p.native_price ? (p.native_price * 1.15) : null, p.currency)}</span>` : ''}
-                ${discountPct > 0 ? `<span class="deal-badge">-${discountPct}% OFF</span>` : ''}
+                <span class="current-price ${isCouponClipped || activeBankCard ? 'price-coupon-clipped' : ''}">${formatMoney(effectivePrice, effectiveNativePrice, p.currency)}</span>
+                ${(isCouponClipped || activeBankCard) ? `
+                  <span class="original-price" style="text-decoration: line-through;" title="Original Amazon Price">${formatMoney(p.current_price, p.native_price, p.currency)}</span>
+                ` : (p.original_price ? `<span class="original-price">${formatMoney(p.original_price, p.native_price ? (p.native_price * 1.15) : null, p.currency)}</span>` : '')}
+                ${isCouponClipped ? `
+                  <span class="badge-coupon-applied" title="Amazon clip-and-save coupon applied"><i class="fa-solid fa-scissors"></i> -${formatMoney(couponVal, p.native_price ? (couponVal * (p.native_price / p.current_price)) : null, p.currency)} Clip</span>
+                ` : ''}
+                ${activeBankCard ? `
+                  <span class="badge-bank-applied" title="${activeBankCard.offer_desc}"><i class="fa-solid fa-credit-card"></i> -${formatMoney(bankDiscountVal, bankDiscountNative, p.currency)} ${activeBankCard.bank_code || 'Card'}</span>
+                ` : ''}
+                ${discountPct > 0 && !isCouponClipped && !activeBankCard ? `<span class="deal-badge">-${discountPct}% OFF</span>` : ''}
                 ${isDeal ? `<span class="deal-badge"><i class="fa-solid fa-fire"></i> Target Met!</span>` : ''}
               </div>
+
+              <!-- Amazon Clip-and-Save Coupon Row -->
+              ${couponVal > 0 ? `
+                <div class="amazon-coupon-row ${isCouponClipped ? 'coupon-clipped' : ''}">
+                  <div class="amazon-coupon-left">
+                    <span class="amazon-coupon-badge">Coupon</span>
+                    <span class="amazon-coupon-text">${net.coupon_text || `Save ${formatMoney(couponVal, p.native_price ? (couponVal * (p.native_price / p.current_price)) : null, p.currency)}`}</span>
+                    <span class="amazon-coupon-terms" data-id="${p.id}" title="View Amazon coupon terms and conditions">Terms</span>
+                  </div>
+                  <button type="button" class="btn-coupon-apply ${isCouponClipped ? 'clipped' : ''}" data-id="${p.id}" title="${isCouponClipped ? 'Unclip coupon' : 'Apply coupon'}">
+                    ${isCouponClipped ? '<i class="fa-solid fa-check"></i> Applied' : 'Apply'}
+                  </button>
+                </div>
+              ` : ''}
+
+              <!-- Amazon Bank Card Offers Row -->
+              ${bankOffers.length > 0 ? `
+                <div class="amazon-bank-row ${activeBankCard ? 'bank-active' : ''}">
+                  <div class="bank-row-header" data-id="${p.id}" title="Click to view all bank offers">
+                    <span class="bank-badge"><i class="fa-solid fa-percent"></i> Bank Offer</span>
+                    <span class="bank-title-text" title="${activeBankCard ? activeBankCard.offer_desc : 'Click to view bank offers'}">
+                      ${activeBankCard ? `<strong>${activeBankCard.bank_name}:</strong> Save ${formatMoney(bankDiscountVal, bankDiscountNative, p.currency)}` : `Upto ${formatMoney(Math.max(...bankOffers.map(b => b.discount_val)), Math.max(...bankOffers.map(b => b.discount_val_native || b.discount_val)), p.currency)} discount on partner cards`}
+                    </span>
+                    <span class="bank-view-terms" data-id="${p.id}" title="View all partner bank card discounts">${bankOffers.length} offers &gt;</span>
+                  </div>
+                  <div class="bank-select-wrapper">
+                    <select class="bank-card-dropdown" data-id="${p.id}" title="Choose your bank card to apply instant discount">
+                      <option value="">No Card Applied (Full Price)</option>
+                      ${bankOffers.map(b => `
+                        <option value="${b.id}" ${selectedBankCardId === b.id ? 'selected' : ''}>
+                          ${b.offer_title || 'Offer'}: ${b.bank_name} - Save ${formatMoney(b.discount_val, b.discount_val_native, p.currency)}
+                        </option>
+                      `).join('')}
+                    </select>
+                  </div>
+                </div>
+              ` : ''}
             </div>
           </div>
 
@@ -665,28 +938,37 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
 
           <div class="card-actions">
-            <span class="scraped-time"><i class="fa-regular fa-clock"></i> ${p.last_scraped || 'Just now'}</span>
-            <div class="action-buttons">
-              <button class="btn btn-sm btn-secondary view-chart-btn" data-id="${p.id}" title="Price Analytics Chart">
-                <i class="fa-solid fa-chart-line"></i> Chart
-              </button>
-              <button class="btn btn-sm btn-secondary compare-stores-btn" data-id="${p.id}" title="Compare prices across 11 Indian & Global stores">
-                <i class="fa-solid fa-code-compare" style="color: var(--accent-biscuit)"></i> Stores
-              </button>
-              ${currentUser ? `
-                <button class="btn btn-sm btn-secondary test-alert-btn" data-id="${p.id}" title="Test Alert Email">
-                  <i class="fa-regular fa-bell"></i> Alert
+            <!-- Tier 1: Timestamp & Quick Action Icons (Refresh, Alert, Delete) -->
+            <div class="card-actions-meta">
+              <span class="scraped-time" title="Last checked live on Amazon">
+                <i class="fa-regular fa-clock"></i> ${p.last_scraped || 'Just now'}
+              </span>
+              <div class="quick-icons-group">
+                <button class="btn btn-sm-icon btn-secondary refresh-single-btn" data-id="${p.id}" title="Re-check live price on Amazon">
+                  <i class="fa-solid fa-arrows-rotate"></i>
                 </button>
-              ` : `
-                <button class="btn btn-sm btn-secondary test-alert-btn auth-locked-btn" data-id="${p.id}" title="Log in to unlock email alerts">
-                  <i class="fa-solid fa-lock"></i> Alert
+                ${currentUser ? `
+                  <button class="btn btn-sm-icon btn-secondary test-alert-btn" data-id="${p.id}" title="Test Alert Email / Webhook">
+                    <i class="fa-regular fa-bell"></i>
+                  </button>
+                ` : `
+                  <button class="btn btn-sm-icon btn-secondary test-alert-btn auth-locked-btn" data-id="${p.id}" title="Log in to unlock email alerts">
+                    <i class="fa-solid fa-lock"></i>
+                  </button>
+                `}
+                <button class="btn btn-sm-icon btn-icon-danger delete-btn" data-id="${p.id}" title="Remove Item from Tracker">
+                  <i class="fa-solid fa-trash-can"></i>
                 </button>
-              `}
-              <button class="btn btn-sm btn-secondary refresh-single-btn" data-id="${p.id}" title="Re-check current live price on Amazon">
-                <i class="fa-solid fa-arrows-rotate"></i>
+              </div>
+            </div>
+
+            <!-- Tier 2: Primary Actions (Price History & Compare Stores) -->
+            <div class="action-buttons-grid">
+              <button class="btn btn-sm btn-secondary view-chart-btn btn-grid-action" data-id="${p.id}" title="Price Analytics & Time-Series History">
+                <i class="fa-solid fa-chart-line" style="color: var(--accent-primary);"></i> Price History
               </button>
-              <button class="btn btn-sm btn-icon btn-danger delete-btn" data-id="${p.id}" title="Remove Item">
-                <i class="fa-solid fa-trash-can"></i>
+              <button class="btn btn-sm btn-secondary compare-stores-btn btn-grid-action" data-id="${p.id}" title="Compare prices across 18 Indian & Global stores">
+                <i class="fa-solid fa-code-compare" style="color: var(--accent-biscuit);"></i> Compare Stores
               </button>
             </div>
           </div>
@@ -748,6 +1030,77 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.compare-stores-btn').forEach(b => {
       b.addEventListener('click', () => openCompetitorModal(b.dataset.id));
+    });
+
+    document.querySelectorAll('.btn-coupon-apply').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const id = parseInt(btn.dataset.id, 10);
+        if (!id) return;
+        const prod = allProducts.find(p => p.id === id);
+        const couponVal = prod?.net_pricing?.coupon_discount || 0;
+        if (appliedCouponIds.has(id)) {
+          appliedCouponIds.delete(id);
+          showToast('🏷️ Amazon coupon unclipped', 'info');
+        } else {
+          appliedCouponIds.add(id);
+          const couponSaveDisplay = prod?.native_price 
+            ? formatMoney(couponVal, couponVal * (prod.native_price / prod.current_price), prod.currency)
+            : formatMoney(couponVal);
+          showToast(`🏷️ Amazon coupon applied! Saved ${couponSaveDisplay} at checkout`, 'success');
+        }
+        try {
+          localStorage.setItem('pricepilot_clipped_coupons', JSON.stringify(Array.from(appliedCouponIds)));
+        } catch (err) {
+          console.warn('Failed saving clipped coupons to localStorage', err);
+        }
+        renderProducts();
+      });
+    });
+
+    document.querySelectorAll('.amazon-coupon-terms').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openCouponTermsModal();
+      });
+    });
+
+    document.querySelectorAll('.bank-card-dropdown').forEach(sel => {
+      sel.addEventListener('change', (e) => {
+        e.stopPropagation();
+        const id = parseInt(sel.dataset.id, 10);
+        const cardId = sel.value;
+        if (cardId) {
+          applyBankCardOffer(id, cardId);
+        } else {
+          clearBankCardOffer(id);
+        }
+      });
+    });
+
+    document.querySelectorAll('.bank-view-terms, .bank-row-header').forEach(el => {
+      el.addEventListener('click', (e) => {
+        if (e.target.closest('.bank-card-dropdown')) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const id = el.dataset.id || el.closest('[data-id]')?.dataset.id;
+        if (id) openBankOffersModal(id);
+      });
+    });
+
+    document.querySelectorAll('.basket-item-check').forEach(cb => {
+      cb.addEventListener('change', (e) => {
+        e.stopPropagation();
+        const id = parseInt(cb.dataset.id, 10);
+        if (cb.checked) {
+          basketSelectedIds.add(id);
+        } else {
+          basketSelectedIds.delete(id);
+        }
+        updateBasketFloatingBar();
+      });
     });
 
     document.querySelectorAll('.test-alert-btn').forEach(b => {
@@ -938,7 +1291,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return `
             <div class="search-result-card glass" data-index="${idx}" data-price="${price}" data-currency="${item.currency || 'INR'}">
               <div class="search-card-main">
-                <img src="${item.image_url}" alt="${item.title}" class="search-card-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=80'">
+                <img src="${item.image_url}" alt="${item.title}" class="search-card-img" onerror="this.onerror=null; this.src='/static/images/product-placeholder.svg'">
                 <div class="search-card-info">
                   <h5 class="search-card-title" title="${item.title}">${item.title}</h5>
                   <div class="search-card-meta">
@@ -1266,6 +1619,174 @@ document.addEventListener('DOMContentLoaded', () => {
         modalTargetPrice.textContent = formatMoney(currentModalTargetUSD);
         modalLowestPrice.textContent = formatMoney(prod.lowest_price || prod.current_price);
         modalHighestPrice.textContent = formatMoney(prod.highest_price || prod.current_price);
+
+        currentModalProductId = id;
+
+        // Populate 1. Deceptive Pricing & Authenticity Audit Card
+        const dec = prod.deceptive_pricing || {};
+        const decBadge = document.getElementById('intelDeceptiveBadge');
+        const decSummary = document.getElementById('intelDeceptiveSummary');
+        const decBase = document.getElementById('intelBaselinePrice');
+        const decClaimed = document.getElementById('intelClaimedMrp');
+        const decInfl = document.getElementById('intelInflationPct');
+        if (decBadge) {
+          decBadge.textContent = dec.is_deceptive ? 'Fake Sale Alert' : 'Authentic Deal';
+          decBadge.className = `intel-status-pill ${dec.is_deceptive ? 'pill-rose' : 'pill-emerald'}`;
+        }
+        if (decSummary) decSummary.textContent = dec.summary || 'Baseline verification complete.';
+        if (decBase) decBase.textContent = formatMoney(dec.baseline_price || prod.current_price);
+        if (decClaimed) decClaimed.textContent = formatMoney(dec.claimed_mrp || prod.original_price || prod.current_price);
+        if (decInfl) decInfl.textContent = `+${dec.inflation_pct || 0}%`;
+
+        // Populate 2. Net Effective Price (Interactive Amazon Coupon + Specific Bank Cards)
+        const net = prod.net_pricing || {};
+        const couponVal = net.coupon_discount || 0;
+        const bankOffers = net.bank_offers || [];
+        const isModalClipped = appliedCouponIds.has(prod.id);
+        const currentModalCardId = appliedBankCards[prod.id] || '';
+
+        const netBase = document.getElementById('intelNetBasePrice');
+        const netCoupon = document.getElementById('intelNetCoupon');
+        const netBank = document.getElementById('intelNetBank');
+        const netEffective = document.getElementById('intelNetEffective');
+        const netPill = document.getElementById('intelNetSavingsPill');
+        const modalCouponBtn = document.getElementById('modalCouponBtn');
+        const modalCouponText = document.getElementById('modalCouponText');
+        const modalCouponTerms = document.getElementById('modalCouponTerms');
+        const modalBankCardSelect = document.getElementById('modalBankCardSelect');
+
+        function updateModalNetPrices(clipped, cardId) {
+          const effectiveCoupon = clipped ? couponVal : 0;
+          const activeCard = bankOffers.find(b => b.id === cardId) || null;
+          const effectiveBankDiscount = activeCard ? activeCard.discount_val : 0;
+          const effectiveBankDiscountNative = activeCard ? activeCard.discount_val_native : null;
+          const totalSavings = effectiveCoupon + effectiveBankDiscount;
+          const trueNet = Math.max(1, (net.base_price || prod.current_price) - totalSavings);
+
+          if (netBase) netBase.textContent = formatMoney(net.base_price || prod.current_price);
+          if (netCoupon) {
+            netCoupon.textContent = clipped 
+              ? `-${formatMoney(couponVal)} (Applied)` 
+              : `$0.00 (Unapplied)`;
+            netCoupon.className = clipped ? 'text-emerald' : 'text-subtle';
+          }
+          if (modalCouponBtn) {
+            modalCouponBtn.className = `btn-coupon-apply ${clipped ? 'clipped' : ''}`;
+            modalCouponBtn.innerHTML = clipped ? '<i class="fa-solid fa-check"></i> Applied' : 'Apply';
+          }
+          if (netBank) {
+            netBank.textContent = activeCard 
+              ? `-${formatMoney(effectiveBankDiscount, effectiveBankDiscountNative, prod.currency)} (${activeCard.bank_name})` 
+              : `$0.00 (No Card Selected)`;
+            netBank.className = activeCard ? 'text-purple' : 'text-subtle';
+          }
+          if (netEffective) netEffective.textContent = formatMoney(trueNet);
+          if (netPill) {
+            netPill.textContent = totalSavings > 0 ? `Save Extra ${formatMoney(totalSavings)}` : 'Sticker Price';
+            netPill.className = `intel-status-pill ${totalSavings > 0 ? 'pill-emerald' : 'pill-slate'}`;
+          }
+        }
+
+        if (modalCouponRow) {
+          if (couponVal > 0) {
+            modalCouponRow.style.display = 'flex';
+            if (modalCouponText) modalCouponText.textContent = net.coupon_text || `Apply ${formatMoney(couponVal)} coupon`;
+            if (modalCouponBtn) {
+              modalCouponBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (appliedCouponIds.has(prod.id)) {
+                  appliedCouponIds.delete(prod.id);
+                  showToast('🏷️ Amazon coupon unclipped', 'info');
+                } else {
+                  appliedCouponIds.add(prod.id);
+                  const couponSaveDisplay = prod.native_price 
+                    ? formatMoney(couponVal, couponVal * (prod.native_price / prod.current_price), prod.currency)
+                    : formatMoney(couponVal);
+                  showToast(`🏷️ Amazon coupon applied! Saved ${couponSaveDisplay} at checkout`, 'success');
+                }
+                try {
+                  localStorage.setItem('pricepilot_clipped_coupons', JSON.stringify(Array.from(appliedCouponIds)));
+                } catch (err) {}
+                const isNowClipped = appliedCouponIds.has(prod.id);
+                updateModalNetPrices(isNowClipped, appliedBankCards[prod.id] || '');
+                renderProducts();
+              };
+            }
+          } else {
+            modalCouponRow.style.display = 'none';
+          }
+        }
+
+        if (modalCouponTerms) {
+          modalCouponTerms.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openCouponTermsModal();
+          };
+        }
+
+        const modalBankOffersLink = document.getElementById('modalBankOffersLink');
+        if (modalBankOffersLink) {
+          modalBankOffersLink.textContent = `${bankOffers.length} Offers >`;
+          modalBankOffersLink.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openBankOffersModal(prod.id);
+          };
+        }
+
+        if (modalBankCardSelect) {
+          modalBankCardSelect.innerHTML = `
+            <option value="">No Card Applied (Full Price)</option>
+            ${bankOffers.map(b => `
+              <option value="${b.id}" ${currentModalCardId === b.id ? 'selected' : ''}>
+                ${escapeHtml(b.offer_title || 'Offer')}: ${escapeHtml(b.bank_name)} - Save ${formatMoney(b.discount_val, b.discount_val_native, prod.currency)}
+              </option>
+            `).join('')}
+          `;
+          modalBankCardSelect.onchange = () => {
+            const chosenId = modalBankCardSelect.value;
+            if (chosenId) {
+              applyBankCardOffer(prod.id, chosenId);
+            } else {
+              clearBankCardOffer(prod.id);
+            }
+            updateModalNetPrices(appliedCouponIds.has(prod.id), chosenId);
+          };
+        }
+
+        updateModalNetPrices(isModalClipped, currentModalCardId);
+
+        // Populate 3. AI Review Authenticity & Sentiment Analysis
+        const rev = prod.review_intelligence || {};
+        const trustGrade = document.getElementById('intelTrustGrade');
+        const authScore = document.getElementById('intelAuthenticityScore');
+        const posPct = document.getElementById('intelPosPct');
+        const neuPct = document.getElementById('intelNeuPct');
+        const critPct = document.getElementById('intelCritPct');
+        const barPos = document.getElementById('intelBarPos');
+        const barNeu = document.getElementById('intelBarNeu');
+        const barCrit = document.getElementById('intelBarCrit');
+        const quote = document.getElementById('intelConsensusQuote');
+        const prosList = document.getElementById('intelProsList');
+        const consList = document.getElementById('intelConsList');
+
+        if (trustGrade) trustGrade.textContent = `Grade ${rev.trust_grade || 'A'}`;
+        if (authScore) authScore.textContent = `${rev.authenticity_score || 92}% Verified`;
+        const sent = rev.sentiment_breakdown || { positive: 75, neutral: 15, critical: 10 };
+        if (posPct) posPct.textContent = `${sent.positive}%`;
+        if (neuPct) neuPct.textContent = `${sent.neutral}%`;
+        if (critPct) critPct.textContent = `${sent.critical}%`;
+        if (barPos) barPos.style.width = `${sent.positive}%`;
+        if (barNeu) barNeu.style.width = `${sent.neutral}%`;
+        if (barCrit) barCrit.style.width = `${sent.critical}%`;
+        if (quote) quote.textContent = `"${rev.consensus_summary || 'Positive consensus overall across verified owners.'}"`;
+        if (prosList && rev.key_pros) {
+          prosList.innerHTML = rev.key_pros.map(p => `<li>${p}</li>`).join('');
+        }
+        if (consList && rev.key_cons) {
+          consList.innerHTML = rev.key_cons.map(c => `<li>${c}</li>`).join('');
+        }
 
         updateModalForecastBanner(currentModalForecast);
 
@@ -2378,6 +2899,166 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+
+  // =================================================================
+  // 6-Feature Intelligence Suite: Simulator & Basket Arbitrage
+  // =================================================================
+  async function simulateProductDrop(id) {
+    if (!id) return;
+    showToast('⚡ Triggering -30% Flash Crash on Amazon Tracker...', 'info');
+    try {
+      const res = await fetch(`/api/products/${id}/simulate-drop`, { method: 'POST' });
+      const data = await res.json();
+      if (data.status === 'success') {
+        showToast(`⚡ Flash Crash Active! Dropped -${data.drop_pct}% to ${formatMoney(data.new_price)} (Alert Target Cross)`, 'success');
+        await fetchProducts();
+        if (currentModalProductId == id) {
+          openChartModal(id);
+        }
+      } else {
+        showToast(data.message || 'Simulation failed', 'error');
+      }
+    } catch (err) {
+      showToast('Error running flash drop simulation', 'error');
+    }
+  }
+
+  async function resetProductPrice(id) {
+    if (!id) return;
+    try {
+      const res = await fetch(`/api/products/${id}/reset-price`, { method: 'POST' });
+      const data = await res.json();
+      if (data.status === 'success') {
+        showToast(`Price reset to baseline: ${formatMoney(data.current_price)}`, 'info');
+        await fetchProducts();
+        if (currentModalProductId == id) {
+          openChartModal(id);
+        }
+      } else {
+        showToast(data.message || 'Reset failed', 'error');
+      }
+    } catch (err) {
+      showToast('Error resetting price', 'error');
+    }
+  }
+
+  // Modal Simulator Buttons
+  const modalSimulateDropBtn = document.getElementById('modalSimulateDropBtn');
+  if (modalSimulateDropBtn) {
+    modalSimulateDropBtn.addEventListener('click', () => {
+      if (currentModalProductId) simulateProductDrop(currentModalProductId);
+    });
+  }
+
+  const modalResetPriceBtn = document.getElementById('modalResetPriceBtn');
+  if (modalResetPriceBtn) {
+    modalResetPriceBtn.addEventListener('click', () => {
+      if (currentModalProductId) resetProductPrice(currentModalProductId);
+    });
+  }
+
+  // Multi-Item Basket Arbitrage Functions
+  function updateBasketFloatingBar() {
+    if (!basketFloatingBar) return;
+    if (basketSelectedIds.size > 0) {
+      basketFloatingBar.classList.remove('hidden');
+      if (basketCountBadge) basketCountBadge.textContent = basketSelectedIds.size;
+      if (basketSummaryText) {
+        basketSummaryText.textContent = `${basketSelectedIds.size} item${basketSelectedIds.size > 1 ? 's' : ''} selected across stores`;
+      }
+    } else {
+      basketFloatingBar.classList.add('hidden');
+    }
+  }
+
+  if (basketClearBtn) {
+    basketClearBtn.addEventListener('click', () => {
+      basketSelectedIds.clear();
+      document.querySelectorAll('.basket-item-check').forEach(cb => cb.checked = false);
+      updateBasketFloatingBar();
+    });
+  }
+
+  if (basketOptimizeBtn) {
+    basketOptimizeBtn.addEventListener('click', async () => {
+      if (basketSelectedIds.size === 0) {
+        showToast('Select at least 1 product to optimize cart arbitrage', 'warning');
+        return;
+      }
+      showToast('Computing multi-store split-cart arbitrage across 18 stores...', 'info');
+      try {
+        const res = await fetch('/api/basket/optimize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_ids: Array.from(basketSelectedIds) })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          renderBasketModalResults(data.result);
+          if (basketModal) basketModal.classList.remove('hidden');
+        } else {
+          showToast(data.message || 'Failed to optimize basket', 'error');
+        }
+      } catch (err) {
+        showToast('Error optimizing cart arbitrage', 'error');
+      }
+    });
+  }
+
+  if (closeBasketModal && basketModal) {
+    closeBasketModal.addEventListener('click', () => {
+      basketModal.classList.add('hidden');
+    });
+  }
+
+  function renderBasketModalResults(result) {
+    const bannerTitle = document.getElementById('basketVerdictTitle');
+    const bannerSub = document.getElementById('basketVerdictSub');
+    const savingsVal = document.getElementById('basketSavingsVal');
+    const optTotal = document.getElementById('basketOptimalTotal');
+    const optBreakdown = document.getElementById('basketOptimalBreakdown');
+    const singleList = document.getElementById('basketSingleStoreList');
+
+    if (savingsVal) savingsVal.textContent = formatMoney(result.total_savings_vs_amazon);
+    if (optTotal) optTotal.textContent = formatMoney(result.optimal_total_cost);
+
+    if (bannerTitle) {
+      bannerTitle.textContent = result.total_savings_vs_amazon > 0 
+        ? `Split-Cart Saves ${formatMoney(result.total_savings_vs_amazon)} (${result.savings_pct}% Off!)`
+        : 'Amazon is already the lowest total cost!';
+    }
+    if (bannerSub) {
+      bannerSub.textContent = `Optimized across ${result.item_count} items comparing Amazon vs 18 partner retailers.`;
+    }
+
+    if (optBreakdown && result.optimal_split) {
+      optBreakdown.innerHTML = result.optimal_split.map(item => `
+        <div class="plan-item-row">
+          <div>
+            <strong>${item.title}</strong>
+            <div class="text-subtle" style="font-size: 0.7rem;">Cheapest at <span class="plan-item-store">${item.best_store}</span> (vs Amazon: ${formatMoney(item.amazon_price)})</div>
+          </div>
+          <div class="text-emerald" style="font-weight: 800; font-size: 0.95rem;">
+            ${formatMoney(item.best_price)}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    if (singleList && result.single_store_totals) {
+      singleList.innerHTML = result.single_store_totals.map(s => `
+        <div class="store-rank-item">
+          <div>
+            <strong>${s.store}</strong>
+            <span class="text-subtle" style="font-size: 0.7rem; margin-left: 6px;">(${s.items_available}/${result.item_count} available)</span>
+          </div>
+          <div style="font-weight: 700;">
+            ${formatMoney(s.total_cost)}
+          </div>
+        </div>
+      `).join('');
+    }
+  }
 
   // Toast Helper & GSAP Slide
   function showToast(msg, type = 'info') {

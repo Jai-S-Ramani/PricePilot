@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
       deal: "🔥 Deal Active!",
       status: "🔥 Deal Active! Price is $51.99 below target",
       delta: "-18.0% 30d",
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80"
+      image: "/static/images/products/sony_wh1000xm5.jpg"
     },
     IN: {
       title: "OnePlus Nord Buds 2 TWS in-Ear Earbuds with Active Noise Cancellation",
@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
       deal: "🔥 Price Drop!",
       status: "🔥 Deal Active! Price is ₹500 below target",
       delta: "-24.2% 30d",
-      image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&auto=format&fit=crop&q=80"
+      image: "/static/images/products/oneplus_buds_2.jpg"
     },
     UK: {
       title: "Apple AirPods Pro 2 Wireless Earbuds with USB-C MagSafe Case",
@@ -271,31 +271,31 @@ document.addEventListener('DOMContentLoaded', () => {
       deal: "🔥 Flash Deal!",
       status: "🔥 Deal Active! Price is £25.00 below target",
       delta: "-21.8% 30d",
-      image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=600&auto=format&fit=crop&q=80"
+      image: "/static/images/products/airpods_pro_2.jpg"
     },
     DE: {
-      title: "Sennheiser Momentum 4 Wireless ANC Headphones (60h Battery)",
-      category: "AUDIO • ASIN: B0B647PVD3 • 🇩🇪 AMAZON GERMANY",
-      price: "249,00 €",
-      original: "349,00 €",
-      discount: "-29% OFF",
-      rating: "4.6",
+      title: "Sony WH-1000XM4 Wireless Noise Cancelling Over-Ear Headphones",
+      category: "AUDIO • ASIN: B0863TXGM3 • 🇩🇪 AMAZON GERMANY",
+      price: "229,00 €",
+      original: "329,00 €",
+      discount: "-30% OFF",
+      rating: "4.7",
       deal: "🔥 Deal Active!",
-      status: "🔥 Deal Active! Price is 40,00 € below target",
-      delta: "-28.7% 30d",
-      image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=600&auto=format&fit=crop&q=80"
+      status: "🔥 Deal Active! Price is 30,00 € below target",
+      delta: "-30.4% 30d",
+      image: "/static/images/products/sony_wh1000xm4.jpg"
     },
     CA: {
-      title: "Bose QuietComfort Ultra Wireless Noise Cancelling Headphones",
-      category: "AUDIO • ASIN: B0CCZ26B5V • 🇨🇦 AMAZON CANADA",
-      price: "CA$ 429.00",
-      original: "CA$ 549.00",
-      discount: "-22% OFF",
+      title: "Bose QuietComfort 45 Bluetooth Wireless Noise Cancelling Headphones",
+      category: "AUDIO • ASIN: B098FKXT8L • 🇨🇦 AMAZON CANADA",
+      price: "CA$ 329.00",
+      original: "CA$ 449.00",
+      discount: "-27% OFF",
       rating: "4.7",
       deal: "🔥 Top Deal!",
-      status: "🔥 Deal Active! Price is CA$ 50.00 below target",
-      delta: "-21.9% 30d",
-      image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&auto=format&fit=crop&q=80"
+      status: "🔥 Deal Active! Price is CA$ 40.00 below target",
+      delta: "-26.7% 30d",
+      image: "/static/images/products/bose_qc45.jpg"
     }
   };
 

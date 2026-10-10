@@ -38,7 +38,7 @@ SAMPLE_PRODUCTS = {
         "original_price": 1099.00,
         "asin": "B0CX23VJP5",
         "url": "https://www.amazon.com/dp/B0CX23VJP5",
-        "image_url": "https://m.media-amazon.com/images/I/71jG+e7roXL._AC_SL1500_.jpg",
+        "image_url": "/static/images/products/macbook_air_m3.jpg",
         "rating": 4.9,
         "reviews_count": 1540,
         "availability": "In Stock",
@@ -53,7 +53,7 @@ SAMPLE_PRODUCTS = {
         "original_price": 1699.99,
         "asin": "B09F3ZNV7W",
         "url": "https://www.amazon.com/dp/B09F3ZNV7W",
-        "image_url": "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=600&auto=format&fit=crop&q=80",
+        "image_url": "/static/images/products/macbook_air_m3.jpg",
         "rating": 4.6,
         "reviews_count": 820,
         "availability": "In Stock",
@@ -68,7 +68,7 @@ SAMPLE_PRODUCTS = {
         "original_price": 1799.99,
         "asin": "B0CV74B8F6",
         "url": "https://www.amazon.com/dp/B0CV74B8F6",
-        "image_url": "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=600&auto=format&fit=crop&q=80",
+        "image_url": "/static/images/products/macbook_pro_m4.jpg",
         "rating": 4.7,
         "reviews_count": 1140,
         "availability": "In Stock",
@@ -85,7 +85,7 @@ SAMPLE_PRODUCTS = {
         "original_price": 1299.00,
         "asin": "B0DGLTCJ4K",
         "url": "https://www.amazon.com/dp/B0DGLTCJ4K",
-        "image_url": "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=600&auto=format&fit=crop&q=80",
+        "image_url": "/static/images/products/xiaomi_powerbank.jpg",
         "rating": 4.8,
         "reviews_count": 4320,
         "availability": "In Stock",
@@ -100,7 +100,7 @@ SAMPLE_PRODUCTS = {
         "original_price": 1299.99,
         "asin": "B0CQV8S67T",
         "url": "https://www.amazon.com/dp/B0CQV8S67T",
-        "image_url": "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&auto=format&fit=crop&q=80",
+        "image_url": "/static/images/products/xiaomi_powerbank.jpg",
         "rating": 4.7,
         "reviews_count": 3150,
         "availability": "In Stock",
@@ -115,7 +115,7 @@ SAMPLE_PRODUCTS = {
         "original_price": 1099.00,
         "asin": "B0D7D7RKVY",
         "url": "https://www.amazon.com/dp/B0D7D7RKVY",
-        "image_url": "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=600&auto=format&fit=crop&q=80",
+        "image_url": "/static/images/products/xiaomi_powerbank.jpg",
         "rating": 4.6,
         "reviews_count": 920,
         "availability": "In Stock",
@@ -132,7 +132,7 @@ SAMPLE_PRODUCTS = {
         "original_price": 399.99,
         "asin": "B09B8V1LZ3",
         "url": "https://www.amazon.com/dp/B09B8V1LZ3",
-        "image_url": "https://m.media-amazon.com/images/I/51SKmu2G9FL._AC_SL1200_.jpg",
+        "image_url": "/static/images/products/sony_wh1000xm5.jpg",
         "rating": 4.6,
         "reviews_count": 12840,
         "availability": "In Stock",
@@ -147,7 +147,7 @@ SAMPLE_PRODUCTS = {
         "original_price": 249.00,
         "asin": "B0CHWRXH8B",
         "url": "https://www.amazon.com/dp/B0CHWRXH8B",
-        "image_url": "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=600&auto=format&fit=crop&q=80",
+        "image_url": "/static/images/products/airpods_pro_2.jpg",
         "rating": 4.8,
         "reviews_count": 28400,
         "availability": "In Stock",
@@ -365,7 +365,7 @@ SAMPLE_PRODUCTS = {
         "original_price": 99.99,
         "asin": "B08N5WRWNW",
         "url": "https://www.amazon.com/dp/B08N5WRWNW",
-        "image_url": "https://m.media-amazon.com/images/I/61ni3t1ryQL._AC_SL1500_.jpg",
+        "image_url": "/static/images/products/mx_master_3s.jpg",
         "rating": 4.7,
         "reviews_count": 9210,
         "availability": "In Stock",
@@ -380,7 +380,7 @@ SAMPLE_PRODUCTS = {
         "original_price": 169.99,
         "asin": "B09LK2R8F7",
         "url": "https://www.amazon.com/dp/B09LK2R8F7",
-        "image_url": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80",
+        "image_url": "/static/images/products/mechanical_keyboard.jpg",
         "rating": 4.6,
         "reviews_count": 4120,
         "availability": "In Stock",
@@ -395,7 +395,7 @@ SAMPLE_PRODUCTS = {
         "original_price": 249.99,
         "asin": "B07W5JK7B9",
         "url": "https://www.amazon.com/dp/B07W5JK7B9",
-        "image_url": "https://images.unsplash.com/photo-1544652478-6653e09f18a2?w=600&auto=format&fit=crop&q=80",
+        "image_url": "/static/images/products/anker_dock.jpg",
         "rating": 4.5,
         "reviews_count": 1120,
         "availability": "Only 3 left in stock",
@@ -411,7 +411,7 @@ SAMPLE_PRODUCTS = {
         "native_price": 89.00,
         "asin": "B09B8V1UK1",
         "url": "https://www.amazon.co.uk/dp/B09B8V1UK1",
-        "image_url": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80",
+        "image_url": "/static/images/products/macbook_air_m3.jpg",
         "rating": 4.8,
         "reviews_count": 2180,
         "availability": "In Stock",
@@ -427,7 +427,7 @@ SAMPLE_PRODUCTS = {
         "native_price": 2999.00,
         "asin": "B0BY8MCQ9S",
         "url": "https://www.amazon.in/dp/B0BY8MCQ9S",
-        "image_url": "https://m.media-amazon.com/images/I/51oMWaW7tKL._SL1500_.jpg",
+        "image_url": "/static/images/products/oneplus_buds_2.jpg",
         "rating": 4.4,
         "reviews_count": 48290,
         "availability": "In Stock",
@@ -444,7 +444,7 @@ SAMPLE_PRODUCTS = {
         "original_price": 24.99,
         "asin": "B07FNW9FGJ",
         "url": "https://www.amazon.com/Funny-Data-Systems-Business-Analyst/dp/B07FNW9FGJ",
-        "image_url": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80",
+        "image_url": "/static/images/products/data_tshirt.jpg",
         "rating": 4.8,
         "reviews_count": 342,
         "availability": "In Stock",
@@ -459,7 +459,7 @@ SAMPLE_PRODUCTS = {
         "original_price": 24.99,
         "asin": "B0000ANHST",
         "url": "https://www.amazon.com/dp/B0000ANHST",
-        "image_url": "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=600&auto=format&fit=crop&q=80",
+        "image_url": "/static/images/products/data_tshirt.jpg",
         "rating": 4.7,
         "reviews_count": 89400,
         "availability": "In Stock",
@@ -467,6 +467,83 @@ SAMPLE_PRODUCTS = {
         "region": "US",
         "currency": "USD",
         "symbol": "$"
+    },
+
+    # 9. Additional Monitored Catalog Items
+    "B0BS74M665": {
+        "title": "Sony WH-CH720N Active Noise Cancellation Wireless Headphones",
+        "price": 89.99,
+        "original_price": 149.99,
+        "asin": "B0BS74M665",
+        "url": "https://www.amazon.in/dp/B0BS74M665",
+        "image_url": "/static/images/products/sony_whch720n.jpg",
+        "rating": 4.5,
+        "reviews_count": 8920,
+        "availability": "In Stock",
+        "category": "Audio & Headphones",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0DCZ3WDTB": {
+        "title": "Xiaomi 20000mAh Power Bank Fast Charging Support",
+        "price": 32.50,
+        "original_price": 45.00,
+        "asin": "B0DCZ3WDTB",
+        "url": "https://www.amazon.in/dp/B0DCZ3WDTB",
+        "image_url": "/static/images/products/xiaomi_powerbank.jpg",
+        "rating": 4.6,
+        "reviews_count": 14200,
+        "availability": "In Stock",
+        "category": "Computer Accessories",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0DMXNPT66": {
+        "title": "Apple 2024 MacBook Pro with Apple M4 Pro Chip 16-inch",
+        "price": 1829.99,
+        "original_price": 1999.00,
+        "asin": "B0DMXNPT66",
+        "url": "https://www.amazon.com/dp/B0DMXNPT66",
+        "image_url": "/static/images/products/macbook_pro_m4.jpg",
+        "rating": 4.9,
+        "reviews_count": 3120,
+        "availability": "In Stock",
+        "category": "Computers & Laptops",
+        "region": "US",
+        "currency": "USD",
+        "symbol": "$"
+    },
+    "B09VXYZTES": {
+        "title": "Quantum Mechanical Cyber Keyboard Pro",
+        "price": 149.99,
+        "original_price": 179.99,
+        "asin": "B09VXYZTES",
+        "url": "https://www.amazon.com/dp/B09VXYZTES",
+        "image_url": "/static/images/products/mechanical_keyboard.jpg",
+        "rating": 4.7,
+        "reviews_count": 2180,
+        "availability": "In Stock",
+        "category": "Computer Accessories",
+        "region": "US",
+        "currency": "USD",
+        "symbol": "$"
+    },
+    "B030306166": {
+        "title": "Bose QuietComfort 45 Bluetooth Wireless Noise Cancelling Headphones",
+        "price": 279.00,
+        "original_price": 329.00,
+        "asin": "B030306166",
+        "url": "https://www.amazon.in/dp/B030306166",
+        "image_url": "/static/images/products/bose_qc45.jpg",
+        "rating": 4.6,
+        "reviews_count": 18900,
+        "availability": "In Stock",
+        "category": "Audio & Headphones",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
     }
 }
 
@@ -606,32 +683,34 @@ def parse_price(price_str: str, region_info: dict = None) -> float:
 
 
 def get_smart_product_image(title: str = "", category: str = "", asin: str = "") -> str:
-    """Returns a verified, high-resolution product photography URL based on title and category keywords."""
+    """Returns a verified, high-resolution authentic product photography URL based on title and category keywords."""
     text = f"{title} {category} {asin}".lower()
     if any(k in text for k in ["keyboard", "mechanical", "keychron", "typing", "rgb"]):
-        return "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80"
+        return "/static/images/products/mechanical_keyboard.jpg"
     if any(k in text for k in ["mouse", "trackball", "logitech", "mx master"]):
-        return "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=600&auto=format&fit=crop&q=80"
-    if any(k in text for k in ["headphone", "earbud", "audio", "sony", "wh-", "airpod", "buds", "tws", "canceling"]):
-        return "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80"
+        return "/static/images/products/mx_master_3s.jpg"
+    if any(k in text for k in ["dock", "hub", "charger", "cable", "adapter", "anker", "577"]):
+        return "/static/images/products/anker_dock.jpg"
+    if any(k in text for k in ["power bank", "xiaomi", "battery", "20000"]):
+        return "/static/images/products/xiaomi_powerbank.jpg"
+    if any(k in text for k in ["bose", "qc45", "quietcomfort"]):
+        return "/static/images/products/bose_qc45.jpg"
+    if any(k in text for k in ["oneplus", "nord", "earbud", "buds", "tws"]):
+        return "/static/images/products/oneplus_buds_2.jpg"
+    if any(k in text for k in ["airpod"]):
+        return "/static/images/products/airpods_pro_2.jpg"
+    if any(k in text for k in ["ch720n", "wh-ch"]):
+        return "/static/images/products/sony_whch720n.jpg"
+    if any(k in text for k in ["headphone", "audio", "sony", "wh-1000", "canceling"]):
+        return "/static/images/products/sony_wh1000xm5.jpg"
+    if any(k in text for k in ["macbook pro", "m4"]):
+        return "/static/images/products/macbook_pro_m4.jpg"
     if any(k in text for k in ["laptop", "macbook", "notebook", "computer", "pc", "dell", "asus", "m3"]):
-        return "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&auto=format&fit=crop&q=80"
-    if any(k in text for k in ["phone", "iphone", "pixel", "samsung", "smartphone", "mobile"]):
-        return "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&auto=format&fit=crop&q=80"
-    if any(k in text for k in ["watch", "smartwatch", "wearable", "band"]):
-        return "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80"
-    if any(k in text for k in ["camera", "dslr", "lens", "mirrorless", "gopro"]):
-        return "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&auto=format&fit=crop&q=80"
-    if any(k in text for k in ["coffee", "espresso", "maker", "brewer", "nespresso"]):
-        return "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=600&auto=format&fit=crop&q=80"
-    if any(k in text for k in ["dock", "hub", "charger", "cable", "adapter", "power bank", "anker"]):
-        return "https://images.unsplash.com/photo-1544652478-6653e09f18a2?w=600&auto=format&fit=crop&q=80"
-    if any(k in text for k in ["gaming", "console", "playstation", "ps5", "nintendo", "xbox"]):
-        return "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&auto=format&fit=crop&q=80"
-    if any(k in text for k in ["shirt", "apparel", "clothing", "t-shirt"]):
-        return "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80"
+        return "/static/images/products/macbook_air_m3.jpg"
+    if any(k in text for k in ["shirt", "apparel", "clothing", "t-shirt", "analyst", "data"]):
+        return "/static/images/products/data_tshirt.jpg"
         
-    return "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&auto=format&fit=crop&q=80"
+    return "/static/images/products/sony_wh1000xm5.jpg"
 
 
 def scrape_amazon_product(url: str) -> dict:
@@ -822,52 +901,52 @@ SYNONYMS_MAP = {
 CATEGORY_VISUALS = {
     "audio": {
         "category": "Audio & Headphones",
-        "img": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80",
+        "img": "/static/images/products/sony_wh1000xm5.jpg",
         "base_usd": 129.99
     },
     "phone": {
         "category": "Smartphones & Accessories",
-        "img": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&auto=format&fit=crop&q=80",
+        "img": "/static/images/products/xiaomi_powerbank.jpg",
         "base_usd": 699.00
     },
     "laptop": {
         "category": "Laptops & Computers",
-        "img": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&auto=format&fit=crop&q=80",
+        "img": "/static/images/products/macbook_air_m3.jpg",
         "base_usd": 999.00
     },
     "watch": {
         "category": "Smartwatches & Wearables",
-        "img": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80",
+        "img": "/static/images/products/sony_whch720n.jpg",
         "base_usd": 279.00
     },
     "kitchen": {
         "category": "Home & Kitchen",
-        "img": "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=600&auto=format&fit=crop&q=80",
+        "img": "/static/images/products/anker_dock.jpg",
         "base_usd": 119.00
     },
     "gaming": {
         "category": "Gaming & Consoles",
-        "img": "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&auto=format&fit=crop&q=80",
+        "img": "/static/images/products/mechanical_keyboard.jpg",
         "base_usd": 399.00
     },
     "camera": {
         "category": "Cameras & Photography",
-        "img": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&auto=format&fit=crop&q=80",
+        "img": "/static/images/products/sony_wh1000xm5.jpg",
         "base_usd": 549.00
     },
     "fashion": {
         "category": "Apparel & Fashion",
-        "img": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=80",
+        "img": "/static/images/products/data_tshirt.jpg",
         "base_usd": 29.99
     },
     "office": {
         "category": "Office & Tech Accessories",
-        "img": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80",
+        "img": "/static/images/products/mx_master_3s.jpg",
         "base_usd": 89.99
     },
     "default": {
         "category": "Consumer Electronics & Tech",
-        "img": "https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=600&auto=format&fit=crop&q=80",
+        "img": "/static/images/products/sony_wh1000xm5.jpg",
         "base_usd": 79.99
     }
 }

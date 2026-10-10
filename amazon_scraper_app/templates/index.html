@@ -407,6 +407,121 @@
           <canvas id="priceChart"></canvas>
         </div>
 
+        <!-- PricePilot Intelligence Grid (Deceptive Pricing, Net Price with Offers, AI Reviews, Simulator) -->
+        <div class="intel-grid">
+          <!-- Card 1: Price Integrity & Deceptive Pricing -->
+          <div class="intel-card glass">
+            <div class="intel-card-header">
+              <span class="intel-card-title"><i class="fa-solid fa-shield-halved text-amber"></i> Price Integrity & Fake-Sale Check</span>
+              <span id="intelDeceptiveBadge" class="intel-status-pill">Authentic Deal</span>
+            </div>
+            <div class="intel-card-body">
+              <p id="intelDeceptiveSummary" class="intel-summary-text">Analyzing 30-day baseline price vs claimed list price...</p>
+              <div class="intel-metrics-row">
+                <div class="intel-metric">
+                  <span class="metric-label">30-Day True Base</span>
+                  <strong id="intelBaselinePrice" class="metric-val">$0.00</strong>
+                </div>
+                <div class="intel-metric">
+                  <span class="metric-label">Claimed MRP</span>
+                  <strong id="intelClaimedMrp" class="metric-val">$0.00</strong>
+                </div>
+                <div class="intel-metric">
+                  <span class="metric-label">MSRP Inflation</span>
+                  <strong id="intelInflationPct" class="metric-val">0%</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Net Effective Price (Coupon + Bank Offers) -->
+          <div class="intel-card glass">
+            <div class="intel-card-header">
+              <span class="intel-card-title"><i class="fa-solid fa-tags text-emerald"></i> Net-Price & Card Savings</span>
+              <span id="intelNetSavingsPill" class="intel-status-pill pill-emerald">Save More</span>
+            </div>
+            <div class="intel-card-body">
+              <div class="net-breakdown-list">
+                <div class="net-item">
+                  <span>Current Amazon Price:</span>
+                  <strong id="intelNetBasePrice">$0.00</strong>
+                </div>
+                <!-- Amazon Interactive Coupon Clip Option -->
+                <div class="net-coupon-interactive-row" id="modalCouponRow">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="amazon-coupon-badge">Coupon</span>
+                    <span class="amazon-coupon-text" id="modalCouponText">Apply coupon</span>
+                    <span class="amazon-coupon-terms" id="modalCouponTerms">Terms</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" id="modalCouponBtn" class="btn-coupon-apply">Apply</button>
+                    <strong id="intelNetCoupon" class="text-emerald">-$0.00</strong>
+                  </div>
+                </div>
+                <!-- Amazon Interactive Bank Card Selection -->
+                <div class="net-item modal-bank-select-item" id="modalBankCardRow" style="flex-direction: column; align-items: stretch; gap: 6px; padding: 6px 0;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="text-purple" style="font-weight: 600;"><i class="fa-solid fa-credit-card"></i> Bank Card Offer:</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <a href="#" id="modalBankOffersLink" class="bank-view-terms" style="font-size: 0.76rem;">All Offers &gt;</a>
+                      <strong id="intelNetBank" class="text-purple">-$0.00</strong>
+                    </div>
+                  </div>
+                  <select id="modalBankCardSelect" class="bank-card-dropdown" style="width: 100%; margin-top: 2px;">
+                    <option value="">No Bank Card Applied</option>
+                  </select>
+                </div>
+                <div class="net-item net-total-row">
+                  <span>Effective Net Out-of-Pocket:</span>
+                  <strong id="intelNetEffective" class="text-emerald">$0.00</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: AI Review Authenticity & Sentiment Analysis -->
+          <div class="intel-card glass intel-card-wide">
+            <div class="intel-card-header">
+              <span class="intel-card-title"><i class="fa-solid fa-brain text-purple"></i> AI Review Authenticity & Sentiment Analysis</span>
+              <div class="intel-grade-wrap">
+                <span class="grade-label">Trust Grade:</span>
+                <span id="intelTrustGrade" class="trust-grade-badge">Grade A</span>
+                <span id="intelAuthenticityScore" class="auth-score-badge">94% Verified</span>
+              </div>
+            </div>
+            <div class="intel-card-body">
+              <div class="sentiment-bar-wrap">
+                <div class="sentiment-bar-labels">
+                  <span class="text-emerald"><i class="fa-solid fa-thumbs-up"></i> Positive <strong id="intelPosPct">75%</strong></span>
+                  <span class="text-subtle"><i class="fa-solid fa-minus"></i> Neutral <strong id="intelNeuPct">15%</strong></span>
+                  <span class="text-rose"><i class="fa-solid fa-thumbs-down"></i> Critical <strong id="intelCritPct">10%</strong></span>
+                </div>
+                <div class="sentiment-stacked-bar">
+                  <div id="intelBarPos" class="sentiment-seg seg-pos" style="width: 75%;"></div>
+                  <div id="intelBarNeu" class="sentiment-seg seg-neu" style="width: 15%;"></div>
+                  <div id="intelBarCrit" class="sentiment-seg seg-crit" style="width: 10%;"></div>
+                </div>
+              </div>
+              <p id="intelConsensusQuote" class="intel-consensus-quote">"Consensus highlights excellent build and sound fidelity with minor caveats on app complexity."</p>
+              <div class="intel-pros-cons-grid">
+                <div class="intel-pros-box">
+                  <span class="pros-title"><i class="fa-solid fa-check text-emerald"></i> What Buyers Love</span>
+                  <ul id="intelProsList" class="pros-list">
+                    <li>Top-tier active noise cancellation</li>
+                  </ul>
+                </div>
+                <div class="intel-cons-box">
+                  <span class="cons-title"><i class="fa-solid fa-xmark text-rose"></i> Verified Caveats</span>
+                  <ul id="intelConsList" class="cons-list">
+                    <li>Non-folding headband case</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
         <div class="modal-footer">
           <div class="footer-meta-note">
             <i class="fa-solid fa-database text-sky"></i> Time-series data points synced to SQLite & CSV
@@ -678,10 +793,135 @@
     </div>
   </div>
 
+  <!-- Floating Multi-Item Basket Arbitrage Bar -->
+  <div id="basketFloatingBar" class="basket-floating-bar hidden">
+    <div class="basket-bar-content glass">
+      <div class="basket-bar-left">
+        <div class="basket-icon-circle">
+          <i class="fa-solid fa-basket-shopping"></i>
+          <span id="basketCountBadge" class="basket-badge">0</span>
+        </div>
+        <div class="basket-info">
+          <span class="basket-title">Multi-Item Cart Optimizer</span>
+          <span id="basketSummaryText" class="basket-sub">Select products to calculate multi-store arbitrage savings</span>
+        </div>
+      </div>
+      <div class="basket-bar-actions">
+        <button id="basketClearBtn" type="button" class="btn btn-sm btn-secondary">
+          <i class="fa-solid fa-trash-can"></i> Clear
+        </button>
+        <button id="basketOptimizeBtn" type="button" class="btn btn-sm btn-accent btn-pulse">
+          <i class="fa-solid fa-calculator"></i> Optimize Multi-Store Cart
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Basket Arbitrage Optimizer Modal -->
+  <div id="basketModal" class="modal-overlay hidden">
+    <div class="modal-content glass modal-lg basket-optimizer-modal">
+      <div class="modal-header">
+        <div class="competitor-modal-title-wrap">
+          <span class="section-tag"><i class="fa-solid fa-basket-shopping"></i> MULTI-ITEM ARBITRAGE</span>
+          <h3>Multi-Store Cart Split Optimizer</h3>
+          <p class="text-subtle">Compare single-cart checkout vs smart multi-store split-cart arbitrage across 18 retailers</p>
+        </div>
+        <button id="closeBasketModal" class="btn-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="basketSavingsBanner" class="arbitrage-verdict-banner">
+          <div class="verdict-icon"><i class="fa-solid fa-piggy-bank text-emerald"></i></div>
+          <div class="verdict-content">
+            <strong id="basketVerdictTitle">Optimal Split Strategy Found!</strong>
+            <span id="basketVerdictSub">Splitting your basket across retailers saves money vs buying all on Amazon</span>
+          </div>
+          <div class="verdict-stat">
+            <span class="verdict-stat-label">Split-Cart Savings</span>
+            <strong id="basketSavingsVal" class="verdict-stat-val text-emerald">$0.00</strong>
+          </div>
+        </div>
+
+        <div class="basket-results-grid">
+          <!-- Optimal Split Plan -->
+          <div class="basket-plan-card optimal-plan glass">
+            <div class="plan-header">
+              <span class="plan-badge"><i class="fa-solid fa-crown text-amber"></i> Recommended Strategy</span>
+              <h4>Smart Multi-Store Split</h4>
+              <span id="basketOptimalTotal" class="plan-price text-emerald">$0.00</span>
+            </div>
+            <div id="basketOptimalBreakdown" class="plan-items-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Single Store Benchmarks -->
+          <div class="basket-plan-card glass">
+            <div class="plan-header">
+              <span class="plan-badge-subtle">Single-Store Baseline</span>
+              <h4>Checkout on Single Store</h4>
+              <span class="plan-sub">If you buy everything on one site</span>
+            </div>
+            <div id="basketSingleStoreList" class="single-store-ranks-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Amazon Coupon Terms Modal -->
+  <div id="couponTermsModal" class="modal-overlay hidden">
+    <div class="modal-content glass modal-sm">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-ticket text-emerald"></i> Amazon Coupon Terms</h3>
+        <button id="closeCouponTermsModal" class="btn-close">&times;</button>
+      </div>
+      <div class="modal-body" style="font-size: 0.88rem; line-height: 1.6; color: var(--text-dim);">
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 14px; color: var(--text-main);">
+          <strong style="color: var(--accent-emerald); display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-circle-check"></i> Clip-and-Save Offer</strong>
+          <p style="margin: 4px 0 0 0; font-size: 0.82rem; color: var(--text-muted);">Discount is automatically deducted from your total at checkout when the coupon is clipped.</p>
+        </div>
+        <ul style="padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 8px;">
+          <li>Coupons are valid for a limited time only. Amazon reserves the right to modify or cancel coupons at any time.</li>
+          <li>Offer good while supplies last. Limit one coupon redemption per customer.</li>
+          <li>Applicable to qualifying items shipped and sold by Amazon or verified marketplace sellers.</li>
+          <li>If you return any of the items purchased with a coupon, the coupon discount will be deducted from your refund.</li>
+          <li>Cannot be combined with select promotional voucher codes.</li>
+        </ul>
+        <div style="margin-top: 18px; text-align: right;">
+          <button id="dismissCouponTermsBtn" class="btn btn-primary btn-sm">Understood</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Amazon Bank Card Offers Modal (Authentic Amazon India Drawer Layout) -->
+  <div id="bankOffersModal" class="modal-overlay hidden">
+    <div class="modal-content glass modal-md amazon-bank-sheet">
+      <div class="amazon-bank-header">
+        <h3 class="amazon-bank-title">Bank Offer</h3>
+        <button id="closeBankOffersModal" class="btn-close" title="Close">&times;</button>
+      </div>
+      <div class="amazon-bank-body">
+        <div id="bankOffersModalList" class="amazon-bank-offers-list">
+          <!-- Dynamic offers rendered via JS matching Amazon India format -->
+        </div>
+        <div class="amazon-how-to-avail">
+          <h4>How to avail offer</h4>
+          <ul>
+            <li>Select eligible card at the time of checkout</li>
+            <li>No promo code required to avail the offer</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <!-- App Script (Cache Buster v6.4 Minimalist Bauhaus) -->
-  <script src="{{ url_for('static', filename='js/app.js') }}?v=6.7"></script>
+  <!-- App Script (Cache Buster v7.4 Authentic Amazon India Bank Offers) -->
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=7.4"></script>
 </body>
 </html>

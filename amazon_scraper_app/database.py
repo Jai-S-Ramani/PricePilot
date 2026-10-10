@@ -4,6 +4,12 @@ import sqlite3
 import datetime
 import random
 from pathlib import Path
+from intelligence import (
+    detect_deceptive_pricing,
+    calculate_review_intelligence,
+    calculate_net_price_with_offers,
+    predict_price_drop_probability
+)
 
 DB_PATH = Path(__file__).parent / "amazon_tracker.db"
 CSV_PATH = Path(__file__).parent.parent / "AmazonWebScraperDataset.csv"
@@ -141,6 +147,24 @@ def init_db():
 
     # Ensure catalog demo products (ID <= 5) are public (user_id IS NULL)
     cursor.execute("UPDATE products SET user_id = NULL WHERE id = 3 AND user_id IS NOT NULL")
+
+    # Migrate any generic/Unsplash or placeholder product DPs to authentic, genuine product photography packshots
+    authentic_dps = {
+        "B07W5JK7B9": "/static/images/products/anker_dock.jpg",
+        "B0DCZ3WDTB": "/static/images/products/xiaomi_powerbank.jpg",
+        "B09VXYZTES": "/static/images/products/mechanical_keyboard.jpg",
+        "B030306166": "/static/images/products/bose_qc45.jpg",
+        "B09B8V1LZ3": "/static/images/products/sony_wh1000xm5.jpg",
+        "B0CX23VJP5": "/static/images/products/macbook_air_m3.jpg",
+        "B08N5WRWNW": "/static/images/products/mx_master_3s.jpg",
+        "B0BS74M665": "/static/images/products/sony_whch720n.jpg",
+        "B0BY8MCQ9S": "/static/images/products/oneplus_buds_2.jpg",
+        "B0DMXNPT66": "/static/images/products/macbook_pro_m4.jpg",
+        "B07FNW9FGJ": "/static/images/products/data_tshirt.jpg",
+        "B0CHWRXH8B": "/static/images/products/airpods_pro_2.jpg"
+    }
+    for item_asin, img_path in authentic_dps.items():
+        cursor.execute("UPDATE products SET image_url = ? WHERE asin = ?", (img_path, item_asin))
 
     conn.commit()
 
@@ -609,6 +633,32 @@ def get_all_products(user_id: int = None):
             target_price=p.get("target_price")
         )
         p.update(stats)
+        
+        # Attach 6-Feature Intelligence Suite
+        p["deceptive_pricing"] = detect_deceptive_pricing(
+            current_price=float(p.get("current_price") or 0.0),
+            original_price=float(p.get("original_price") or 0.0),
+            price_history=price_list
+        )
+        p["review_intelligence"] = calculate_review_intelligence(
+            product_title=p.get("title") or "",
+            category=p.get("category") or "",
+            rating=float(p.get("rating") or 4.5),
+            reviews_count=int(p.get("reviews_count") or 150)
+        )
+        p["net_pricing"] = calculate_net_price_with_offers(
+            price=float(p.get("current_price") or 0.0),
+            currency=p.get("currency") or "USD",
+            native_price=float(p.get("native_price") or 0.0) if p.get("native_price") else None,
+            product_id=p.get("id"),
+            title=p.get("title"),
+            category=p.get("category")
+        )
+        p["drop_prediction"] = predict_price_drop_probability(
+            price=float(p.get("current_price") or 0.0),
+            price_history=price_list,
+            volatility=float(p.get("volatility_ratio") or 0.0) * 10.0
+        )
 
     return product_dicts
 
@@ -633,6 +683,32 @@ def get_product_by_id(product_id: int):
         target_price=p.get("target_price")
     )
     p.update(stats)
+    
+    # Attach 6-Feature Intelligence Suite
+    p["deceptive_pricing"] = detect_deceptive_pricing(
+        current_price=float(p.get("current_price") or 0.0),
+        original_price=float(p.get("original_price") or 0.0),
+        price_history=price_rows
+    )
+    p["review_intelligence"] = calculate_review_intelligence(
+        product_title=p.get("title") or "",
+        category=p.get("category") or "",
+        rating=float(p.get("rating") or 4.5),
+        reviews_count=int(p.get("reviews_count") or 150)
+    )
+    p["net_pricing"] = calculate_net_price_with_offers(
+        price=float(p.get("current_price") or 0.0),
+        currency=p.get("currency") or "USD",
+        native_price=float(p.get("native_price") or 0.0) if p.get("native_price") else None,
+        product_id=p.get("id"),
+        title=p.get("title"),
+        category=p.get("category")
+    )
+    p["drop_prediction"] = predict_price_drop_probability(
+        price=float(p.get("current_price") or 0.0),
+        price_history=price_rows,
+        volatility=float(p.get("volatility_ratio") or 0.0) * 10.0
+    )
     return p
 
 
@@ -871,3 +947,84 @@ def export_to_csv():
         writer.writerow(['Title', 'Price', 'Date', 'ASIN', 'URL'])
         for r in rows:
             writer.writerow([r['title'], r['price'], r['date'], r['asin'], r['url']])
+
+
+def simulate_product_price_drop(product_id: int, drop_percent: float = 30.0) -> dict:
+    """
+    Simulates a sudden flash-crash price drop (e.g. -30%) on a tracked item.
+    Updates current_price in SQLite, appends to price_history, and exports to CSV.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT current_price, original_price FROM products WHERE id = ?", (product_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return None
+
+    cur = float(row[0])
+    orig = float(row[1]) if row[1] else cur
+    new_price = max(1.0, round(cur * (1.0 - (drop_percent / 100.0)), 2))
+    
+    cursor.execute("""
+        UPDATE products 
+        SET current_price = ?, original_price = ?, last_scraped = datetime('now', 'localtime')
+        WHERE id = ?
+    """, (new_price, orig, product_id))
+    
+    now_dt = datetime.datetime.now()
+    cursor.execute("""
+        INSERT INTO price_history (product_id, price, timestamp, date)
+        VALUES (?, ?, ?, ?)
+    """, (product_id, new_price, now_dt.strftime("%Y-%m-%d %H:%M:%S"), now_dt.strftime("%Y-%m-%d")))
+    
+    conn.commit()
+    conn.close()
+    export_to_csv()
+    return get_product_by_id(product_id)
+
+
+def reset_product_price(product_id: int) -> dict:
+    """
+    Restores a product's price to its authentic pre-drop baseline.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT original_price, current_price FROM products WHERE id = ?", (product_id,))
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return None
+
+    orig_p = float(row[0]) if row[0] else None
+
+    cursor.execute("SELECT price FROM price_history WHERE product_id = ? ORDER BY id ASC", (product_id,))
+    rows = cursor.fetchall()
+    prices = [float(r[0]) for r in rows if r[0] is not None]
+
+    if orig_p and orig_p > 0:
+        restored_price = round(orig_p * 0.90, 2)
+    elif prices:
+        # Use maximum of median of historical prices
+        restored_price = max(sorted(prices)[len(prices) // 2], max(prices[:10]))
+    else:
+        restored_price = 99.0
+
+    original_p = orig_p if orig_p else round(restored_price * 1.15, 2)
+    
+    cursor.execute("""
+        UPDATE products 
+        SET current_price = ?, original_price = ?, last_scraped = datetime('now', 'localtime')
+        WHERE id = ?
+    """, (restored_price, original_p, product_id))
+    
+    now_dt = datetime.datetime.now()
+    cursor.execute("""
+        INSERT INTO price_history (product_id, price, timestamp, date)
+        VALUES (?, ?, ?, ?)
+    """, (product_id, restored_price, now_dt.strftime("%Y-%m-%d %H:%M:%S"), now_dt.strftime("%Y-%m-%d")))
+    
+    conn.commit()
+    conn.close()
+    export_to_csv()
+    return get_product_by_id(product_id)

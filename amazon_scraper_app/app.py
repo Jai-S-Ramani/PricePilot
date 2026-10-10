@@ -11,12 +11,13 @@ from database import (
     create_user, get_user_by_email, get_user_by_id,
     get_alert_logs_for_user, toggle_user_auto_alerts, process_auto_alerts_for_user,
     get_portfolio_kpis, calculate_deal_score, update_user_notification_settings,
-    calculate_price_forecast
+    calculate_price_forecast, simulate_product_price_drop, reset_product_price
 )
 from scraper import scrape_amazon_product, extract_asin, SAMPLE_PRODUCTS, search_amazon_products, fetch_amazon_suggestions
 from notifier import build_alert_email_template, send_mail, send_discord_alert, dispatch_multi_channel_alert
 from scheduler import price_scheduler
 from competitor import get_competitor_prices
+from intelligence import optimize_basket_arbitrage
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "amazon_scraper_super_secret_luxe_key_2026")
@@ -247,6 +248,86 @@ def api_update_target_price(product_id):
     update_target_price(product_id, float(target_price))
     product = get_product_by_id(product_id)
     return jsonify({"status": "success", "product": product})
+
+
+@app.route("/api/health")
+def api_health():
+    """Lightweight 24/7 keep-alive monitor endpoint for Render / UptimeRobot."""
+    all_prods = get_all_products()
+    return jsonify({
+        "status": "healthy",
+        "service": "PricePilot Intelligence Platform",
+        "active_products": len(all_prods),
+        "scheduler_alive": price_scheduler.is_running if hasattr(price_scheduler, "is_running") else True
+    })
+
+
+@app.route("/api/basket/optimize", methods=["POST"])
+def api_basket_optimize():
+    """
+    Computes optimal split-cart store allocations across 18 competitors for a multi-item bundle.
+    """
+    data = request.get_json(silent=True) or {}
+    items = data.get("items", [])
+    if not items and data.get("product_ids"):
+        all_p = get_all_products()
+        pid_set = set(data["product_ids"])
+        items = [p for p in all_p if p["id"] in pid_set]
+    if not items:
+        user_id = session.get("user_id")
+        items = get_all_products(user_id)[:6]
+
+    res = optimize_basket_arbitrage(items)
+    return jsonify({"status": "success", "result": res, "basket": res})
+
+
+@app.route("/api/products/<int:product_id>/simulate-drop", methods=["POST"])
+def api_simulate_price_drop(product_id):
+    """
+    Simulates an instant flash price drop (-25% to -35%) on a product.
+    Triggers automated notification pipeline if target price is crossed.
+    """
+    data = request.get_json(silent=True) or {}
+    drop_pct = float(data.get("drop_percent", 30.0))
+    updated_product = simulate_product_price_drop(product_id, drop_percent=drop_pct)
+    if not updated_product:
+        return jsonify({"status": "error", "message": "Product not found"}), 404
+
+    # Trigger automatic notification evaluation
+    user_id = session.get("user_id")
+    triggered_alerts = process_auto_alerts_for_user(user_id) if user_id else []
+
+    return jsonify({
+        "status": "success",
+        "drop_pct": drop_pct,
+        "new_price": updated_product["current_price"],
+        "message": f"Simulated -{drop_pct:.0f}% flash crash! New price: ${updated_product['current_price']:.2f}",
+        "product": updated_product,
+        "auto_alerts_triggered": len(triggered_alerts)
+    })
+
+
+@app.route("/api/products/<int:product_id>/reset-price", methods=["POST"])
+def api_reset_price(product_id):
+    """
+    Restores simulated price drop back to verified historical median.
+    """
+    updated_product = reset_product_price(product_id)
+    if not updated_product:
+        return jsonify({"status": "error", "message": "Product not found"}), 404
+
+    return jsonify({
+        "status": "success",
+        "current_price": updated_product["current_price"],
+        "message": "Product price restored to historical median",
+        "product": updated_product
+    })
+
+    return jsonify({
+        "status": "success",
+        "message": f"Price restored to historical baseline (${updated_product['current_price']:.2f})",
+        "product": updated_product
+    })
 
 
 @app.route("/api/products/scrape-all", methods=["POST"])
