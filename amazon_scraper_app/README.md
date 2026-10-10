@@ -15,17 +15,20 @@
 - [Key Features](#-key-features)
   - [1. Real-Time Amazon Catalog Search & Predictive Autocomplete with Target Price Setting](#1-real-time-amazon-catalog-search--predictive-autocomplete-with-target-price-setting)
   - [2. Multi-Store Competitor Arbitrage Engine (18 Stores with Official Logos)](#2-multi-store-competitor-arbitrage-engine-18-stores-with-official-logos)
-  - [3. Intelligent Dealer Catalog Availability Filter](#3-intelligent-dealer-catalog-availability-filter)
-  - [4. Multi-Channel Alert Dispatcher (Email, Discord & Telegram)](#4-multi-channel-alert-dispatcher-email-discord--telegram)
-  - [5. Autonomous Background Price Scheduler Daemon](#5-autonomous-background-price-scheduler-daemon)
-  - [6. Multi-Currency FX Engine & Exact Price Normalization (7 Currencies)](#6-multi-currency-fx-engine--exact-price-normalization-7-currencies)
-  - [7. Predictive Analytics & Volatility Scoring](#7-predictive-analytics--volatility-scoring)
-  - [8. Interactive 30-Day Time-Series & Inline Sparklines](#8-interactive-30-day-time-series--inline-sparklines)
+  - [3. Authentic Amazon India Bank Offers Drawer & Instant Discounts](#3-authentic-amazon-india-bank-offers-drawer--instant-discounts)
+  - [4. Amazon Clip-and-Save Coupon Engine (Checkbox-Free UI)](#4-amazon-clip-and-save-coupon-engine-checkbox-free-ui)
+  - [5. Advanced 6-Engine E-Commerce Intelligence Suite](#5-advanced-6-engine-e-commerce-intelligence-suite)
+  - [6. Intelligent Dealer Catalog Availability Filter](#6-intelligent-dealer-catalog-availability-filter)
+  - [7. Multi-Channel Alert Dispatcher (Email, Discord & Telegram)](#7-multi-channel-alert-dispatcher-email-discord--telegram)
+  - [8. Autonomous Background Price Scheduler Daemon](#8-autonomous-background-price-scheduler-daemon)
+  - [9. Multi-Currency FX Engine & Exact Price Normalization (7 Currencies)](#9-multi-currency-fx-engine--exact-price-normalization-7-currencies)
+  - [10. Predictive Analytics & Volatility Scoring](#10-predictive-analytics--volatility-scoring)
+  - [11. Interactive 30-Day Time-Series & Inline Sparklines](#11-interactive-30-day-time-series--inline-sparklines)
 - [Design System & Theme Switcher](#-design-system--theme-switcher)
 - [Project Architecture](#-project-architecture)
 - [Database Schema & Data Pipeline](#-database-schema--data-pipeline)
 - [REST API Reference](#-rest-api-reference)
-- [Automated Test Suite (43 Tests)](#-automated-test-suite-43-tests)
+- [Automated Test Suite (55 Tests)](#-automated-test-suite-55-tests)
 - [Installation & Quickstart](#-installation--quickstart)
 - [Multi-Channel Notification Setup](#-multi-channel-notification-setup)
 - [Attribution & Credits](#-attribution--credits)
@@ -83,7 +86,31 @@
 - **Interactive Sector Tabs & Channel Pills**: Switch between Indian and Global retail tabs or filter by channels (*All Stores*, *Fashion & Beauty*, *10-Min Quick Commerce*, *Electronics & Mega*).
 - **Market Price Spread Visualizer**: Relative percentage bars display price distribution across all carrying stores with a Best Price trophy badge.
 
-### 3. Intelligent Dealer Catalog Availability Filter
+### 3. Authentic Amazon India Bank Offers Drawer & Instant Discounts
+- **Exact Amazon India Drawer Layout**: Recreated the authentic modal/bottom-sheet layout with:
+  - **Offer 1**: `10% Instant Discount up to INR [cap] on [Bank] Credit Card EMI Trxn. Min purchase value INR [min].00`
+  - **Offer 2**: `10% Instant Discount up to INR [cap] on [Bank] Credit Card Non-EMI Trxn. Min purchase value INR [min].00`
+  - **Offer 3**: `Additional [cap] Instant Discount on [Bank] Credit Card 24 month EMI Txn. Mini purchase value INR [min].00 . Add Amazon Upgrade+ to the cart along with the [item] and avail the discount. Shop items`
+  - **Offer 4**: `10% Instant Discount up to INR [cap] on [Bank] Debit Card Non-EMI Trxn. Min purchase value INR [min].00`
+  - **Offer 5**: `5% Unlimited Cashback on Amazon Pay ICICI Card for Prime members. No minimum spend value.`
+- **Calibrated Dynamically for Each Product**: Automatically adapts to product vertical (*phones*, *headphones*, *laptops*, *accessories*) and adjusts minimum spend thresholds based on product price tiers.
+- **Interactive `[Apply]` Action**: Allows instant card selection directly within the drawer, calculating the effective net price with immediate visual feedback and toast notifications.
+- **Inline Terms & Conditions**: Clicking `See details >` smoothly expands specific bank terms and conditions inline.
+- **How to Avail Offer Section**: Displays the exact checkout instructions (*Select eligible card at checkout; No promo code required*).
+
+### 4. Amazon Clip-and-Save Coupon Engine (Checkbox-Free UI)
+- **Authentic `[Apply]` / `[✓ Applied]` Pill Buttons**: Eliminates raw HTML checkboxes in favor of authentic Amazon India action buttons across both product cards and the Price Analytics modal.
+- **Instant Net Price Recomputation**: Clipping coupons adjusts effective out-of-pocket costs, triggers live deal score re-evaluations, and provides immediate toast feedback.
+- **State Persistence**: Clips are saved in `localStorage` ensuring selections persist seamlessly across page reloads.
+
+### 5. Advanced 6-Engine E-Commerce Intelligence Suite
+- **Deceptive Pricing Detection**: Flags artificial markups where retailers inflate list prices right before a "sale" discount.
+- **AI Review Authenticity & Sentiment Grading**: Computes an A–D Trust Grade, sentiment breakdown (positive, neutral, critical), verified purchaser percentage, and AI consensus highlights.
+- **Price Drop Probability Forecaster**: Evaluates 30-day volatility and historical support levels to project 7–14 day price drop probability scores (0% – 100%).
+- **Multi-Store Basket Arbitrage Splitter**: Optimizes multi-item cart purchases across competing stores to find the lowest possible split-order total.
+- **Net Price Engine**: Computes true out-of-pocket price factoring in stacked coupons and partner bank card discounts.
+
+### 6. Intelligent Dealer Catalog Availability Filter
 - **Real-World Category Mapping**:
   - **Quick Commerce (Zepto, Blinkit, Instamart, BigBasket)**: Actively stocks audio earbuds (OnePlus Buds, boAt), tech accessories, phone chargers, daily grooming, and groceries.
   - **Electronics Specialists (Croma, Reliance Digital, Best Buy, B&H Photo)**: Dedicated to audio, tech, laptops, phones, and appliances.
@@ -95,24 +122,24 @@
   - **Uncarried Muted State**: Toggling the filter off renders excluded stores with dashed borders, low opacity, a red `⊘ Not Sold Here` badge, and disabled CTAs.
 - **Protected Spread Analytics**: Non-carrying stores are strictly excluded from winner calculations and spread metrics so unavailable dealers never distort market pricing.
 
-### 4. Multi-Channel Alert Dispatcher (Email, Discord & Telegram)
+### 7. Multi-Channel Alert Dispatcher (Email, Discord & Telegram)
 - **Discord Rich Embeds**: Automatically pushes emerald green `#10B981` embed cards to your Discord channel featuring product thumbnails, price drops, target comparisons, and direct store links.
 - **Telegram Push Alerts**: Delivers real-time Markdown-formatted push notifications via Telegram Bot API with instant buy actions.
 - **HTML Email Engine**: Dispatches responsive HTML alert emails or renders them in the built-in in-browser preview simulator.
 - **Multi-Channel Dispatcher (`dispatch_multi_channel_alert`)**: Automatically triggers across all enabled channels when automated sweeps detect a price below target.
 - **User Settings Modal**: Configure custom Discord Webhook URLs and Telegram Chat IDs directly from the dashboard 3-dot menu with live test buttons.
 
-### 5. Autonomous Background Price Scheduler Daemon
+### 8. Autonomous Background Price Scheduler Daemon
 - **Thread-Safe Daemon (`scheduler.py`)**: Continuously monitors tracked products in an isolated worker thread.
 - **Configurable Cadence**: Adjust sweep intervals on the fly (15m, 30m, 45m, 60m) via REST API or the header dropdown.
 - **Live Status Header Pill**: Real-time pulsing radar indicator (`Sync: Active (30m)`) with pause, resume, and immediate manual sweep capabilities.
 
-### 6. Multi-Currency FX Engine & Exact Price Normalization (7 Currencies)
+### 9. Multi-Currency FX Engine & Exact Price Normalization (7 Currencies)
 - **7 Currencies Supported**: `INR (₹)`, `USD ($)`, `EUR (€)`, `GBP (£)`, `CAD (CA$)`, `AUD (A$)`, and `JPY (¥)`.
 - **Exact Native Price Preservation**: Scraped prices are stored with both normalized base USD and exact native currency figures (`native_price`, `currency`, `symbol`).
 - **Indian Numbering Format (`en-IN`)**: When viewing in INR, prices are formatted to Indian standards (e.g., `₹1,88,735.00` or `₹2,999.00`), ensuring 100% 1:1 price consistency between search cards and monitored dashboard cards.
 
-### 7. Predictive Analytics & Volatility Scoring
+### 10. Predictive Analytics & Volatility Scoring
 - **Actionable Decision Signals**:
   - 🟢 **Buy Now (Strong Deal)**: Current price is $\le$ target price or within 3% of the 30-day historical low.
   - 🟡 **Fair Price**: Current price is below the 30-day moving average.
@@ -120,7 +147,7 @@
 - **Standard Deviation Volatility**: Quantifies price fluctuations into `Stable`, `Moderate`, or `High` risk tiers.
 - **Portfolio KPIs**: Real-time roll-up metrics tracking Total Products, Active Deals, Total Savings ($), and Average Discount %.
 
-### 8. Interactive 30-Day Time-Series & Inline Sparklines
+### 11. Interactive 30-Day Time-Series & Inline Sparklines
 - **Inline SVG Sparklines**: Every product card displays a dedicated 30-day mini-trajectory chart with gradient fills and percentage delta tags (`🟢 -X.X% 30d` or `🔴 +X.X% 30d`).
 - **Modal Deep-Dive Chart (Chart.js)**: Detailed time-series plot comparing 30-day prices against 30-Day Low, 30-Day High, Moving Average, and Alert Target Price lines.
 
@@ -156,13 +183,15 @@ PortfolioProjects/
     ├── scheduler.py                 # Thread-safe BackgroundPriceScheduler daemon
     ├── scraper.py                   # Multi-region BS4 scraper, live search & suggestion engine
     ├── competitor.py                # 18-store competitor comparison & catalog availability engine
+    ├── intelligence.py              # 6-engine e-commerce intelligence & Indian bank offers engine
     ├── database.py                  # SQLite database manager, analytics & seed pipelines
     ├── notifier.py                  # Email, Discord webhook & Telegram notification engine
     ├── amazon_tracker.db            # Production SQLite3 database
     ├── README.md                    # Detailed application documentation
     ├── tests/
     │   ├── test_all_features.py     # Base test suite (24 passing unit & integration tests)
-    │   └── test_advanced_features.py# Search & notification tests (19 passing tests)
+    │   ├── test_advanced_features.py# Search & notification tests (19 passing tests)
+    │   └── test_intelligence_suite.py # 6-engine intelligence suite tests (12 passing tests)
     ├── static/
     │   ├── css/
     │   │   ├── styles.css           # Dashboard design system & theme variables
@@ -176,6 +205,7 @@ PortfolioProjects/
     │       ├── pricepilot_brand_light.png # Transparent light-mode brand lockup
     │       ├── logo.svg             # Scalable vector emblem
     │       ├── product-placeholder.svg    # Self-hosted product placeholder fallback
+    │       ├── products/            # 14 verified high-res local product photography assets
     │       └── retailers/           # 18 official SVG brand logos for competitor stores
     └── templates/
         ├── index.html               # Main dashboard with live search & competitor modals
@@ -299,28 +329,23 @@ PortfolioProjects/
 
 ---
 
-## 🧪 Automated Test Suite (43 Tests)
+## 🧪 Automated Test Suite (55 Tests)
 
-The repository features **43 automated unit and integration tests** organized into two test suites:
+The repository features **55 automated unit and integration tests** organized into three specialized test suites:
 - [`tests/test_all_features.py`](tests/test_all_features.py) (24 tests): Scraper parsing, 18-store competitor benchmarking, catalog availability engine, predictive signals, background scheduler, and Flask endpoints.
 - [`tests/test_advanced_features.py`](tests/test_advanced_features.py) (19 tests): Live Amazon catalog search, suggestion autocompletion, target price setting, Discord webhook embeds, Telegram push alerts, multi-channel dispatch, single-product live refresh, and multi-format CSV/JSON exports.
+- [`tests/test_intelligence_suite.py`](tests/test_intelligence_suite.py) (12 tests): Deceptive price detection, AI review authenticity & sentiment breakdown, price drop probability forecaster, multi-store split basket arbitrage optimizer, and stacked coupon & Indian partner bank card discount calculations.
 
 ### Running the Full Test Suite:
 ```bash
-python -m pytest tests/ -v
+python -m unittest discover -s tests -p "test_*.py"
 ```
 
 ```
-============================= test session starts =============================
-platform win32 -- Python 3.14.4, pytest-9.1.1, pluggy-1.6.0
-rootdir: E:\DATA ANALYTICS\PortfolioProjects\amazon_scraper_app
-plugins: anyio-4.14.2, shiny-1.7.0
-collected 43 items
+----------------------------------------------------------------------
+Ran 55 tests in 5.421s
 
-tests\test_advanced_features.py ...................                      [ 44%]
-tests\test_all_features.py ........................                      [100%]
-
-============================= 43 passed in 9.10s ==============================
+OK
 ```
 
 ---

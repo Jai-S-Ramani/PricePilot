@@ -11,6 +11,9 @@
 
 - 🔎 **Real-Time Amazon Live Search & Autocomplete**: Search products directly across Amazon's catalog with instant debounced suggestions, regional selection (defaulting to 🇮🇳 India `IN`), and 1-click tracking.
 - 🏪 **18-Store Competitor Arbitrage Engine**: Benchmarks Amazon against **13 Indian marketplaces** (Flipkart, Croma, Reliance Digital, Tata CLiQ, JioMart, Meesho, Blinkit, Zepto, Swiggy Instamart, BigBasket, Myntra, AJIO, Nykaa) and **5 Global retailers** (Walmart, Best Buy, eBay, Target, B&H Photo).
+- 💳 **Authentic Amazon India Bank Offers Drawer**: Dynamic bank offers drawer (`Offer 1` CC EMI, `Offer 2` CC Non-EMI, `Offer 3` 24m EMI with Amazon Upgrade+, `Offer 4` Debit Card, `Offer 5` Amazon Pay ICICI Cashback) with inline `See details >` terms expanders and instant `[Apply]` calculation.
+- 🏷️ **Amazon Clip-and-Save Coupons (Checkbox-Free)**: Sleek `[Apply]` / `[✓ Applied]` action buttons for coupons and card offers with real-time net price recomputation and zero raw checkboxes.
+- 🧠 **6-Engine E-Commerce Intelligence Suite**: Deceptive price detection, AI review authenticity & sentiment grading, price drop probability forecaster (0–100%), and multi-store split basket arbitrage optimizer.
 - 🏷️ **Intelligent Catalog Availability Filter**: Real-world vertical filtering that excludes stores that do not sell a specific product category (e.g., Nykaa does not sell OnePlus Buds; Croma does not sell fashion apparel).
 - 🔔 **Multi-Channel Alert Dispatcher**: Pushes instant price-drop alerts across **Discord Webhooks** (rich emerald embeds), **Telegram Bots** (Markdown push notifications), and **HTML Emails**.
 - 💱 **Multi-Currency FX Engine (7 Currencies)**: Full support for `INR (₹)`, `USD ($)`, `EUR (€)`, `GBP (£)`, `CAD (CA$)`, `AUD (A$)`, and `JPY (¥)` with exact native price preservation and zero rounding discrepancies.
@@ -19,7 +22,7 @@
 - 🎨 **Obsidian Briar & Warm Biscuit Luxe UI**: Premium dark glassmorphic design featuring rolling GSAP numeric roll-ups, spring pop-up physics, and interactive Chart.js analytics.
 - 📊 **Multi-Format Data Exports**: Export time-series records to CSV and comprehensive portfolio intelligence to JSON, with per-product historical downloads directly from the analytics modal.
 - 🔄 **Instant 1-Click Price Re-Scraper**: Refresh live Amazon prices for any individual product on demand with animated spring feedback.
-- 🧪 **43 Automated Tests**: Comprehensive test suite covering scrapers, competitor comparison, availability filters, scheduler lifecycle, export pipelines, and REST APIs.
+- 🧪 **55 Automated Tests**: Comprehensive test suite covering scrapers, competitor comparison, availability filters, intelligence engines, scheduler lifecycle, export pipelines, and REST APIs.
 
 ---
 
@@ -37,13 +40,15 @@ PortfolioProjects/
     ├── scheduler.py                 # Thread-safe BackgroundPriceScheduler daemon
     ├── scraper.py                   # Multi-region BS4 scraper, live search & suggestion engine
     ├── competitor.py                # 18-store competitor comparison & catalog availability engine
+    ├── intelligence.py              # 6-engine e-commerce intelligence & Indian bank offers engine
     ├── database.py                  # SQLite database manager, analytics & seed pipelines
     ├── notifier.py                  # Email, Discord webhook & Telegram notification engine
     ├── amazon_tracker.db            # Production SQLite3 database
     ├── README.md                    # Detailed application documentation
     ├── tests/
     │   ├── test_all_features.py     # Base test suite (24 tests)
-    │   └── test_advanced_features.py# Search, notification & export tests (19 tests)
+    │   ├── test_advanced_features.py# Search, notification & export tests (19 tests)
+    │   └── test_intelligence_suite.py # 6-engine intelligence suite tests (12 tests)
     ├── static/
     │   ├── css/
     │   │   └── styles.css           # Obsidian Briar & Warm Biscuit design system
@@ -52,7 +57,9 @@ PortfolioProjects/
     │   │   └── landing.js           # Landing page animations, fast demo login & theme toggle
     │   └── images/
     │       ├── logo.svg             # Application vector brand mark
-    │       └── product-placeholder.svg # Self-hosted luxury 3D isometric SVG fallback
+    │       ├── product-placeholder.svg # Self-hosted luxury 3D isometric SVG fallback
+    │       ├── products/            # 14 verified high-res local product photography assets
+    │       └── retailers/           # 18 official SVG brand logos for competitor stores
     └── templates/
         ├── index.html               # Main dashboard with live search & competitor modals
         └── landing.html             # High-conversion landing page & authentication portal
@@ -67,7 +74,7 @@ PortfolioProjects/
 
 ### 2. Install Dependencies
 ```bash
-python -m pip install flask beautifulsoup4 requests pandas
+python -m pip install flask beautifulsoup4 requests pandas pillow
 ```
 
 ### 3. Launch the Web Application
@@ -81,7 +88,7 @@ Open **[`http://127.0.0.1:5000/dashboard`](http://127.0.0.1:5000/dashboard)** in
 ```bash
 python -m unittest discover -s amazon_scraper_app/tests -p "test_*.py"
 ```
-*(All 43 tests passing 100% across both test modules)*.
+*(All 55 tests passing 100% across all 3 test modules)*.
 
 ### 5. Run the Original Tutorial Scraper
 ```bash
