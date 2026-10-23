@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  pricepilot:
+    build:
+      context: ./amazon_scraper_app
+      dockerfile: Dockerfile
+    container_name: pricepilot_app
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Persist SQLite tracking database across container restarts
+      - ./amazon_scraper_app/amazon_tracker.db:/app/amazon_tracker.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s

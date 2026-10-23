@@ -16,9 +16,8 @@
   - [1. Real-Time Amazon Catalog Search & Predictive Autocomplete with Target Price Setting](#1-real-time-amazon-catalog-search--predictive-autocomplete-with-target-price-setting)
   - [2. Multi-Store Competitor Arbitrage Engine (18 Stores with Official Logos)](#2-multi-store-competitor-arbitrage-engine-18-stores-with-official-logos)
   - [3. Authentic Amazon India Bank Offers Drawer & Instant Discounts](#3-authentic-amazon-india-bank-offers-drawer--instant-discounts)
-  - [4. Amazon Clip-and-Save Coupon Engine (Checkbox-Free UI)](#4-amazon-clip-and-save-coupon-engine-checkbox-free-ui)
-  - [5. Advanced 6-Engine E-Commerce Intelligence Suite](#5-advanced-6-engine-e-commerce-intelligence-suite)
-  - [6. Intelligent Dealer Catalog Availability Filter](#6-intelligent-dealer-catalog-availability-filter)
+  - [4. Advanced E-Commerce Intelligence Suite](#4-advanced-e-commerce-intelligence-suite)
+  - [5. Intelligent Dealer Catalog Availability Filter](#5-intelligent-dealer-catalog-availability-filter)
   - [7. Multi-Channel Alert Dispatcher (Email, Discord & Telegram)](#7-multi-channel-alert-dispatcher-email-discord--telegram)
   - [8. Autonomous Background Price Scheduler Daemon](#8-autonomous-background-price-scheduler-daemon)
   - [9. Multi-Currency FX Engine & Exact Price Normalization (7 Currencies)](#9-multi-currency-fx-engine--exact-price-normalization-7-currencies)
@@ -98,19 +97,14 @@
 - **Inline Terms & Conditions**: Clicking `See details >` smoothly expands specific bank terms and conditions inline.
 - **How to Avail Offer Section**: Displays the exact checkout instructions (*Select eligible card at checkout; No promo code required*).
 
-### 4. Amazon Clip-and-Save Coupon Engine (Checkbox-Free UI)
-- **Authentic `[Apply]` / `[✓ Applied]` Pill Buttons**: Eliminates raw HTML checkboxes in favor of authentic Amazon India action buttons across both product cards and the Price Analytics modal.
-- **Instant Net Price Recomputation**: Clipping coupons adjusts effective out-of-pocket costs, triggers live deal score re-evaluations, and provides immediate toast feedback.
-- **State Persistence**: Clips are saved in `localStorage` ensuring selections persist seamlessly across page reloads.
-
-### 5. Advanced 6-Engine E-Commerce Intelligence Suite
+### 4. Advanced E-Commerce Intelligence Suite
 - **Deceptive Pricing Detection**: Flags artificial markups where retailers inflate list prices right before a "sale" discount.
 - **AI Review Authenticity & Sentiment Grading**: Computes an A–D Trust Grade, sentiment breakdown (positive, neutral, critical), verified purchaser percentage, and AI consensus highlights.
 - **Price Drop Probability Forecaster**: Evaluates 30-day volatility and historical support levels to project 7–14 day price drop probability scores (0% – 100%).
 - **Multi-Store Basket Arbitrage Splitter**: Optimizes multi-item cart purchases across competing stores to find the lowest possible split-order total.
-- **Net Price Engine**: Computes true out-of-pocket price factoring in stacked coupons and partner bank card discounts.
+- **Net Price Engine**: Computes true out-of-pocket price factoring in partner bank card instant discounts.
 
-### 6. Intelligent Dealer Catalog Availability Filter
+### 5. Intelligent Dealer Catalog Availability Filter
 - **Real-World Category Mapping**:
   - **Quick Commerce (Zepto, Blinkit, Instamart, BigBasket)**: Actively stocks audio earbuds (OnePlus Buds, boAt), tech accessories, phone chargers, daily grooming, and groceries.
   - **Electronics Specialists (Croma, Reliance Digital, Best Buy, B&H Photo)**: Dedicated to audio, tech, laptops, phones, and appliances.

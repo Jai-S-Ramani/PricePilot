@@ -8,7 +8,8 @@ from intelligence import (
     detect_deceptive_pricing,
     calculate_review_intelligence,
     calculate_net_price_with_offers,
-    predict_price_drop_probability
+    predict_price_drop_probability,
+    compute_buying_verdict
 )
 
 DB_PATH = Path(__file__).parent / "amazon_tracker.db"
@@ -635,16 +636,20 @@ def get_all_products(user_id: int = None):
         p.update(stats)
         
         # Attach 6-Feature Intelligence Suite
-        p["deceptive_pricing"] = detect_deceptive_pricing(
+        deceptive = detect_deceptive_pricing(
             current_price=float(p.get("current_price") or 0.0),
             original_price=float(p.get("original_price") or 0.0),
             price_history=price_list
         )
+        p["deceptive_pricing"] = deceptive
         p["review_intelligence"] = calculate_review_intelligence(
             product_title=p.get("title") or "",
             category=p.get("category") or "",
             rating=float(p.get("rating") or 4.5),
-            reviews_count=int(p.get("reviews_count") or 150)
+            reviews_count=int(p.get("reviews_count") or 150),
+            is_deceptive=bool(deceptive.get("is_deceptive")),
+            inflation_pct=float(deceptive.get("inflation_pct") or 0.0),
+            deal_quality=str(deceptive.get("effective_deal_quality") or "")
         )
         p["net_pricing"] = calculate_net_price_with_offers(
             price=float(p.get("current_price") or 0.0),
@@ -658,6 +663,15 @@ def get_all_products(user_id: int = None):
             price=float(p.get("current_price") or 0.0),
             price_history=price_list,
             volatility=float(p.get("volatility_ratio") or 0.0) * 10.0
+        )
+        p["buying_verdict"] = compute_buying_verdict(
+            current_price=float(p.get("current_price") or 0.0),
+            original_price=float(p.get("original_price") or 0.0),
+            deceptive=deceptive,
+            drop_pred=p["drop_prediction"],
+            net_pricing=p["net_pricing"],
+            lowest_price=float(p.get("lowest_price") or 0.0),
+            median_price=float(p.get("median_price") or deceptive.get("baseline_price") or 0.0)
         )
 
     return product_dicts
@@ -685,16 +699,20 @@ def get_product_by_id(product_id: int):
     p.update(stats)
     
     # Attach 6-Feature Intelligence Suite
-    p["deceptive_pricing"] = detect_deceptive_pricing(
+    deceptive = detect_deceptive_pricing(
         current_price=float(p.get("current_price") or 0.0),
         original_price=float(p.get("original_price") or 0.0),
         price_history=price_rows
     )
+    p["deceptive_pricing"] = deceptive
     p["review_intelligence"] = calculate_review_intelligence(
         product_title=p.get("title") or "",
         category=p.get("category") or "",
         rating=float(p.get("rating") or 4.5),
-        reviews_count=int(p.get("reviews_count") or 150)
+        reviews_count=int(p.get("reviews_count") or 150),
+        is_deceptive=bool(deceptive.get("is_deceptive")),
+        inflation_pct=float(deceptive.get("inflation_pct") or 0.0),
+        deal_quality=str(deceptive.get("effective_deal_quality") or "")
     )
     p["net_pricing"] = calculate_net_price_with_offers(
         price=float(p.get("current_price") or 0.0),
@@ -708,6 +726,15 @@ def get_product_by_id(product_id: int):
         price=float(p.get("current_price") or 0.0),
         price_history=price_rows,
         volatility=float(p.get("volatility_ratio") or 0.0) * 10.0
+    )
+    p["buying_verdict"] = compute_buying_verdict(
+        current_price=float(p.get("current_price") or 0.0),
+        original_price=float(p.get("original_price") or 0.0),
+        deceptive=deceptive,
+        drop_pred=p["drop_prediction"],
+        net_pricing=p["net_pricing"],
+        lowest_price=float(p.get("lowest_price") or 0.0),
+        median_price=float(p.get("median_price") or deceptive.get("baseline_price") or 0.0)
     )
     return p
 

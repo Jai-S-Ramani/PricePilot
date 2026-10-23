@@ -116,35 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const basketModal = document.getElementById('basketModal');
   const closeBasketModal = document.getElementById('closeBasketModal');
 
-  // Amazon Clip-and-Save Coupons (persisted in localStorage)
-  let appliedCouponIds = new Set();
-  try {
-    const savedCoupons = JSON.parse(localStorage.getItem('pricepilot_clipped_coupons') || '[]');
-    if (Array.isArray(savedCoupons)) {
-      appliedCouponIds = new Set(savedCoupons);
-    }
-  } catch (e) {
-    appliedCouponIds = new Set();
-  }
 
-  // Amazon Coupon Terms Modal
-  const couponTermsModal = document.getElementById('couponTermsModal');
-  const closeCouponTermsModal = document.getElementById('closeCouponTermsModal');
-  const dismissCouponTermsBtn = document.getElementById('dismissCouponTermsBtn');
-
-  function openCouponTermsModal() {
-    if (couponTermsModal) couponTermsModal.classList.remove('hidden');
-  }
-  function hideCouponTermsModal() {
-    if (couponTermsModal) couponTermsModal.classList.add('hidden');
-  }
-  if (closeCouponTermsModal) closeCouponTermsModal.addEventListener('click', hideCouponTermsModal);
-  if (dismissCouponTermsBtn) dismissCouponTermsBtn.addEventListener('click', hideCouponTermsModal);
-  if (couponTermsModal) {
-    couponTermsModal.addEventListener('click', (e) => {
-      if (e.target === couponTermsModal) hideCouponTermsModal();
-    });
-  }
 
   // Amazon Partner Bank Cards Selection (persisted in localStorage)
   let appliedBankCards = {};
@@ -731,6 +703,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (filtered.length === 0) {
       productsGrid.innerHTML = '';
+      if (searchTerm) {
+        emptyState.innerHTML = `
+          <div class="empty-state-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+          <h3>No Monitored Products Found for "${escapeHtml(searchTerm)}"</h3>
+          <p>This item is not yet in your tracked list. Click below to search all of Amazon in real-time:</p>
+          <button id="searchAmazonFromEmptyBtn" class="btn btn-accent" style="margin-top: 12px;">
+            <i class="fa-solid fa-bolt"></i> Live Search Amazon for "${escapeHtml(searchTerm)}"
+          </button>
+        `;
+        const emptyBtn = document.getElementById('searchAmazonFromEmptyBtn');
+        if (emptyBtn) {
+          emptyBtn.addEventListener('click', () => {
+            if (tabModeSearch) tabModeSearch.click();
+            if (searchAmazonQueryInput) {
+              searchAmazonQueryInput.value = searchTerm;
+              executeLiveSearch(searchTerm);
+            }
+          });
+        }
+      } else {
+        emptyState.innerHTML = `
+          <div class="empty-state-icon"><i class="fa-solid fa-box-open"></i></div>
+          <h3>No tracked products found</h3>
+          <p>Add an Amazon product URL or click a Quick Add sample chip to start tracking!</p>
+        `;
+      }
       emptyState.classList.remove('hidden');
       return;
     }
@@ -738,19 +736,15 @@ document.addEventListener('DOMContentLoaded', () => {
     emptyState.classList.add('hidden');
     productsGrid.innerHTML = filtered.map(p => {
       const net = p.net_pricing || {};
-      const couponVal = net.coupon_discount || 0;
-      const isCouponClipped = appliedCouponIds.has(p.id) && couponVal > 0;
-      
       const bankOffers = net.bank_offers || [];
       const selectedBankCardId = appliedBankCards[p.id] || '';
       const activeBankCard = bankOffers.find(b => b.id === selectedBankCardId) || null;
       const bankDiscountVal = activeBankCard ? activeBankCard.discount_val : 0;
       const bankDiscountNative = activeBankCard ? activeBankCard.discount_val_native : null;
 
-      const totalAppliedDiscount = (isCouponClipped ? couponVal : 0) + bankDiscountVal;
-      const effectivePrice = Math.max(1, p.current_price - totalAppliedDiscount);
+      const effectivePrice = Math.max(1, p.current_price - bankDiscountVal);
       const effectiveNativePrice = (p.native_price && p.current_price) 
-        ? Math.max(1, p.native_price - (totalAppliedDiscount * (p.native_price / p.current_price))) 
+        ? Math.max(1, p.native_price - (bankDiscountVal * (p.native_price / p.current_price))) 
         : null;
 
       const target = p.target_price || (p.current_price * 0.9);
@@ -770,7 +764,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (isDeal) {
         const dealNotes = [];
-        if (isCouponClipped) dealNotes.push('Coupon');
         if (activeBankCard) dealNotes.push(activeBankCard.bank_code || 'Card Offer');
         const noteText = dealNotes.length > 0 ? ` (${dealNotes.join(' + ')} Applied)` : '';
         statusText = `🔥 Deal Active! Price is ${formatMoney(Math.abs(diff), diffNative != null ? Math.abs(diffNative) : null, p.currency)} below target${noteText}`;
@@ -811,11 +804,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const dealLabel = p.deal_label || `🔥 ${dealScore}% Deal`;
       const dealScoreBadge = `<span class="deal-score-pill" title="${p.deal_label || 'Deal Score'}" style="font-size: 0.72rem; padding: 2px 8px; border-radius: 9999px; background: rgba(16, 185, 129, 0.2); color: #10b981; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.4);"><i class="fa-solid fa-fire"></i> ${dealLabel}</span>`;
 
+      // 0. AI Purchasing Verdict Badge
+      const verd = p.buying_verdict || {};
+      const verdictBadge = verd.verdict 
+        ? `<span class="badge-verdict ${verd.badge_class || 'verdict-fair'}" title="${escapeHtml(verd.rationale || '')}"><i class="fa-solid ${verd.icon || 'fa-circle-check'}"></i> ${verd.verdict_label || 'Buy'}</span>`
+        : '';
+
       // 1. Deceptive Pricing & Fake Sale Detector Badge
       const dec = p.deceptive_pricing || {};
-      const deceptiveBadge = dec.is_deceptive 
-        ? `<span class="badge-deceptive" title="${dec.summary || 'Artificial Price Hike'}"><i class="fa-solid fa-triangle-exclamation"></i> Fake Sale +${dec.inflation_pct || 0}%</span>`
-        : (discountPct > 0 ? `<span class="badge-authentic-deal" title="${dec.summary || 'Verified Baseline Discount'}"><i class="fa-solid fa-shield-check"></i> Authentic Deal</span>` : '');
+      let deceptiveBadge = '';
+      if (dec.is_deceptive) {
+        deceptiveBadge = `<span class="badge-deceptive" title="${escapeHtml(dec.summary || 'Artificial Price Hike')}"><i class="fa-solid fa-triangle-exclamation"></i> Fake Sale +${dec.inflation_pct || 0}%</span>`;
+      } else if (dec.status === 'VERIFIED_MSRP') {
+        deceptiveBadge = `<span class="badge-verified-msrp" title="${escapeHtml(dec.summary || 'Verified Street Price')}"><i class="fa-solid fa-tag"></i> Street Price</span>`;
+      } else if (dec.status === 'ALL_TIME_LOW') {
+        deceptiveBadge = `<span class="badge-authentic-deal" title="${escapeHtml(dec.summary || 'All-Time Low Price')}"><i class="fa-solid fa-bolt"></i> All-Time Low</span>`;
+      } else if (discountPct > 0 || (dec.real_discount_pct && dec.real_discount_pct > 0)) {
+        deceptiveBadge = `<span class="badge-authentic-deal" title="${escapeHtml(dec.summary || 'Verified Baseline Discount')}"><i class="fa-solid fa-shield-check"></i> Authentic Deal</span>`;
+      }
 
       // 2. Review Authenticity Trust Badge
       const rev = p.review_intelligence || {};
@@ -850,6 +856,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ${basketCheckbox}
             </div>
             <div class="card-meta-tags">
+              ${verdictBadge}
               ${deceptiveBadge}
               ${trustBadge}
               ${dropProbBadge}
@@ -869,33 +876,16 @@ document.addEventListener('DOMContentLoaded', () => {
               <span class="product-category">${p.category || 'Electronics'} &bull; ASIN: ${p.asin}</span>
               <h4 class="product-title" title="${p.title}">${p.title}</h4>
               <div class="price-row">
-                <span class="current-price ${isCouponClipped || activeBankCard ? 'price-coupon-clipped' : ''}">${formatMoney(effectivePrice, effectiveNativePrice, p.currency)}</span>
-                ${(isCouponClipped || activeBankCard) ? `
+                <span class="current-price ${activeBankCard ? 'price-discounted' : ''}">${formatMoney(effectivePrice, effectiveNativePrice, p.currency)}</span>
+                ${activeBankCard ? `
                   <span class="original-price" style="text-decoration: line-through;" title="Original Amazon Price">${formatMoney(p.current_price, p.native_price, p.currency)}</span>
                 ` : (p.original_price ? `<span class="original-price">${formatMoney(p.original_price, p.native_price ? (p.native_price * 1.15) : null, p.currency)}</span>` : '')}
-                ${isCouponClipped ? `
-                  <span class="badge-coupon-applied" title="Amazon clip-and-save coupon applied"><i class="fa-solid fa-scissors"></i> -${formatMoney(couponVal, p.native_price ? (couponVal * (p.native_price / p.current_price)) : null, p.currency)} Clip</span>
-                ` : ''}
                 ${activeBankCard ? `
                   <span class="badge-bank-applied" title="${activeBankCard.offer_desc}"><i class="fa-solid fa-credit-card"></i> -${formatMoney(bankDiscountVal, bankDiscountNative, p.currency)} ${activeBankCard.bank_code || 'Card'}</span>
                 ` : ''}
-                ${discountPct > 0 && !isCouponClipped && !activeBankCard ? `<span class="deal-badge">-${discountPct}% OFF</span>` : ''}
+                ${discountPct > 0 && !activeBankCard ? `<span class="deal-badge">-${discountPct}% OFF</span>` : ''}
                 ${isDeal ? `<span class="deal-badge"><i class="fa-solid fa-fire"></i> Target Met!</span>` : ''}
               </div>
-
-              <!-- Amazon Clip-and-Save Coupon Row -->
-              ${couponVal > 0 ? `
-                <div class="amazon-coupon-row ${isCouponClipped ? 'coupon-clipped' : ''}">
-                  <div class="amazon-coupon-left">
-                    <span class="amazon-coupon-badge">Coupon</span>
-                    <span class="amazon-coupon-text">${net.coupon_text || `Save ${formatMoney(couponVal, p.native_price ? (couponVal * (p.native_price / p.current_price)) : null, p.currency)}`}</span>
-                    <span class="amazon-coupon-terms" data-id="${p.id}" title="View Amazon coupon terms and conditions">Terms</span>
-                  </div>
-                  <button type="button" class="btn-coupon-apply ${isCouponClipped ? 'clipped' : ''}" data-id="${p.id}" title="${isCouponClipped ? 'Unclip coupon' : 'Apply coupon'}">
-                    ${isCouponClipped ? '<i class="fa-solid fa-check"></i> Applied' : 'Apply'}
-                  </button>
-                </div>
-              ` : ''}
 
               <!-- Amazon Bank Card Offers Row -->
               ${bankOffers.length > 0 ? `
@@ -1025,47 +1015,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.querySelectorAll('.view-chart-btn').forEach(b => {
-      b.addEventListener('click', () => openChartModal(b.dataset.id));
+      b.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openChartModal(b.dataset.id);
+      });
     });
 
     document.querySelectorAll('.compare-stores-btn').forEach(b => {
-      b.addEventListener('click', () => openCompetitorModal(b.dataset.id));
-    });
-
-    document.querySelectorAll('.btn-coupon-apply').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
+      b.addEventListener('click', (e) => {
         e.preventDefault();
-        const id = parseInt(btn.dataset.id, 10);
-        if (!id) return;
-        const prod = allProducts.find(p => p.id === id);
-        const couponVal = prod?.net_pricing?.coupon_discount || 0;
-        if (appliedCouponIds.has(id)) {
-          appliedCouponIds.delete(id);
-          showToast('🏷️ Amazon coupon unclipped', 'info');
-        } else {
-          appliedCouponIds.add(id);
-          const couponSaveDisplay = prod?.native_price 
-            ? formatMoney(couponVal, couponVal * (prod.native_price / prod.current_price), prod.currency)
-            : formatMoney(couponVal);
-          showToast(`🏷️ Amazon coupon applied! Saved ${couponSaveDisplay} at checkout`, 'success');
-        }
-        try {
-          localStorage.setItem('pricepilot_clipped_coupons', JSON.stringify(Array.from(appliedCouponIds)));
-        } catch (err) {
-          console.warn('Failed saving clipped coupons to localStorage', err);
-        }
-        renderProducts();
+        e.stopPropagation();
+        openCompetitorModal(b.dataset.id);
       });
     });
 
-    document.querySelectorAll('.amazon-coupon-terms').forEach(el => {
-      el.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        openCouponTermsModal();
-      });
-    });
+
 
     document.querySelectorAll('.bank-card-dropdown').forEach(sel => {
       sel.addEventListener('change', (e) => {
@@ -1197,6 +1162,10 @@ document.addEventListener('DOMContentLoaded', () => {
       addProductForm.classList.add('hidden');
       searchAmazonContainer.classList.remove('hidden');
       if (searchAmazonQueryInput) searchAmazonQueryInput.focus();
+      // If no search results currently rendered, automatically show full catalog
+      if (!liveSearchResults.querySelector('.search-result-card')) {
+        executeLiveSearch('');
+      }
     });
   }
 
@@ -1238,12 +1207,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  let liveSearchDebounceTimer = null;
   if (searchAmazonQueryInput) {
     searchAmazonQueryInput.addEventListener('input', (e) => {
+      const val = e.target.value;
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(() => {
-        fetchLiveSuggestions(e.target.value);
-      }, 250);
+        fetchLiveSuggestions(val);
+      }, 200);
+
+      // Instant live search execution as user types (400ms debounce)
+      clearTimeout(liveSearchDebounceTimer);
+      liveSearchDebounceTimer = setTimeout(() => {
+        executeLiveSearch(val);
+      }, 400);
     });
   }
 
@@ -1259,11 +1236,199 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  let currentSearchResults = [];
+  let currentSearchActiveCategory = 'ALL';
+
+  // Render search cards with category filter bar and target price calculators
+  function renderLiveSearchCards(items, queryText, region) {
+    if (!liveSearchResults) return;
+    const defaultDiscountMultiplier = searchAmazonTargetPreset ? (parseFloat(searchAmazonTargetPreset.value) || 0.90) : 0.90;
+
+    let filtered = items;
+    if (currentSearchActiveCategory !== 'ALL') {
+      filtered = items.filter(it => {
+        const cat = (it.category || '').toLowerCase();
+        const tit = (it.title || '').toLowerCase();
+        if (currentSearchActiveCategory === 'laptop') return cat.includes('laptop') || cat.includes('computer') || tit.includes('macbook') || tit.includes('xps') || tit.includes('laptop');
+        if (currentSearchActiveCategory === 'phone') return cat.includes('smartphone') || cat.includes('phone') || tit.includes('iphone') || tit.includes('galaxy') || tit.includes('pixel');
+        if (currentSearchActiveCategory === 'audio') return cat.includes('audio') || cat.includes('headphone') || tit.includes('buds') || tit.includes('ear') || tit.includes('speaker') || tit.includes('sound');
+        if (currentSearchActiveCategory === 'accessories') return cat.includes('accessories') || tit.includes('mouse') || tit.includes('keyboard') || tit.includes('dock') || tit.includes('power bank');
+        if (currentSearchActiveCategory === 'kitchen') return cat.includes('kitchen') || tit.includes('coffee') || tit.includes('fryer') || tit.includes('pot');
+        if (currentSearchActiveCategory === 'gaming') return cat.includes('gaming') || tit.includes('playstation') || tit.includes('switch') || tit.includes('console');
+        return true;
+      });
+    }
+
+    const titleLead = queryText ? `Found ${items.length} products for "${escapeHtml(queryText)}"` : `Browsing All Amazon Catalog Products (${items.length} items in ${region})`;
+
+    const filterBarHtml = `
+      <div class="search-results-meta-header" style="grid-column: 1/-1; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <div style="font-size: 0.85rem; font-weight: 600; color: #cbd5e1; display: flex; align-items: center; gap: 6px;">
+          <i class="fa-solid fa-layer-group text-amber" style="color: #f59e0b;"></i>
+          <span>${titleLead}</span>
+        </div>
+        <div class="search-category-filters" style="display: flex; flex-wrap: wrap; gap: 5px;">
+          <button type="button" class="btn btn-xs ${currentSearchActiveCategory === 'ALL' ? 'btn-primary' : 'btn-secondary'} search-cat-pill" data-cat="ALL">All (${items.length})</button>
+          <button type="button" class="btn btn-xs ${currentSearchActiveCategory === 'laptop' ? 'btn-primary' : 'btn-secondary'} search-cat-pill" data-cat="laptop">💻 Laptops</button>
+          <button type="button" class="btn btn-xs ${currentSearchActiveCategory === 'phone' ? 'btn-primary' : 'btn-secondary'} search-cat-pill" data-cat="phone">📱 Phones</button>
+          <button type="button" class="btn btn-xs ${currentSearchActiveCategory === 'audio' ? 'btn-primary' : 'btn-secondary'} search-cat-pill" data-cat="audio">🎧 Audio</button>
+          <button type="button" class="btn btn-xs ${currentSearchActiveCategory === 'accessories' ? 'btn-primary' : 'btn-secondary'} search-cat-pill" data-cat="accessories">⌨️ Accessories</button>
+          <button type="button" class="btn btn-xs ${currentSearchActiveCategory === 'kitchen' ? 'btn-primary' : 'btn-secondary'} search-cat-pill" data-cat="kitchen">☕ Kitchen</button>
+          <button type="button" class="btn btn-xs ${currentSearchActiveCategory === 'gaming' ? 'btn-primary' : 'btn-secondary'} search-cat-pill" data-cat="gaming">🎮 Gaming</button>
+        </div>
+      </div>
+    `;
+
+    if (filtered.length === 0) {
+      liveSearchResults.innerHTML = filterBarHtml + `<div style="grid-column: 1/-1; text-align: center; padding: 24px; color: #94a3b8;">No products in this specific category. Click "All (${items.length})" to view all items.</div>`;
+      liveSearchResults.querySelectorAll('.search-cat-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentSearchActiveCategory = btn.dataset.cat;
+          renderLiveSearchCards(items, queryText, region);
+        });
+      });
+      return;
+    }
+
+    const cardsHtml = filtered.map((item, idx) => {
+      const sym = item.symbol || '₹';
+      const locale = item.currency === 'INR' ? 'en-IN' : undefined;
+      const price = parseFloat(item.price) || 0;
+      const priceStr = `${sym}${price.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      const initialTarget = Math.round(price * defaultDiscountMultiplier * 100) / 100;
+      const initialTargetStr = initialTarget.toFixed(2);
+      const productPayload = JSON.stringify(item).replace(/"/g, '&quot;');
+
+      return `
+        <div class="search-result-card glass" data-index="${idx}" data-price="${price}" data-currency="${item.currency || 'INR'}">
+          <div class="search-card-main">
+            <img src="${item.image_url}" alt="${item.title}" class="search-card-img" onerror="this.onerror=null; this.src='/static/images/product-placeholder.svg'">
+            <div class="search-card-info">
+              <h5 class="search-card-title" title="${item.title}">${item.title}</h5>
+              <div class="search-card-meta">
+                <span class="search-card-price">${priceStr}</span>
+                <span class="search-card-rating"><i class="fa-solid fa-star" style="color: var(--accent-amber);"></i> ${item.rating || 4.5}</span>
+                <span class="search-card-region">${item.region || region}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Set Option (Editable Target Alert Price & Quick % Shortcuts) -->
+          <div class="search-target-box">
+            <div class="search-target-header">
+              <span class="search-target-label"><i class="fa-solid fa-bullseye" style="color: var(--accent-amber);"></i> Alert Target Price</span>
+              <div class="search-pct-pills">
+                <button type="button" class="search-pct-btn ${defaultDiscountMultiplier === 0.90 ? 'active' : ''}" data-pct="0.90">-10%</button>
+                <button type="button" class="search-pct-btn ${defaultDiscountMultiplier === 0.85 ? 'active' : ''}" data-pct="0.85">-15%</button>
+                <button type="button" class="search-pct-btn ${defaultDiscountMultiplier === 0.80 ? 'active' : ''}" data-pct="0.80">-20%</button>
+                <button type="button" class="search-pct-btn ${defaultDiscountMultiplier === 0.75 ? 'active' : ''}" data-pct="0.75">-25%</button>
+              </div>
+            </div>
+            <div class="search-target-input-row">
+              <span class="search-target-symbol">${sym}</span>
+              <input type="number" step="0.01" class="search-target-input" value="${initialTargetStr}" placeholder="Set alert target..." title="Enter your custom alert price">
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-sm btn-accent track-search-item-btn" data-url="${item.url}" data-price="${price}" data-product='${productPayload}'>
+            <i class="fa-solid fa-plus"></i> Track with Target (<span class="btn-target-preview">${sym}${initialTargetStr}</span>)
+          </button>
+        </div>
+      `;
+    }).join('');
+
+    liveSearchResults.innerHTML = filterBarHtml + cardsHtml;
+
+    // Attach category filter listeners
+    liveSearchResults.querySelectorAll('.search-cat-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentSearchActiveCategory = btn.dataset.cat;
+        renderLiveSearchCards(items, queryText, region);
+      });
+    });
+
+    // Setup interactive target price adjustments for each card
+    liveSearchResults.querySelectorAll('.search-result-card').forEach(card => {
+      const itemPrice = parseFloat(card.dataset.price) || 0;
+      const targetInput = card.querySelector('.search-target-input');
+      const targetPreview = card.querySelector('.btn-target-preview');
+      const sym = card.querySelector('.search-target-symbol')?.textContent || '₹';
+      const pctBtns = card.querySelectorAll('.search-pct-btn');
+
+      function updateTargetDisplay(val) {
+        const num = parseFloat(val);
+        if (!isNaN(num) && num > 0) {
+          if (targetPreview) targetPreview.textContent = `${sym}${num.toFixed(2)}`;
+        } else {
+          if (targetPreview) targetPreview.textContent = `${sym}${(itemPrice * 0.9).toFixed(2)}`;
+        }
+      }
+
+      pctBtns.forEach(pBtn => {
+        pBtn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          pctBtns.forEach(b => b.classList.remove('active'));
+          pBtn.classList.add('active');
+          const mult = parseFloat(pBtn.dataset.pct) || 0.90;
+          const calcVal = (itemPrice * mult).toFixed(2);
+          if (targetInput) targetInput.value = calcVal;
+          updateTargetDisplay(calcVal);
+        });
+      });
+
+      if (targetInput) {
+        targetInput.addEventListener('input', () => {
+          pctBtns.forEach(b => b.classList.remove('active'));
+          updateTargetDisplay(targetInput.value);
+        });
+      }
+    });
+
+    liveSearchResults.querySelectorAll('.track-search-item-btn').forEach(btn => {
+      btn.addEventListener('click', async (ev) => {
+        const btnEl = ev.currentTarget;
+        const card = btnEl.closest('.search-result-card');
+        const targetInput = card?.querySelector('.search-target-input');
+        const customTarget = targetInput ? parseFloat(targetInput.value) : null;
+        const url = btnEl.dataset.url;
+        const price = parseFloat(btnEl.dataset.price);
+        let metadata = {};
+        try {
+          metadata = JSON.parse(btnEl.dataset.product || '{}');
+        } catch (e) {}
+
+        btnEl.disabled = true;
+        btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Tracking...`;
+        
+        // Calculate target price in base USD
+        let targetUSD = null;
+        const itemCurrency = metadata.currency || 'INR';
+        const rate = itemCurrency === 'INR' ? 83.50 : (CURRENCIES[itemCurrency]?.rate || 1.0);
+
+        if (customTarget && !isNaN(customTarget) && customTarget > 0) {
+          targetUSD = (customTarget / rate).toFixed(2);
+        } else {
+          const baseUSD = metadata.base_usd || (price / rate);
+          targetUSD = (baseUSD * 0.90).toFixed(2);
+        }
+
+        const success = await addProductByUrl(url, targetUSD, metadata);
+        if (success) {
+          const sym = card?.querySelector('.search-target-symbol')?.textContent || '₹';
+          const displayTarget = customTarget ? `${sym}${customTarget.toFixed(2)}` : '';
+          btnEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Tracked at ${displayTarget}!`;
+          btnEl.style.background = '#10b981';
+        } else {
+          btnEl.disabled = false;
+          btnEl.innerHTML = `<i class="fa-solid fa-rotate-left"></i> Retry`;
+        }
+      });
+    });
+  }
+
   // Execute Live Search across Amazon Catalog
   async function executeLiveSearch(query) {
     const q = (query || '').trim();
-    if (!q) return;
-
     const region = searchAmazonRegionSelect ? searchAmazonRegionSelect.value : 'IN';
 
     if (searchAmazonSubmitBtn) {
@@ -1271,138 +1436,15 @@ document.addEventListener('DOMContentLoaded', () => {
       searchAmazonSubmitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Searching...`;
     }
     liveSearchResults.classList.remove('hidden');
-    liveSearchResults.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 24px; color: #94a3b8;"><i class="fa-solid fa-spinner fa-spin"></i> Searching Amazon India catalog in real-time...</div>`;
+    liveSearchResults.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 24px; color: #94a3b8;"><i class="fa-solid fa-spinner fa-spin"></i> Indexing Amazon ${region} catalog in real-time...</div>`;
 
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&region=${region}&limit=6`);
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&region=${region}&limit=40`);
       const data = await res.json();
       if (data.status === 'success' && data.results && data.results.length > 0) {
-        const defaultDiscountMultiplier = searchAmazonTargetPreset ? (parseFloat(searchAmazonTargetPreset.value) || 0.90) : 0.90;
-
-        liveSearchResults.innerHTML = data.results.map((item, idx) => {
-          const sym = item.symbol || '₹';
-          const locale = item.currency === 'INR' ? 'en-IN' : undefined;
-          const price = parseFloat(item.price) || 0;
-          const priceStr = `${sym}${price.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-          const initialTarget = Math.round(price * defaultDiscountMultiplier * 100) / 100;
-          const initialTargetStr = initialTarget.toFixed(2);
-          const productPayload = JSON.stringify(item).replace(/"/g, '&quot;');
-
-          return `
-            <div class="search-result-card glass" data-index="${idx}" data-price="${price}" data-currency="${item.currency || 'INR'}">
-              <div class="search-card-main">
-                <img src="${item.image_url}" alt="${item.title}" class="search-card-img" onerror="this.onerror=null; this.src='/static/images/product-placeholder.svg'">
-                <div class="search-card-info">
-                  <h5 class="search-card-title" title="${item.title}">${item.title}</h5>
-                  <div class="search-card-meta">
-                    <span class="search-card-price">${priceStr}</span>
-                    <span class="search-card-rating"><i class="fa-solid fa-star" style="color: var(--accent-amber);"></i> ${item.rating || 4.5}</span>
-                    <span class="search-card-region">${item.region || region}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Price Set Option (Editable Target Alert Price & Quick % Shortcuts) -->
-              <div class="search-target-box">
-                <div class="search-target-header">
-                  <span class="search-target-label"><i class="fa-solid fa-bullseye" style="color: var(--accent-amber);"></i> Alert Target Price</span>
-                  <div class="search-pct-pills">
-                    <button type="button" class="search-pct-btn ${defaultDiscountMultiplier === 0.90 ? 'active' : ''}" data-pct="0.90">-10%</button>
-                    <button type="button" class="search-pct-btn ${defaultDiscountMultiplier === 0.85 ? 'active' : ''}" data-pct="0.85">-15%</button>
-                    <button type="button" class="search-pct-btn ${defaultDiscountMultiplier === 0.80 ? 'active' : ''}" data-pct="0.80">-20%</button>
-                    <button type="button" class="search-pct-btn ${defaultDiscountMultiplier === 0.75 ? 'active' : ''}" data-pct="0.75">-25%</button>
-                  </div>
-                </div>
-                <div class="search-target-input-row">
-                  <span class="search-target-symbol">${sym}</span>
-                  <input type="number" step="0.01" class="search-target-input" value="${initialTargetStr}" placeholder="Set alert target..." title="Enter your custom alert price">
-                </div>
-              </div>
-
-              <button type="button" class="btn btn-sm btn-accent track-search-item-btn" data-url="${item.url}" data-price="${price}" data-product='${productPayload}'>
-                <i class="fa-solid fa-plus"></i> Track with Target (<span class="btn-target-preview">${sym}${initialTargetStr}</span>)
-              </button>
-            </div>
-          `;
-        }).join('');
-
-        // Setup interactive target price adjustments for each card
-        liveSearchResults.querySelectorAll('.search-result-card').forEach(card => {
-          const itemPrice = parseFloat(card.dataset.price) || 0;
-          const targetInput = card.querySelector('.search-target-input');
-          const targetPreview = card.querySelector('.btn-target-preview');
-          const sym = card.querySelector('.search-target-symbol')?.textContent || '₹';
-          const pctBtns = card.querySelectorAll('.search-pct-btn');
-
-          function updateTargetDisplay(val) {
-            const num = parseFloat(val);
-            if (!isNaN(num) && num > 0) {
-              if (targetPreview) targetPreview.textContent = `${sym}${num.toFixed(2)}`;
-            } else {
-              if (targetPreview) targetPreview.textContent = `${sym}${(itemPrice * 0.9).toFixed(2)}`;
-            }
-          }
-
-          pctBtns.forEach(pBtn => {
-            pBtn.addEventListener('click', (ev) => {
-              ev.stopPropagation();
-              pctBtns.forEach(b => b.classList.remove('active'));
-              pBtn.classList.add('active');
-              const mult = parseFloat(pBtn.dataset.pct) || 0.90;
-              const calcVal = (itemPrice * mult).toFixed(2);
-              if (targetInput) targetInput.value = calcVal;
-              updateTargetDisplay(calcVal);
-            });
-          });
-
-          if (targetInput) {
-            targetInput.addEventListener('input', () => {
-              pctBtns.forEach(b => b.classList.remove('active'));
-              updateTargetDisplay(targetInput.value);
-            });
-          }
-        });
-
-        liveSearchResults.querySelectorAll('.track-search-item-btn').forEach(btn => {
-          btn.addEventListener('click', async (ev) => {
-            const btnEl = ev.currentTarget;
-            const card = btnEl.closest('.search-result-card');
-            const targetInput = card?.querySelector('.search-target-input');
-            const customTarget = targetInput ? parseFloat(targetInput.value) : null;
-            const url = btnEl.dataset.url;
-            const price = parseFloat(btnEl.dataset.price);
-            let metadata = {};
-            try {
-              metadata = JSON.parse(btnEl.dataset.product || '{}');
-            } catch (e) {}
-
-            btnEl.disabled = true;
-            btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Tracking...`;
-            
-            // Calculate target price in base USD
-            let targetUSD = null;
-            const itemCurrency = metadata.currency || 'INR';
-            const rate = itemCurrency === 'INR' ? 83.50 : (CURRENCIES[itemCurrency]?.rate || 1.0);
-
-            if (customTarget && !isNaN(customTarget) && customTarget > 0) {
-              targetUSD = (customTarget / rate).toFixed(2);
-            } else {
-              const baseUSD = metadata.base_usd || (price / rate);
-              targetUSD = (baseUSD * 0.90).toFixed(2);
-            }
-
-            const success = await addProductByUrl(url, targetUSD, metadata);
-            if (success) {
-              const sym = card?.querySelector('.search-target-symbol')?.textContent || '₹';
-              const displayTarget = customTarget ? `${sym}${customTarget.toFixed(2)}` : '';
-              btnEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Tracked at ${displayTarget}!`;
-              btnEl.style.background = '#10b981';
-            } else {
-              btnEl.disabled = false;
-              btnEl.innerHTML = `<i class="fa-solid fa-rotate-left"></i> Retry`;
-            }
-          });
-        });
+        currentSearchResults = data.results;
+        currentSearchActiveCategory = 'ALL';
+        renderLiveSearchCards(currentSearchResults, q, region);
       } else {
         liveSearchResults.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #94a3b8;">No matching products found. Try a different query or brand name.</div>`;
       }
@@ -1421,6 +1463,13 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const q = searchAmazonQueryInput ? searchAmazonQueryInput.value.trim() : '';
       if (searchSuggestionsBox) searchSuggestionsBox.classList.add('hidden');
+      executeLiveSearch(q);
+    });
+  }
+
+  if (searchAmazonRegionSelect) {
+    searchAmazonRegionSelect.addEventListener('change', () => {
+      const q = searchAmazonQueryInput ? searchAmazonQueryInput.value.trim() : '';
       executeLiveSearch(q);
     });
   }
@@ -1622,6 +1671,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentModalProductId = id;
 
+        // Populate Top AI Buying Verdict Ribbon
+        const verd = prod.buying_verdict || {};
+        const vBanner = document.getElementById('modalBuyingVerdictBanner');
+        const vIconCircle = document.getElementById('modalVerdictIconCircle');
+        const vIcon = document.getElementById('modalVerdictIcon');
+        const vTitle = document.getElementById('modalVerdictTitle');
+        const vConf = document.getElementById('modalVerdictConfidence');
+        const vRationale = document.getElementById('modalVerdictRationale');
+        const vSavings = document.getElementById('modalVerdictSavingsVal');
+        const vHorizon = document.getElementById('modalVerdictHorizon');
+
+        if (vBanner) {
+          vBanner.className = `modal-verdict-banner glass ${verd.badge_class || 'verdict-fair'}`;
+        }
+        if (vIconCircle) {
+          vIconCircle.className = `verdict-icon-circle ${verd.badge_class || 'verdict-fair'}`;
+        }
+        if (vIcon) {
+          vIcon.className = `fa-solid ${verd.icon || 'fa-circle-check'}`;
+        }
+        if (vTitle) {
+          vTitle.textContent = (verd.verdict_label || 'FAIR BUY').toUpperCase();
+          vTitle.className = `verdict-badge ${verd.badge_class || 'verdict-fair'}`;
+        }
+        if (vConf) {
+          vConf.textContent = `${verd.confidence_pct || 85}% Confidence`;
+        }
+        if (vRationale) {
+          vRationale.textContent = verd.rationale || 'Analysis complete.';
+        }
+        if (vSavings) {
+          vSavings.textContent = (verd.projected_savings && verd.projected_savings > 0)
+            ? `Save ${formatMoney(verd.projected_savings)}`
+            : 'Best Rate';
+        }
+        if (vHorizon) {
+          vHorizon.textContent = verd.horizon || 'Immediate';
+        }
+
         // Populate 1. Deceptive Pricing & Authenticity Audit Card
         const dec = prod.deceptive_pricing || {};
         const decBadge = document.getElementById('intelDeceptiveBadge');
@@ -1630,50 +1718,53 @@ document.addEventListener('DOMContentLoaded', () => {
         const decClaimed = document.getElementById('intelClaimedMrp');
         const decInfl = document.getElementById('intelInflationPct');
         if (decBadge) {
-          decBadge.textContent = dec.is_deceptive ? 'Fake Sale Alert' : 'Authentic Deal';
-          decBadge.className = `intel-status-pill ${dec.is_deceptive ? 'pill-rose' : 'pill-emerald'}`;
+          if (dec.is_deceptive) {
+            decBadge.textContent = 'Fake Sale Alert';
+            decBadge.className = 'intel-status-pill pill-rose';
+          } else if (dec.status === 'VERIFIED_MSRP') {
+            decBadge.textContent = 'Verified Street Price';
+            decBadge.className = 'intel-status-pill pill-blue';
+          } else if (dec.status === 'ALL_TIME_LOW') {
+            decBadge.textContent = 'All-Time Low';
+            decBadge.className = 'intel-status-pill pill-emerald';
+          } else {
+            decBadge.textContent = 'Authentic Deal';
+            decBadge.className = 'intel-status-pill pill-emerald';
+          }
         }
         if (decSummary) decSummary.textContent = dec.summary || 'Baseline verification complete.';
         if (decBase) decBase.textContent = formatMoney(dec.baseline_price || prod.current_price);
         if (decClaimed) decClaimed.textContent = formatMoney(dec.claimed_mrp || prod.original_price || prod.current_price);
-        if (decInfl) decInfl.textContent = `+${dec.inflation_pct || 0}%`;
+        if (decInfl) {
+          if (dec.is_deceptive) {
+            decInfl.textContent = `+${dec.inflation_pct || 0}% (Hike)`;
+            decInfl.className = 'metric-val text-rose';
+          } else {
+            decInfl.textContent = '0% (Fair Baseline)';
+            decInfl.className = 'metric-val text-emerald';
+          }
+        }
 
         // Populate 2. Net Effective Price (Interactive Amazon Coupon + Specific Bank Cards)
+        // Populate 2. Net Effective Price (Bank Card Savings)
         const net = prod.net_pricing || {};
-        const couponVal = net.coupon_discount || 0;
         const bankOffers = net.bank_offers || [];
-        const isModalClipped = appliedCouponIds.has(prod.id);
         const currentModalCardId = appliedBankCards[prod.id] || '';
 
         const netBase = document.getElementById('intelNetBasePrice');
-        const netCoupon = document.getElementById('intelNetCoupon');
         const netBank = document.getElementById('intelNetBank');
         const netEffective = document.getElementById('intelNetEffective');
         const netPill = document.getElementById('intelNetSavingsPill');
-        const modalCouponBtn = document.getElementById('modalCouponBtn');
-        const modalCouponText = document.getElementById('modalCouponText');
-        const modalCouponTerms = document.getElementById('modalCouponTerms');
         const modalBankCardSelect = document.getElementById('modalBankCardSelect');
 
-        function updateModalNetPrices(clipped, cardId) {
-          const effectiveCoupon = clipped ? couponVal : 0;
+        function updateModalNetPrices(cardId) {
           const activeCard = bankOffers.find(b => b.id === cardId) || null;
           const effectiveBankDiscount = activeCard ? activeCard.discount_val : 0;
           const effectiveBankDiscountNative = activeCard ? activeCard.discount_val_native : null;
-          const totalSavings = effectiveCoupon + effectiveBankDiscount;
+          const totalSavings = effectiveBankDiscount;
           const trueNet = Math.max(1, (net.base_price || prod.current_price) - totalSavings);
 
           if (netBase) netBase.textContent = formatMoney(net.base_price || prod.current_price);
-          if (netCoupon) {
-            netCoupon.textContent = clipped 
-              ? `-${formatMoney(couponVal)} (Applied)` 
-              : `$0.00 (Unapplied)`;
-            netCoupon.className = clipped ? 'text-emerald' : 'text-subtle';
-          }
-          if (modalCouponBtn) {
-            modalCouponBtn.className = `btn-coupon-apply ${clipped ? 'clipped' : ''}`;
-            modalCouponBtn.innerHTML = clipped ? '<i class="fa-solid fa-check"></i> Applied' : 'Apply';
-          }
           if (netBank) {
             netBank.textContent = activeCard 
               ? `-${formatMoney(effectiveBankDiscount, effectiveBankDiscountNative, prod.currency)} (${activeCard.bank_name})` 
@@ -1685,44 +1776,6 @@ document.addEventListener('DOMContentLoaded', () => {
             netPill.textContent = totalSavings > 0 ? `Save Extra ${formatMoney(totalSavings)}` : 'Sticker Price';
             netPill.className = `intel-status-pill ${totalSavings > 0 ? 'pill-emerald' : 'pill-slate'}`;
           }
-        }
-
-        if (modalCouponRow) {
-          if (couponVal > 0) {
-            modalCouponRow.style.display = 'flex';
-            if (modalCouponText) modalCouponText.textContent = net.coupon_text || `Apply ${formatMoney(couponVal)} coupon`;
-            if (modalCouponBtn) {
-              modalCouponBtn.onclick = (e) => {
-                e.stopPropagation();
-                if (appliedCouponIds.has(prod.id)) {
-                  appliedCouponIds.delete(prod.id);
-                  showToast('🏷️ Amazon coupon unclipped', 'info');
-                } else {
-                  appliedCouponIds.add(prod.id);
-                  const couponSaveDisplay = prod.native_price 
-                    ? formatMoney(couponVal, couponVal * (prod.native_price / prod.current_price), prod.currency)
-                    : formatMoney(couponVal);
-                  showToast(`🏷️ Amazon coupon applied! Saved ${couponSaveDisplay} at checkout`, 'success');
-                }
-                try {
-                  localStorage.setItem('pricepilot_clipped_coupons', JSON.stringify(Array.from(appliedCouponIds)));
-                } catch (err) {}
-                const isNowClipped = appliedCouponIds.has(prod.id);
-                updateModalNetPrices(isNowClipped, appliedBankCards[prod.id] || '');
-                renderProducts();
-              };
-            }
-          } else {
-            modalCouponRow.style.display = 'none';
-          }
-        }
-
-        if (modalCouponTerms) {
-          modalCouponTerms.onclick = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            openCouponTermsModal();
-          };
         }
 
         const modalBankOffersLink = document.getElementById('modalBankOffersLink');
@@ -1751,11 +1804,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
               clearBankCardOffer(prod.id);
             }
-            updateModalNetPrices(appliedCouponIds.has(prod.id), chosenId);
+            updateModalNetPrices(chosenId);
           };
         }
 
-        updateModalNetPrices(isModalClipped, currentModalCardId);
+        updateModalNetPrices(currentModalCardId);
 
         // Populate 3. AI Review Authenticity & Sentiment Analysis
         const rev = prod.review_intelligence || {};
@@ -1771,7 +1824,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const prosList = document.getElementById('intelProsList');
         const consList = document.getElementById('intelConsList');
 
-        if (trustGrade) trustGrade.textContent = `Grade ${rev.trust_grade || 'A'}`;
+        if (trustGrade) {
+          const tGrade = rev.trust_grade || 'A';
+          trustGrade.textContent = `Grade ${tGrade}`;
+          trustGrade.className = `trust-grade-badge grade-${tGrade}`;
+        }
         if (authScore) authScore.textContent = `${rev.authenticity_score || 92}% Verified`;
         const sent = rev.sentiment_breakdown || { positive: 75, neutral: 15, critical: 10 };
         if (posPct) posPct.textContent = `${sent.positive}%`;
@@ -1781,6 +1838,50 @@ document.addEventListener('DOMContentLoaded', () => {
         if (barNeu) barNeu.style.width = `${sent.neutral}%`;
         if (barCrit) barCrit.style.width = `${sent.critical}%`;
         if (quote) quote.textContent = `"${rev.consensus_summary || 'Positive consensus overall across verified owners.'}"`;
+        
+        const trustFactorsRow = document.getElementById('intelTrustFactorsRow');
+        if (trustFactorsRow) {
+          const pil = rev.pillars || {};
+          const isFake = Boolean(dec.is_deceptive);
+          trustFactorsRow.innerHTML = `
+            <span class="trust-factor-pill ${pil.rating_score >= 25 ? 'pill-verified' : ''}" title="Authentic customer rating contribution">
+              <i class="fa-solid fa-star text-amber"></i> Rating: ${pil.rating_score || 25}/35 pts
+            </span>
+            <span class="trust-factor-pill ${pil.volume_score >= 18 ? 'pill-verified' : ''}" title="Verified review volume & sample size reliability">
+              <i class="fa-solid fa-users text-sky"></i> Volume: ${pil.volume_score || 20}/25 pts
+            </span>
+            <span class="trust-factor-pill ${pil.brand_score >= 16 ? 'pill-verified' : ''}" title="Manufacturer track record, warranty & compliance">
+              <i class="fa-solid fa-award text-purple"></i> Brand Tier: ${pil.brand_score || 15}/20 pts
+            </span>
+            <span class="trust-factor-pill ${isFake ? 'pill-warning' : 'pill-verified'}" title="Commercial pricing transparency & baseline integrity">
+              <i class="fa-solid ${isFake ? 'fa-triangle-exclamation' : 'fa-shield-check'}"></i> 
+              Pricing: ${pil.pricing_score >= 0 ? '+' : ''}${pil.pricing_score || 18} pts
+            </span>
+          `;
+        }
+
+        const botBadge = document.getElementById('intelBotRiskBadge');
+        const aspectsGrid = document.getElementById('intelAspectsGrid');
+        const botRisk = rev.bot_risk || { tier: 'LOW', risk_pct: 6, description: 'Low bot risk' };
+        if (botBadge) {
+          botBadge.innerHTML = `<i class="fa-solid ${botRisk.tier === 'ELEVATED' ? 'fa-triangle-exclamation' : 'fa-shield-virus'}"></i> ${botRisk.tier === 'ELEVATED' ? 'Elevated Bot Risk' : 'Low Bot Risk'} (${botRisk.risk_pct}%)`;
+          botBadge.className = `bot-risk-badge ${botRisk.tier === 'ELEVATED' ? 'risk-elevated' : (botRisk.tier === 'MODERATE' ? 'risk-moderate' : '')}`;
+          botBadge.title = botRisk.description;
+        }
+        if (aspectsGrid && rev.aspect_sentiment) {
+          aspectsGrid.innerHTML = rev.aspect_sentiment.map(asp => `
+            <div class="aspect-card">
+              <div class="aspect-name-row">
+                <span><i class="fa-solid ${asp.icon || 'fa-check'}"></i> ${escapeHtml(asp.aspect)}</span>
+                <strong class="aspect-pct-val">${asp.positive_pct}%</strong>
+              </div>
+              <div class="aspect-bar-track">
+                <div class="aspect-bar-fill" style="width: ${asp.positive_pct}%;"></div>
+              </div>
+            </div>
+          `).join('');
+        }
+
         if (prosList && rev.key_pros) {
           prosList.innerHTML = rev.key_pros.map(p => `<li>${p}</li>`).join('');
         }
@@ -1823,6 +1924,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const prices = history.map(h => h.price * curr.rate);
     const targetPriceConverted = targetPriceUSD * curr.rate;
 
+    // Detect All-Time Low historical milestone
+    let minPriceIdx = -1;
+    let minPriceVal = Infinity;
+    prices.forEach((p, idx) => {
+      if (p != null && p < minPriceVal) {
+        minPriceVal = p;
+        minPriceIdx = idx;
+      }
+    });
+
+    const pointColors = prices.map((p, idx) => idx === minPriceIdx ? '#10b981' : '#ff7700');
+    const pointRadii = prices.map((p, idx) => idx === minPriceIdx ? 7 : 4);
+    const pointBorders = prices.map((p, idx) => idx === minPriceIdx ? '#ffffff' : '#0a0a0c');
+
     const gradient = ctx.createLinearGradient(0, 0, 0, 300);
     gradient.addColorStop(0, 'rgba(255, 119, 0, 0.35)');
     gradient.addColorStop(1, 'rgba(255, 119, 0, 0.0)');
@@ -1836,10 +1951,10 @@ document.addEventListener('DOMContentLoaded', () => {
         borderWidth: 2.5,
         fill: true,
         tension: 0.35,
-        pointRadius: 4,
-        pointHoverRadius: 7,
-        pointBackgroundColor: '#ff7700',
-        pointBorderColor: '#0a0a0c',
+        pointRadius: pointRadii,
+        pointHoverRadius: 8,
+        pointBackgroundColor: pointColors,
+        pointBorderColor: pointBorders,
         pointBorderWidth: 2
       },
       {
@@ -1904,7 +2019,13 @@ document.addEventListener('DOMContentLoaded', () => {
             bodyFont: { family: 'JetBrains Mono', size: 13 },
             padding: 12,
             callbacks: {
-              label: (context) => `${context.dataset.label}: ${curr.symbol}${context.parsed.y != null ? context.parsed.y.toLocaleString(undefined, { minimumFractionDigits: currentCurrency === 'JPY' ? 0 : 2 }) : ''}`
+              label: (context) => {
+                let lbl = `${context.dataset.label}: ${curr.symbol}${context.parsed.y != null ? context.parsed.y.toLocaleString(undefined, { minimumFractionDigits: currentCurrency === 'JPY' ? 0 : 2 }) : ''}`;
+                if (context.datasetIndex === 0 && context.dataIndex === minPriceIdx) {
+                  lbl += ' 🏆 [All-Time Low Record]';
+                }
+                return lbl;
+              }
             }
           }
         },
@@ -2266,6 +2387,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (competitorModal) {
     competitorModal.addEventListener('click', (e) => {
       if (e.target === competitorModal) competitorModal.classList.add('hidden');
+    });
+  }
+
+  const modalCompareStoresBtn = document.getElementById('modalCompareStoresBtn');
+  if (modalCompareStoresBtn) {
+    modalCompareStoresBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (currentModalProductId) {
+        if (chartModal) chartModal.classList.add('hidden');
+        openCompetitorModal(currentModalProductId);
+      }
     });
   }
 

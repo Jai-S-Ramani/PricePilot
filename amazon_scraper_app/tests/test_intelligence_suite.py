@@ -11,7 +11,8 @@ from intelligence import (
     calculate_review_intelligence,
     calculate_net_price_with_offers,
     predict_price_drop_probability,
-    optimize_basket_arbitrage
+    optimize_basket_arbitrage,
+    compute_buying_verdict
 )
 from app import app
 import database as db
@@ -50,6 +51,21 @@ class TestIntelligenceSuite(unittest.TestCase):
         self.assertGreater(len(res["key_pros"]), 0)
         self.assertGreater(len(res["key_cons"]), 0)
         self.assertTrue(len(res["consensus_summary"]) > 10)
+
+    def test_review_intelligence_deceptive_sale_penalty(self):
+        # Deceptive fake sales must be penalized and cannot achieve Grade A or B
+        res = calculate_review_intelligence(
+            product_title="Sony WH-1000XM5 Wireless Headphones",
+            category="Electronics",
+            rating=4.7,
+            reviews_count=2400,
+            is_deceptive=True,
+            inflation_pct=21.0
+        )
+        self.assertIn(res["trust_grade"], ["C", "D"])
+        self.assertLessEqual(res["authenticity_score"], 74)
+        self.assertIn("deceptive", res["consensus_summary"].lower())
+        self.assertTrue(any("deceptive" in c.lower() or "inflated" in c.lower() for c in res["key_cons"]))
 
     def test_net_price_with_offers(self):
         res = calculate_net_price_with_offers(100.0, "USD")
@@ -120,6 +136,45 @@ class TestIntelligenceSuite(unittest.TestCase):
             reset_data = reset_res.get_json()
             self.assertEqual(reset_data["status"], "success")
             self.assertGreater(reset_data["current_price"], sim_data["new_price"])
+
+    def test_buying_verdict_buy_now(self):
+        deceptive = {"is_deceptive": False, "status": "ALL_TIME_LOW", "real_discount_pct": 12.0, "baseline_price": 100.0}
+        drop_pred = {"probability_pct": 15, "likelihood_tier": "LOW", "predicted_channel_low": 85.0}
+        net_pricing = {"total_extra_savings": 10.0, "net_effective_price": 78.0}
+        res = compute_buying_verdict(88.0, 100.0, deceptive, drop_pred, net_pricing, lowest_price=88.0, median_price=100.0)
+        self.assertEqual(res["verdict"], "BUY_NOW")
+        self.assertEqual(res["verdict_label"], "Buy Now")
+        self.assertIn("all-time low", res["rationale"].lower())
+
+    def test_buying_verdict_wait_and_save(self):
+        # Fake sale scenario
+        deceptive = {"is_deceptive": True, "status": "INFLATED_BASELINE", "inflation_pct": 25.0, "baseline_price": 100.0}
+        drop_pred = {"probability_pct": 85, "likelihood_tier": "HIGH", "predicted_channel_low": 95.0}
+        res = compute_buying_verdict(125.0, 150.0, deceptive, drop_pred, lowest_price=90.0, median_price=100.0)
+        self.assertEqual(res["verdict"], "WAIT_AND_SAVE")
+        self.assertEqual(res["verdict_label"], "Wait & Save")
+        self.assertGreater(res["projected_savings"], 0.0)
+
+    def test_aspect_sentiment_and_bot_risk(self):
+        res = calculate_review_intelligence(
+            product_title="Sony WH-1000XM5 Wireless Headphones",
+            category="Electronics",
+            rating=4.7,
+            reviews_count=5000
+        )
+        self.assertIn("aspect_sentiment", res)
+        self.assertGreater(len(res["aspect_sentiment"]), 0)
+        self.assertIn("bot_risk", res)
+        self.assertIn("tier", res["bot_risk"])
+        self.assertEqual(res["bot_risk"]["tier"], "LOW")
+
+    def test_api_health_endpoint(self):
+        res = self.client.get("/api/health")
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json()
+        self.assertEqual(data["status"], "healthy")
+        self.assertTrue(data["database"]["connected"])
+        self.assertGreaterEqual(data["database"]["tracked_products"], 1)
 
 
 if __name__ == "__main__":

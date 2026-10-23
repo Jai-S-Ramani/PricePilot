@@ -11,8 +11,7 @@
 
 - 🔎 **Real-Time Amazon Live Search & Autocomplete**: Search products directly across Amazon's catalog with instant debounced suggestions, regional selection (defaulting to 🇮🇳 India `IN`), and 1-click tracking.
 - 🏪 **18-Store Competitor Arbitrage Engine**: Benchmarks Amazon against **13 Indian marketplaces** (Flipkart, Croma, Reliance Digital, Tata CLiQ, JioMart, Meesho, Blinkit, Zepto, Swiggy Instamart, BigBasket, Myntra, AJIO, Nykaa) and **5 Global retailers** (Walmart, Best Buy, eBay, Target, B&H Photo).
-- 💳 **Authentic Amazon India Bank Offers Drawer**: Dynamic bank offers drawer (`Offer 1` CC EMI, `Offer 2` CC Non-EMI, `Offer 3` 24m EMI with Amazon Upgrade+, `Offer 4` Debit Card, `Offer 5` Amazon Pay ICICI Cashback) with inline `See details >` terms expanders and instant `[Apply]` calculation.
-- 🏷️ **Amazon Clip-and-Save Coupons (Checkbox-Free)**: Sleek `[Apply]` / `[✓ Applied]` action buttons for coupons and card offers with real-time net price recomputation and zero raw checkboxes.
+- 💳 **Authentic Amazon India Bank Offers Drawer**: Dynamic bank offers drawer (`Offer 1` CC EMI, `Offer 2` CC Non-EMI, `Offer 3` 24m EMI with Amazon Upgrade+, `Offer 4` Debit Card, `Offer 5` Amazon Pay ICICI Cashback) with inline `See details >` terms expanders and instant partner card savings calculation.
 - 🧠 **6-Engine E-Commerce Intelligence Suite**: Deceptive price detection, AI review authenticity & sentiment grading, price drop probability forecaster (0–100%), and multi-store split basket arbitrage optimizer.
 - 🏷️ **Intelligent Catalog Availability Filter**: Real-world vertical filtering that excludes stores that do not sell a specific product category (e.g., Nykaa does not sell OnePlus Buds; Croma does not sell fashion apparel).
 - 🔔 **Multi-Channel Alert Dispatcher**: Pushes instant price-drop alerts across **Discord Webhooks** (rich emerald embeds), **Telegram Bots** (Markdown push notifications), and **HTML Emails**.

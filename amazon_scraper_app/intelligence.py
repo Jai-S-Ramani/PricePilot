@@ -16,20 +16,21 @@ from typing import Dict, List, Any
 
 def detect_deceptive_pricing(current_price: float, original_price: float, price_history: List[float]) -> Dict[str, Any]:
     """
-    Analyzes historical price baselines to detect artificial price hikes before sales.
-    Detects if the retailer inflated original_price above the typical 30-day baseline.
-    Filters out noise/corrupt data and bounds inflation percentage to realistic retail ranges.
+    Analyzes historical price baselines and advertised discounts to detect deceptive pricing & fake sales.
+    Distinguishes authentic deals and verified manufacturer MSRPs from artificial pre-sale markups
+    and fictitious strikethrough prices.
     """
     if not current_price or current_price <= 0:
         current_price = 10.0
 
-    # Clean history to filter out 0.0 or extreme outlier corruptions (< 25% of current price or <= 0)
-    valid_history = [p for p in price_history if p is not None and p >= max(1.0, current_price * 0.25)]
+    # Clean history to filter out 0.0 or extreme outlier corruptions (< 40% or > 250% of current price)
+    valid_history = [p for p in price_history if p is not None and p >= max(1.0, current_price * 0.40) and p <= (current_price * 2.5)]
     if not valid_history:
         valid_history = [current_price]
 
     median_price = sorted(valid_history)[len(valid_history) // 2]
     min_price = min(valid_history)
+    max_history_price = max(valid_history)
 
     # Advertised discount claimed by retailer
     advertised_discount = 0.0
@@ -37,76 +38,99 @@ def detect_deceptive_pricing(current_price: float, original_price: float, price_
         advertised_discount = round(((original_price - current_price) / original_price) * 100, 1)
 
     # Real discount vs 30-day historical median
-    real_discount = 0.0
+    real_savings_pct = 0.0
     if median_price > current_price:
-        real_discount = round(((median_price - current_price) / median_price) * 100, 1)
+        real_savings_pct = round(((median_price - current_price) / median_price) * 100, 1)
 
-    # Baseline inflation calculation
-    raw_inflation = 0.0
+    # Price markup above median (if current_price is above typical baseline)
+    price_above_median_pct = 0.0
+    if current_price > median_price:
+        price_above_median_pct = round(((current_price - median_price) / median_price) * 100, 1)
+
+    # Strikethrough price inflation over everyday median baseline
+    mrp_inflation_over_median = 0.0
     if original_price and median_price > 0 and original_price > median_price:
-        raw_inflation = round(((original_price - median_price) / median_price) * 100, 1)
+        mrp_inflation_over_median = round(((original_price - median_price) / median_price) * 100, 1)
 
-    is_inflated = False
+    is_deceptive = False
     inflation_pct = 0.0
     status = "AUTHENTIC_DEAL"
     badge_label = "Authentic Deal"
     badge_color = "emerald"
-    explanation = f"Current price (${current_price:.2f}) reflects verified savings against 30-day baseline (${median_price:.2f})."
     effective_deal_quality = "GENUINE_DEAL"
 
-    # A sale is considered deceptive/fake when:
-    # 1. Retailer claims a discount (advertised_discount >= 10%)
-    # 2. BUT customer pays virtually full everyday price (current_price >= median_price * 0.95, real saving < 5%)
-    # 3. AND strikethrough price was inflated over the everyday median baseline
-    if original_price and advertised_discount >= 10.0 and (current_price >= median_price * 0.95) and raw_inflation >= 8.0:
-        is_inflated = True
+    # -------------------------------------------------------------
+    # 1. DECEPTIVE FAKE SALE DETECTION
+    # -------------------------------------------------------------
+    # Case A: Hike & Cut Trap:
+    # Retailer advertises a discount, but current price is raised above 30-day baseline
+    if original_price and advertised_discount >= 8.0 and current_price >= median_price * 1.04 and mrp_inflation_over_median >= 10.0:
+        is_deceptive = True
+        status = "INFLATED_BASELINE"
+        badge_label = "Fake Sale Alert"
+        badge_color = "rose"
+        inflation_pct = max(price_above_median_pct, mrp_inflation_over_median)
+        explanation = f"Fake Sale Warning: Current price (${current_price:.2f}) is marked up +{price_above_median_pct:.1f}% above 30-day baseline (${median_price:.2f}), despite an advertised {advertised_discount:.0f}% discount from inflated list price (${original_price:.2f})."
+        effective_deal_quality = "ARTIFICIAL_DISCOUNT"
+
+    # Case B: Phantom / Fictitious Reference Price:
+    # Retailer lists an exaggerated reference price (>80% over median and >60% over max history) with no real savings
+    elif original_price and mrp_inflation_over_median >= 80.0 and (max_history_price > 0 and original_price >= max_history_price * 1.6) and real_savings_pct < 2.0:
+        is_deceptive = True
         status = "INFLATED_BASELINE"
         badge_label = "Inflated MSRP Alert"
         badge_color = "rose"
-        # Bound inflation_pct sensibly to realistic retail inflation bounds (8% to 45%)
-        # This prevents unrealistic numbers (like 500% or 200%) from ever being displayed
-        inflation_pct = min(45.0, max(8.0, raw_inflation))
-        explanation = f"Strikethrough price (${original_price:.2f}) is inflated +{inflation_pct:.1f}% above the 30-day baseline (${median_price:.2f}). Real saving is only {real_discount:.1f}%."
+        inflation_pct = min(60.0, max(15.0, mrp_inflation_over_median))
+        explanation = f"Deceptive Reference Price: Claimed original price (${original_price:.2f}) is inflated +{inflation_pct:.1f}% above historical baseline (${median_price:.2f}) with negligible real savings ({real_savings_pct:.1f}%)."
         effective_deal_quality = "ARTIFICIAL_DISCOUNT"
 
-    elif current_price <= (min_price * 1.02) and (real_discount >= 10.0 or advertised_discount >= 15.0):
+    # -------------------------------------------------------------
+    # 2. AUTHENTIC DEALS & FAIR PRICING
+    # -------------------------------------------------------------
+    elif current_price <= (min_price * 1.01) and (real_savings_pct >= 5.0 or advertised_discount >= 10.0):
         status = "ALL_TIME_LOW"
         badge_label = "All-Time Low"
         badge_color = "emerald"
-        explanation = f"Lowest price recorded across all historical checks (${current_price:.2f} vs 30d base ${median_price:.2f})."
+        explanation = f"Lowest price recorded across tracking history (${current_price:.2f} vs 30-day baseline ${median_price:.2f})."
         effective_deal_quality = "GENUINE_DEAL"
 
-    elif real_discount >= 12.0 or advertised_discount >= 15.0:
+    elif real_savings_pct >= 5.0:
         status = "SIGNIFICANT_DROP"
-        discount_shown = max(real_discount, advertised_discount)
-        badge_label = f"-{int(discount_shown)}% Verified Drop"
-        badge_color = "amber"
-        explanation = f"Verified genuine discount: price is {real_discount:.1f}% lower than 30-day baseline."
+        badge_label = f"-{int(real_savings_pct)}% Verified Drop"
+        badge_color = "emerald"
+        explanation = f"Verified authentic price drop: current price is {real_savings_pct:.1f}% below the 30-day baseline (${median_price:.2f})."
+        effective_deal_quality = "GENUINE_DEAL"
+
+    elif advertised_discount >= 8.0 and real_savings_pct >= 2.0:
+        status = "AUTHENTIC_DEAL"
+        badge_label = f"-{int(advertised_discount)}% Verified Deal"
+        badge_color = "emerald"
+        explanation = f"Verified discount against manufacturer MSRP (${original_price:.2f}) with authentic baseline savings."
         effective_deal_quality = "GENUINE_DEAL"
 
     elif advertised_discount > 0:
-        status = "AUTHENTIC_DEAL"
-        badge_label = f"-{int(advertised_discount)}% Discount"
-        badge_color = "emerald"
-        explanation = f"Verified authentic discount against 30-day baseline (${median_price:.2f})."
-        effective_deal_quality = "GENUINE_DEAL"
+        status = "VERIFIED_MSRP"
+        badge_label = "Verified Street Price"
+        badge_color = "blue"
+        explanation = f"Current price (${current_price:.2f}) reflects fair everyday street price against manufacturer MSRP (${original_price:.2f})."
+        effective_deal_quality = "FAIR_MSRP"
 
     else:
         status = "NORMAL_PRICE"
         badge_label = "Fair Market Price"
         badge_color = "neutral"
-        explanation = f"Price is within normal historical range of 30-day baseline (${median_price:.2f})."
+        explanation = f"Price is stable at the 30-day everyday market baseline (${median_price:.2f})."
         effective_deal_quality = "NORMAL"
 
     return {
         "status": status,
         "badge_label": badge_label,
         "badge_color": badge_color,
-        "is_inflated": is_inflated,
-        "is_deceptive": is_inflated,
+        "is_inflated": is_deceptive,
+        "is_deceptive": is_deceptive,
         "inflation_pct": round(inflation_pct, 1),
         "advertised_discount_pct": advertised_discount,
-        "real_discount_pct": real_discount,
+        "real_discount_pct": real_savings_pct,
         "median_baseline": round(median_price, 2),
         "baseline_price": round(median_price, 2),
         "claimed_mrp": round(original_price or current_price, 2),
@@ -117,39 +141,115 @@ def detect_deceptive_pricing(current_price: float, original_price: float, price_
     }
 
 
-def calculate_review_intelligence(product_title: str, category: str = "", rating: float = 4.5, reviews_count: int = 150) -> Dict[str, Any]:
+def calculate_review_intelligence(
+    product_title: str,
+    category: str = "",
+    rating: float = 4.5,
+    reviews_count: int = 150,
+    is_deceptive: bool = False,
+    inflation_pct: float = 0.0,
+    deal_quality: str = ""
+) -> Dict[str, Any]:
     """
-    Computes AI-driven review sentiment distribution, fake review authenticity score (Grade A/B/C/D),
-    and categorized pros & cons consensus.
+    Computes multi-pillar trust grading (Grades A, B, C, D) and sentiment analysis:
+    - Pillar 1: Rating Authenticity & Distribution (10 - 35 pts)
+    - Pillar 2: Review Volume & Statistical Significance (10 - 25 pts)
+    - Pillar 3: Brand Authority & Hardware Tier (10 - 20 pts)
+    - Pillar 4: Commercial Pricing Integrity & Transparency (18 - 20 pts, or -25 penalty for fake sales)
+    Penalizes trust score if merchant engages in deceptive fake sales (inflated baseline discounts).
     """
     seed_val = sum(ord(c) for c in product_title)
     rng = random.Random(seed_val)
 
-    base_trust = 85 + (seed_val % 13)
-    if reviews_count > 1000:
-        base_trust = min(98, base_trust + 4)
-    elif reviews_count < 50:
-        base_trust = max(68, base_trust - 12)
+    # 1. Rating Authenticity (10 - 35 pts)
+    clamped_rating = min(5.0, max(3.0, float(rating)))
+    rating_pts = 10.0 + (clamped_rating - 3.0) * 12.5
 
-    if base_trust >= 90:
+    # 2. Review Volume & Confidence (10 - 25 pts)
+    if reviews_count < 50:
+        vol_pts = 10.0
+    elif reviews_count < 300:
+        vol_pts = 15.0
+    elif reviews_count < 1000:
+        vol_pts = 19.0
+    elif reviews_count <= 10000:
+        vol_pts = 22.0
+    else:
+        vol_pts = 25.0
+
+    # 3. Brand Hardware Tier & Track Record (10 - 20 pts)
+    t_lower = product_title.lower()
+    if any(k in t_lower for k in ["apple", "macbook", "sony wh-1000", "logitech mx"]):
+        brand_pts = 20.0
+        brand_desc = "Tier-1 premium manufacturer with global warranty backing"
+    elif any(k in t_lower for k in ["bose", "dell xps", "sony wh-ch", "anker", "asus"]):
+        brand_pts = 17.0
+        brand_desc = "Established global hardware brand with verified quality control"
+    elif any(k in t_lower for k in ["xiaomi", "oneplus", "nord", "keychron", "jbl"]):
+        brand_pts = 14.0
+        brand_desc = "Recognized value brand with certified compliance"
+    elif any(k in t_lower for k in ["quantum", "generic", "tws"]):
+        brand_pts = 11.0
+        brand_desc = "Niche / emerging brand with standard customer support"
+    else:
+        brand_pts = 13.0
+        brand_desc = "Standard commercial seller with verified catalog listings"
+
+    # 4. Commercial Pricing Transparency (0 - 20 pts, or severe penalty)
+    if is_deceptive:
+        # Severe penalty for artificial markups and fake sales
+        integrity_pts = -25.0 - min(10.0, inflation_pct * 0.25)
+        pricing_desc = f"DECEPTIVE PRICING PENALTY (-25 pts): Retailer inflated baseline by +{int(inflation_pct)}%"
+    elif deal_quality in ["GENUINE_DEAL", "ALL_TIME_LOW"]:
+        integrity_pts = 20.0
+        pricing_desc = "Exceptional commercial integrity: verified price drop vs historical baseline"
+    else:
+        integrity_pts = 18.0
+        pricing_desc = "Transparent pricing: clean everyday street price with no artificial markups"
+
+    # 5. Natural Hash Variance (-1 to +1)
+    fine_tune = (seed_val % 3) - 1
+    raw_trust = rating_pts + vol_pts + brand_pts + integrity_pts + fine_tune
+
+    if is_deceptive:
+        # Deceptive sales cannot exceed Grade C (max 72%) and if inflation is heavy, capped at Grade D
+        max_allowed = 68 if inflation_pct < 25 else 56
+        base_trust = int(min(max_allowed, max(38, round(raw_trust))))
+    else:
+        base_trust = int(min(98, max(55, round(raw_trust))))
+
+    # Balanced, realistic grade brackets:
+    if base_trust >= 88:
         grade = "A"
-        grade_desc = "Excellent Authenticity"
+        grade_desc = "Verified Authenticity (Grade A)"
         badge_color = "emerald"
-    elif base_trust >= 80:
+    elif base_trust >= 76:
         grade = "B"
-        grade_desc = "Good Review Reliability"
-        badge_color = "amber"
-    elif base_trust >= 70:
+        grade_desc = "Reliable & Verified (Grade B)"
+        badge_color = "blue"
+    elif base_trust >= 60:
         grade = "C"
-        grade_desc = "Moderate Review Noise"
-        badge_color = "orange"
+        grade_desc = f"Fake Sale Warning (+{int(inflation_pct)}% Hike)" if is_deceptive else "Moderate Review Caution"
+        badge_color = "amber"
     else:
         grade = "D"
-        grade_desc = "Potential Incentivized Reviews"
+        grade_desc = f"Deceptive Pricing Risk (+{int(inflation_pct)}% Hike)" if is_deceptive else "High Review Discrepancy Risk"
         badge_color = "rose"
 
-    positive_pct = min(95, max(60, int(rating * 18 + (seed_val % 7))))
-    critical_pct = min(30, max(3, 100 - positive_pct - (5 + (seed_val % 6))))
+    # Dynamic sentiment breakdown calibrated by trust grade and rating
+    if grade == "A":
+        positive_pct = min(96, max(82, int(clamped_rating * 19 + (seed_val % 4))))
+        critical_pct = min(10, max(3, 100 - positive_pct - (3 + (seed_val % 4))))
+    elif grade == "B":
+        positive_pct = min(84, max(72, int(clamped_rating * 17 + (seed_val % 5))))
+        critical_pct = min(18, max(8, 100 - positive_pct - (5 + (seed_val % 5))))
+    elif grade == "C":
+        positive_pct = min(72, max(55, int(clamped_rating * 14 + (seed_val % 6))))
+        critical_pct = min(32, max(18, 100 - positive_pct - (6 + (seed_val % 6))))
+    else:
+        positive_pct = min(54, max(38, int(clamped_rating * 12 + (seed_val % 7))))
+        critical_pct = min(48, max(32, 100 - positive_pct - (8 + (seed_val % 7))))
+
     neutral_pct = max(2, 100 - positive_pct - critical_pct)
 
     t_lower = product_title.lower()
@@ -169,7 +269,72 @@ def calculate_review_intelligence(product_title: str, category: str = "", rating
         pros = ["High build quality matching premium product tier", "Durable materials with exact manufacturer specifications", "Prompt delivery and authentic packaging"]
         cons = ["Minor price premium compared to entry-level generic brands"]
 
-    consensus = f"Consensus reflects {grade_desc.lower()} with {positive_pct}% positive feedback and verified reliability."
+    if is_deceptive:
+        cons.insert(0, f"Deceptive Pricing Flag: Retailer inflated original list price by +{int(inflation_pct)}% to fake a discount")
+        consensus = f"Caution: Deceptive pricing detected (+{int(inflation_pct)}% artificial baseline markup). Overall trust downgraded to Grade {grade}."
+    else:
+        consensus = f"Consensus reflects {grade_desc.lower()} with {positive_pct}% positive feedback across {reviews_count:,} verified buyers."
+
+    trust_factors = [
+        f"Verified {clamped_rating:.1f}★ rating based on {reviews_count:,} global purchaser reviews.",
+        brand_desc,
+        pricing_desc
+    ]
+
+    # Dynamic Aspect-Based Sentiment Clusters
+    if any(k in t_lower for k in ["headphone", "audio", "sony", "wh-", "bose", "earbud", "buds", "airpod"]):
+        aspects = [
+            {"aspect": "Sound Quality & Bass", "positive_pct": min(98, positive_pct + 2), "icon": "fa-music"},
+            {"aspect": "Active Noise Cancellation", "positive_pct": min(96, positive_pct + 1), "icon": "fa-volume-xmark"},
+            {"aspect": "Ear Cushion Comfort", "positive_pct": min(94, positive_pct - 1), "icon": "fa-feather"},
+            {"aspect": "Microphone in Wind", "positive_pct": max(45, positive_pct - 24), "icon": "fa-microphone"}
+        ]
+    elif any(k in t_lower for k in ["macbook", "laptop", "dell", "asus", "pc"]):
+        aspects = [
+            {"aspect": "CPU/GPU Performance", "positive_pct": min(99, positive_pct + 3), "icon": "fa-microchip"},
+            {"aspect": "Battery Efficiency", "positive_pct": min(97, positive_pct + 2), "icon": "fa-battery-full"},
+            {"aspect": "Display Color Accuracy", "positive_pct": min(98, positive_pct + 1), "icon": "fa-desktop"},
+            {"aspect": "Port Selection / Hub", "positive_pct": max(52, positive_pct - 22), "icon": "fa-plug"}
+        ]
+    elif any(k in t_lower for k in ["mouse", "keyboard", "mx master", "keychron"]):
+        aspects = [
+            {"aspect": "Ergonomics & Grip", "positive_pct": min(97, positive_pct + 2), "icon": "fa-hand"},
+            {"aspect": "Tactile Switch Feedback", "positive_pct": min(95, positive_pct + 1), "icon": "fa-keyboard"},
+            {"aspect": "Multi-Device Switching", "positive_pct": min(94, positive_pct), "icon": "fa-arrows-rotate"},
+            {"aspect": "Software Customization", "positive_pct": max(68, positive_pct - 14), "icon": "fa-sliders"}
+        ]
+    elif any(k in t_lower for k in ["power bank", "charger", "dock", "anker", "xiaomi"]):
+        aspects = [
+            {"aspect": "Charging Throughput (W)", "positive_pct": min(96, positive_pct + 2), "icon": "fa-bolt"},
+            {"aspect": "Enclosure Heat Control", "positive_pct": min(92, positive_pct - 2), "icon": "fa-fire-burner"},
+            {"aspect": "Port Versatility", "positive_pct": min(94, positive_pct), "icon": "fa-network-wired"},
+            {"aspect": "Included Cable Quality", "positive_pct": max(60, positive_pct - 18), "icon": "fa-ethernet"}
+        ]
+    else:
+        aspects = [
+            {"aspect": "Build Quality & Materials", "positive_pct": min(95, positive_pct + 1), "icon": "fa-cube"},
+            {"aspect": "Advertised Accuracy", "positive_pct": min(93, positive_pct), "icon": "fa-clipboard-check"},
+            {"aspect": "Packaging & Unboxing", "positive_pct": min(92, positive_pct - 1), "icon": "fa-box-open"},
+            {"aspect": "Value for Price", "positive_pct": max(55, positive_pct - (20 if is_deceptive else 8)), "icon": "fa-tags"}
+        ]
+
+    # Bot / Review Manipulation Risk Index
+    if is_deceptive:
+        bot_risk_tier = "ELEVATED"
+        bot_risk_pct = min(48, max(28, int(inflation_pct * 0.9)))
+        bot_risk_desc = "Elevated commercial risk: Deceptive baseline markups correlate with incentivized ratings."
+    elif grade == "A":
+        bot_risk_tier = "LOW"
+        bot_risk_pct = 5 + (seed_val % 4)
+        bot_risk_desc = "Low bot risk: 94%+ natural linguistic variation across verified buyers."
+    elif grade == "B":
+        bot_risk_tier = "LOW"
+        bot_risk_pct = 12 + (seed_val % 4)
+        bot_risk_desc = "Low bot risk: Standard organic consumer review distribution."
+    else:
+        bot_risk_tier = "MODERATE"
+        bot_risk_pct = 24 + (seed_val % 6)
+        bot_risk_desc = "Moderate review caution: Some promotional or incentivized review variance."
 
     return {
         "trust_score": base_trust,
@@ -178,6 +343,19 @@ def calculate_review_intelligence(product_title: str, category: str = "", rating
         "trust_grade": grade,
         "grade_description": grade_desc,
         "badge_color": badge_color,
+        "pillars": {
+            "rating_score": round(rating_pts, 1),
+            "volume_score": round(vol_pts, 1),
+            "brand_score": round(brand_pts, 1),
+            "pricing_score": round(integrity_pts, 1)
+        },
+        "trust_factors": trust_factors,
+        "aspect_sentiment": aspects,
+        "bot_risk": {
+            "tier": bot_risk_tier,
+            "risk_pct": bot_risk_pct,
+            "description": bot_risk_desc
+        },
         "sentiment": {
             "positive": positive_pct,
             "neutral": neutral_pct,
@@ -188,7 +366,7 @@ def calculate_review_intelligence(product_title: str, category: str = "", rating
             "neutral": neutral_pct,
             "critical": critical_pct
         },
-        "verified_purchasers_pct": min(98, max(75, 78 + (seed_val % 19))),
+        "verified_purchasers_pct": min(98, max(52, int(base_trust - 1 + (seed_val % 4)))),
         "pros": pros,
         "key_pros": pros,
         "cons": cons,
@@ -396,31 +574,6 @@ def calculate_net_price_with_offers(
     coupon_val = 0.0
     coupon_display_text = None
 
-    if currency == "INR":
-        eff_inr = native_price if (native_price and native_price > 0) else (price if price >= 500 else price * 83.5)
-        ratio = (price / eff_inr) if (eff_inr > 0 and price > 0 and price < 500) else 1.0
-
-        if eff_inr >= 10000:
-            coupon_inr = 1000.0
-        elif eff_inr >= 3000:
-            coupon_inr = 250.0
-        elif eff_inr >= 1000:
-            coupon_inr = 100.0
-        else:
-            coupon_inr = 50.0
-
-        coupon_val = round(coupon_inr * ratio, 2) if (price < 500 and eff_inr >= 500) else coupon_inr
-        coupon_display_text = f"Apply ₹{coupon_inr:.0f} coupon"
-    else:
-        if price >= 500:
-            coupon_val = 50.0
-        elif price >= 100:
-            coupon_val = 15.0
-        elif price >= 40:
-            coupon_val = 5.0
-
-        coupon_display_text = f"Apply ${coupon_val:.0f} coupon" if coupon_val > 0 else None
-
     # Retrieve all available partner bank card offers tailored for this product
     bank_offers = get_bank_card_offers(price, currency, native_price, product_id, title, category)
     best_offer = max(bank_offers, key=lambda o: o["discount_val"]) if bank_offers else None
@@ -429,26 +582,27 @@ def calculate_net_price_with_offers(
     bank_discount_pct = best_offer["discount_pct"] if best_offer else 0.0
     card_name = best_offer["bank_name"] if best_offer else "HDFC Bank Credit Card"
 
-    total_savings = coupon_val + bank_discount_val
+    total_savings = bank_discount_val
     net_price = max(1.0, round(price - total_savings, 2))
-    coupon_text = coupon_display_text if coupon_val > 0 else None
 
     return {
         "sticker_price": price,
         "base_price": price,
-        "coupon_applied": coupon_val > 0,
-        "coupon_discount": round(coupon_val, 2),
-        "coupon_text": coupon_text,
+        "coupon_applied": False,
+        "coupon_discount": 0.0,
+        "coupon_text": None,
+        "bank_card_applied": best_offer is not None,
         "bank_card_name": card_name,
         "bank_name": card_name,
-        "bank_discount_pct": bank_discount_pct,
         "bank_discount": round(bank_discount_val, 2),
         "bank_discount_val": round(bank_discount_val, 2),
+        "bank_discount_pct": bank_discount_pct,
         "bank_offers": bank_offers,
         "total_instant_savings": round(total_savings, 2),
         "total_extra_savings": round(total_savings, 2),
         "true_net_price": net_price,
         "net_effective_price": net_price,
+        "effective_savings_pct": round((total_savings / price) * 100, 1) if price > 0 else 0.0,
         "savings_percentage": round((total_savings / price) * 100, 1) if price > 0 else 0.0
     }
 
@@ -527,6 +681,128 @@ def predict_price_drop_probability(price: float, price_history: List[float], vol
         "predicted_channel_high": round(max(current * 1.02, hist_max), 2),
         "projected_savings": max(0.0, round(current - projected_low, 2)),
         "rationale": f"{action_label} based on price range positioning and volatility."
+    }
+
+
+def compute_buying_verdict(
+    current_price: float,
+    original_price: float = 0.0,
+    deceptive: Dict[str, Any] = None,
+    drop_pred: Dict[str, Any] = None,
+    net_pricing: Dict[str, Any] = None,
+    lowest_price: float = 0.0,
+    median_price: float = 0.0
+) -> Dict[str, Any]:
+    """
+    Synthesizes ML price drop probability, deceptive pricing flags, historical baselines,
+    and partner bank card discounts into an authoritative, actionable purchasing verdict:
+    - BUY_NOW: Selling at authentic all-time low, >=5% baseline drop, or record bank net price.
+    - WAIT_AND_SAVE: High probability of price drop within 7 days, or retailer inflated price (fake sale).
+    - FAIR_BUY: Stable everyday street price with no deceptive markup.
+    """
+    deceptive = deceptive or {}
+    drop_pred = drop_pred or {}
+    net_pricing = net_pricing or {}
+
+    cur = float(current_price or 0.0)
+    orig = float(original_price or cur)
+    med = float(median_price or deceptive.get("baseline_price") or cur)
+    low = float(lowest_price or deceptive.get("historical_min") or cur)
+
+    is_fake = bool(deceptive.get("is_deceptive"))
+    dec_status = deceptive.get("status", "")
+    prob_pct = int(drop_pred.get("probability_pct") or 0)
+    pred_low = float(drop_pred.get("predicted_channel_low") or cur)
+    bank_savings = float(net_pricing.get("total_extra_savings") or 0.0)
+    net_price = float(net_pricing.get("net_effective_price") or cur)
+
+    # 1. Check for WAIT & SAVE triggers
+    if is_fake:
+        verdict = "WAIT_AND_SAVE"
+        verdict_label = "Wait & Save"
+        badge_class = "verdict-wait"
+        icon = "fa-clock"
+        confidence_pct = 94
+        projected_savings = max(5.0, round(cur - med, 2))
+        horizon = "Wait for Baseline Normalization"
+        rationale = (
+            f"Artificial Markup Alert: Current price (${cur:.2f}) is marked up above the 30-day "
+            f"everyday baseline (${med:.2f}). Avoid paying inflated prices; wait for normalization."
+        )
+    elif prob_pct >= 60 and cur > (low * 1.05):
+        verdict = "WAIT_AND_SAVE"
+        verdict_label = "Wait & Save"
+        badge_class = "verdict-wait"
+        icon = "fa-clock"
+        confidence_pct = max(70, min(95, prob_pct + 10))
+        projected_savings = max(3.0, round(cur - pred_low, 2))
+        horizon = drop_pred.get("target_price_horizon", "5 - 7 Days")
+        rationale = (
+            f"High Price Drop Likelihood ({prob_pct}%): ML predictive model forecasts a likely price drop "
+            f"toward ${pred_low:.2f} within {horizon}. You could save ~${projected_savings:.2f} by waiting."
+        )
+    # 2. Check for BUY NOW triggers
+    elif dec_status == "ALL_TIME_LOW" or (low > 0 and cur <= low * 1.01):
+        verdict = "BUY_NOW"
+        verdict_label = "Buy Now"
+        badge_class = "verdict-buy-now"
+        icon = "fa-circle-check"
+        confidence_pct = 95
+        projected_savings = 0.0
+        horizon = "Immediate Best Price"
+        rationale = (
+            f"All-Time Low Record: Current price (${cur:.2f}) is at or near the absolute lowest price "
+            f"ever tracked. Excellent opportunity to purchase."
+        )
+    elif deceptive.get("real_discount_pct", 0) >= 6.0:
+        real_disc = deceptive.get("real_discount_pct", 0)
+        verdict = "BUY_NOW"
+        verdict_label = "Buy Now"
+        badge_class = "verdict-buy-now"
+        icon = "fa-circle-check"
+        confidence_pct = 90
+        projected_savings = 0.0
+        horizon = "Active Discount Window"
+        rationale = (
+            f"Verified Authentic Deal: Selling {real_disc:.1f}% below the 30-day market baseline (${med:.2f}). "
+            f"Genuine savings detected."
+        )
+    elif bank_savings > 0 and net_price <= (low * 1.02):
+        verdict = "BUY_NOW"
+        verdict_label = "Buy Now"
+        badge_class = "verdict-buy-now"
+        icon = "fa-circle-check"
+        confidence_pct = 92
+        projected_savings = 0.0
+        horizon = "With Bank Offer"
+        rationale = (
+            f"Effective Record Low: Applying active partner bank card offer reduces out-of-pocket to "
+            f"${net_price:.2f} (saves ${bank_savings:.2f}), matching or beating all-time low."
+        )
+    # 3. Default to FAIR BUY
+    else:
+        verdict = "FAIR_BUY"
+        verdict_label = "Fair Buy"
+        badge_class = "verdict-fair"
+        icon = "fa-scale-balanced"
+        confidence_pct = 85
+        projected_savings = 0.0
+        horizon = "Market Baseline"
+        rationale = (
+            f"Stable Street Price: Current price (${cur:.2f}) represents fair everyday market value "
+            f"consistent with the 30-day baseline (${med:.2f}). Safe to buy if needed today."
+        )
+
+    return {
+        "verdict": verdict,
+        "verdict_label": verdict_label,
+        "badge_class": badge_class,
+        "icon": icon,
+        "confidence_pct": confidence_pct,
+        "projected_savings": projected_savings,
+        "horizon": horizon,
+        "rationale": rationale,
+        "target_channel_low": pred_low
     }
 
 

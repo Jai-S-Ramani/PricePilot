@@ -377,6 +377,28 @@
           </div>
         </div>
 
+        <!-- Buy Now vs. Wait AI Decision Ribbon -->
+        <div id="modalBuyingVerdictBanner" class="modal-verdict-banner glass">
+          <div class="verdict-banner-left">
+            <div id="modalVerdictIconCircle" class="verdict-icon-circle verdict-buy-now">
+              <i id="modalVerdictIcon" class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="verdict-text-wrap">
+              <div class="verdict-title-row">
+                <span class="verdict-label-sub">PricePilot AI Verdict:</span>
+                <span id="modalVerdictTitle" class="verdict-badge verdict-buy-now">BUY NOW</span>
+                <span id="modalVerdictConfidence" class="verdict-conf-pill">95% Confidence</span>
+              </div>
+              <p id="modalVerdictRationale" class="verdict-rationale-text">All-time low record. Excellent value to buy immediately.</p>
+            </div>
+          </div>
+          <div class="verdict-banner-right" id="modalVerdictSavingsBox">
+            <span class="verdict-savings-label">Projected Savings</span>
+            <strong id="modalVerdictSavingsVal" class="verdict-savings-val">$0.00</strong>
+            <span id="modalVerdictHorizon" class="verdict-horizon-tag">Immediate</span>
+          </div>
+        </div>
+
         <!-- 7-Day Statistical Predictive Forecast Ribbon -->
         <div id="modalForecastBanner" class="modal-forecast-banner glass">
           <div class="forecast-banner-left">
@@ -434,7 +456,7 @@
             </div>
           </div>
 
-          <!-- Card 2: Net Effective Price (Coupon + Bank Offers) -->
+          <!-- Card 2: Net Effective Price (Bank Card Offers) -->
           <div class="intel-card glass">
             <div class="intel-card-header">
               <span class="intel-card-title"><i class="fa-solid fa-tags text-emerald"></i> Net-Price & Card Savings</span>
@@ -445,18 +467,6 @@
                 <div class="net-item">
                   <span>Current Amazon Price:</span>
                   <strong id="intelNetBasePrice">$0.00</strong>
-                </div>
-                <!-- Amazon Interactive Coupon Clip Option -->
-                <div class="net-coupon-interactive-row" id="modalCouponRow">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="amazon-coupon-badge">Coupon</span>
-                    <span class="amazon-coupon-text" id="modalCouponText">Apply coupon</span>
-                    <span class="amazon-coupon-terms" id="modalCouponTerms">Terms</span>
-                  </div>
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <button type="button" id="modalCouponBtn" class="btn-coupon-apply">Apply</button>
-                    <strong id="intelNetCoupon" class="text-emerald">-$0.00</strong>
-                  </div>
                 </div>
                 <!-- Amazon Interactive Bank Card Selection -->
                 <div class="net-item modal-bank-select-item" id="modalBankCardRow" style="flex-direction: column; align-items: stretch; gap: 6px; padding: 6px 0;">
@@ -503,6 +513,19 @@
                 </div>
               </div>
               <p id="intelConsensusQuote" class="intel-consensus-quote">"Consensus highlights excellent build and sound fidelity with minor caveats on app complexity."</p>
+              <div id="intelTrustFactorsRow" class="intel-trust-factors-row"></div>
+              
+              <!-- Feature Scorecards & Bot Risk Index -->
+              <div class="intel-aspects-section">
+                <div class="aspects-header">
+                  <span class="aspects-title"><i class="fa-solid fa-layer-group text-purple"></i> Feature Performance Scorecards</span>
+                  <span id="intelBotRiskBadge" class="bot-risk-badge"><i class="fa-solid fa-shield-virus"></i> Low Bot Risk</span>
+                </div>
+                <div id="intelAspectsGrid" class="aspects-grid">
+                  <!-- Dynamically populated -->
+                </div>
+              </div>
+
               <div class="intel-pros-cons-grid">
                 <div class="intel-pros-box">
                   <span class="pros-title"><i class="fa-solid fa-check text-emerald"></i> What Buyers Love</span>
@@ -527,6 +550,9 @@
             <i class="fa-solid fa-database text-sky"></i> Time-series data points synced to SQLite & CSV
           </div>
           <div class="modal-export-btns">
+            <button id="modalCompareStoresBtn" type="button" class="btn btn-secondary btn-sm" title="Compare prices across 18 Indian & Global stores">
+              <i class="fa-solid fa-code-compare" style="color: var(--accent-biscuit);"></i> Compare Stores
+            </button>
             <a id="modalDownloadCsvBtn" href="#" class="btn btn-secondary btn-sm">
               <i class="fa-solid fa-file-csv" style="color: var(--accent-emerald);"></i> Export CSV
             </a>
@@ -870,31 +896,6 @@
     </div>
   </div>
 
-  <!-- Amazon Coupon Terms Modal -->
-  <div id="couponTermsModal" class="modal-overlay hidden">
-    <div class="modal-content glass modal-sm">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-ticket text-emerald"></i> Amazon Coupon Terms</h3>
-        <button id="closeCouponTermsModal" class="btn-close">&times;</button>
-      </div>
-      <div class="modal-body" style="font-size: 0.88rem; line-height: 1.6; color: var(--text-dim);">
-        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 14px; color: var(--text-main);">
-          <strong style="color: var(--accent-emerald); display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-circle-check"></i> Clip-and-Save Offer</strong>
-          <p style="margin: 4px 0 0 0; font-size: 0.82rem; color: var(--text-muted);">Discount is automatically deducted from your total at checkout when the coupon is clipped.</p>
-        </div>
-        <ul style="padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 8px;">
-          <li>Coupons are valid for a limited time only. Amazon reserves the right to modify or cancel coupons at any time.</li>
-          <li>Offer good while supplies last. Limit one coupon redemption per customer.</li>
-          <li>Applicable to qualifying items shipped and sold by Amazon or verified marketplace sellers.</li>
-          <li>If you return any of the items purchased with a coupon, the coupon discount will be deducted from your refund.</li>
-          <li>Cannot be combined with select promotional voucher codes.</li>
-        </ul>
-        <div style="margin-top: 18px; text-align: right;">
-          <button id="dismissCouponTermsBtn" class="btn btn-primary btn-sm">Understood</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- Amazon Bank Card Offers Modal (Authentic Amazon India Drawer Layout) -->
   <div id="bankOffersModal" class="modal-overlay hidden">

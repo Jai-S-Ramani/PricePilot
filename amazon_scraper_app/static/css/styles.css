@@ -2747,6 +2747,238 @@ body::before {
 }
 
 /* ==========================================================================
+   AI Buying Verdict & Feature Aspect Styles
+   ========================================================================== */
+.modal-verdict-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  margin-bottom: 12px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  flex-wrap: wrap;
+  gap: 12px;
+  transition: all 0.25s ease;
+}
+.modal-verdict-banner.verdict-buy-now {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.05) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+.modal-verdict-banner.verdict-wait {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(220, 38, 38, 0.05) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+.modal-verdict-banner.verdict-fair {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(37, 99, 235, 0.05) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+.verdict-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 260px;
+}
+.verdict-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+.verdict-icon-circle.verdict-buy-now {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.3);
+}
+.verdict-icon-circle.verdict-wait {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.3);
+}
+.verdict-icon-circle.verdict-fair {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.3);
+}
+
+.verdict-text-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.verdict-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.verdict-label-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.verdict-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 2px 9px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+.verdict-badge.verdict-buy-now {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+.verdict-badge.verdict-wait {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+.verdict-badge.verdict-fair {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+.verdict-conf-pill {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.verdict-rationale-text {
+  font-size: 0.75rem;
+  color: var(--text-main);
+  line-height: 1.35;
+  margin: 0;
+}
+.verdict-banner-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.verdict-savings-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+.verdict-savings-val {
+  font-size: 1.05rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: #10b981;
+}
+.verdict-horizon-tag {
+  font-size: 0.68rem;
+  color: var(--text-subtle);
+}
+
+/* Main Card Verdict Pill */
+.badge-verdict {
+  font-size: 0.7rem;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.badge-verdict.verdict-buy-now {
+  background: rgba(16, 185, 129, 0.18);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+.badge-verdict.verdict-wait {
+  background: rgba(239, 68, 68, 0.18);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+.badge-verdict.verdict-fair {
+  background: rgba(59, 130, 246, 0.18);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+/* Feature Aspects & Bot Risk */
+.intel-aspects-section {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+.aspects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.aspects-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-transform: uppercase;
+}
+.bot-risk-badge {
+  font-size: 0.68rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.bot-risk-badge.risk-elevated {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+.bot-risk-badge.risk-moderate {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.35);
+}
+.aspects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+.aspect-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+.aspect-name-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.aspect-pct-val {
+  font-weight: 700;
+  color: #10b981;
+}
+.aspect-bar-track {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.aspect-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: #10b981;
+  transition: width 0.4s ease;
+}
+
+/* ==========================================================================
    Statistical Predictive Forecast Ribbon (Modal)
    ========================================================================== */
 .modal-forecast-banner {
@@ -2881,6 +3113,19 @@ body::before {
   background: rgba(16, 185, 129, 0.14);
   color: #34d399;
   border: 1px solid rgba(16, 185, 129, 0.3);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-verified-msrp {
+  font-size: 0.7rem;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  background: rgba(59, 130, 246, 0.14);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
   font-weight: 700;
   display: inline-flex;
   align-items: center;
@@ -3045,6 +3290,11 @@ body::before {
   color: #10b981;
   border-color: rgba(16, 185, 129, 0.35);
 }
+.intel-status-pill.pill-blue {
+  background: rgba(59, 130, 246, 0.16);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.35);
+}
 .intel-status-pill.pill-amber {
   background: rgba(245, 158, 11, 0.16);
   color: #fbbf24;
@@ -3124,6 +3374,27 @@ body::before {
   background: rgba(99, 102, 241, 0.2);
   color: #818cf8;
   border: 1px solid rgba(99, 102, 241, 0.4);
+  transition: all 0.2s ease;
+}
+.trust-grade-badge.grade-A {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.4);
+}
+.trust-grade-badge.grade-B {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.4);
+}
+.trust-grade-badge.grade-C {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.4);
+}
+.trust-grade-badge.grade-D {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.4);
 }
 .auth-score-badge {
   font-size: 0.72rem;
@@ -3165,6 +3436,34 @@ body::before {
   border-left: 3px solid var(--accent-primary, #6366f1);
   border-radius: 0 6px 6px 0;
   margin-bottom: 12px;
+}
+
+.intel-trust-factors-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.trust-factor-pill {
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-subtle, #94a3b8);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.trust-factor-pill.pill-verified {
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.06);
+}
+.trust-factor-pill.pill-warning {
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.08);
 }
 
 .intel-pros-cons-grid {
@@ -3496,7 +3795,8 @@ body::before {
   gap: 4px;
 }
 
-.price-coupon-clipped {
+.price-coupon-clipped,
+.price-discounted {
   color: var(--accent-emerald) !important;
 }
 

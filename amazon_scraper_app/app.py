@@ -251,15 +251,34 @@ def api_update_target_price(product_id):
 
 
 @app.route("/api/health")
+@app.route("/health", endpoint="health_check")
 def api_health():
-    """Lightweight 24/7 keep-alive monitor endpoint for Render / UptimeRobot."""
-    all_prods = get_all_products()
+    """DevOps container & keep-alive monitor endpoint for Docker / Render / UptimeRobot."""
+    try:
+        all_prods = get_all_products()
+        prod_count = len(all_prods)
+        db_ok = True
+    except Exception:
+        prod_count = 0
+        db_ok = False
+
+    sched_status = price_scheduler.get_status()
+
     return jsonify({
-        "status": "healthy",
+        "status": "healthy" if db_ok else "degraded",
         "service": "PricePilot Intelligence Platform",
-        "active_products": len(all_prods),
-        "scheduler_alive": price_scheduler.is_running if hasattr(price_scheduler, "is_running") else True
-    })
+        "version": "2.4.0",
+        "database": {
+            "connected": db_ok,
+            "tracked_products": prod_count
+        },
+        "scheduler": {
+            "running": sched_status.get("running", True),
+            "interval_minutes": sched_status.get("interval_minutes", 15),
+            "last_run": sched_status.get("last_run"),
+            "next_run": sched_status.get("next_run")
+        }
+    }), (200 if db_ok else 500)
 
 
 @app.route("/api/basket/optimize", methods=["POST"])
@@ -635,12 +654,9 @@ def api_search():
     query = request.args.get("q", "").strip()
     region = request.args.get("region", "IN").strip().upper()
     try:
-        limit = int(request.args.get("limit", 5))
+        limit = min(int(request.args.get("limit", 30)), 100)
     except ValueError:
-        limit = 5
-
-    if not query:
-        return jsonify({"status": "error", "message": "Search query parameter 'q' is required", "results": []}), 400
+        limit = 30
 
     results = search_amazon_products(query, region=region, limit=limit)
     return jsonify({
