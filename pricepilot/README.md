@@ -202,7 +202,6 @@ A dedicated 1-click **Light / Dark Mode** button is positioned right in the top 
 ```
 PortfolioProjects/
 ├── AmazonWebScraperDataset.csv       # Live synchronized CSV export
-├── run_original_scraper.py          # Standalone runner for single-item command-line scraper
 ├── architecture.html                # Interactive system architecture diagram
 ├── pricepilot.architecture.json     # Architecture specification model
 └── pricepilot/
