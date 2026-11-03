@@ -360,8 +360,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (valUSD == null || isNaN(valUSD)) return '₹0.00';
     const curr = CURRENCIES[currentCurrency] || CURRENCIES.INR;
 
+    // Safety guard: if valUSD is already unconverted native INR (> 2000), do not multiply by exchange rate
+    if (currentCurrency === 'INR' && valUSD > 2000 && (!nativePrice || Math.abs(nativePrice - valUSD) < 1)) {
+      return `${curr.symbol}${Number(valUSD).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
     // If viewing in native currency (e.g. INR) and we have exact scraped native_price, use it directly!
-    if (nativePrice != null && !isNaN(nativePrice) && (nativeCurrency === currentCurrency || (!nativeCurrency && currentCurrency === 'INR'))) {
+    if (nativePrice != null && !isNaN(nativePrice) && Number(nativePrice) > 0 && 
+       (nativeCurrency === currentCurrency || (!nativeCurrency && currentCurrency === 'INR') || (currentCurrency === 'INR' && Number(nativePrice) > 500))) {
       const decimals = currentCurrency === 'JPY' ? 0 : 2;
       const locale = currentCurrency === 'INR' ? 'en-IN' : undefined;
       return `${curr.symbol}${Number(nativePrice).toLocaleString(locale, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;

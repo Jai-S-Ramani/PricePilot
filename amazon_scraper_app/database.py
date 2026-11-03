@@ -809,61 +809,51 @@ def save_or_update_product(data: dict, user_id: int = None):
     now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     today_str = datetime.date.today().strftime("%Y-%m-%d")
 
-    region = data.get("region", "IN")
-    currency = data.get("currency", "INR" if region == "IN" else "USD")
-    symbol = data.get("symbol", "₹" if region == "IN" else "$")
+    url_str = (data.get("url") or "").lower()
+    is_inr = (
+        data.get("currency") == "INR" 
+        or data.get("region") == "IN" 
+        or "amazon.in" in url_str 
+        or "amzn.in" in url_str
+        or ".in/" in url_str
+    )
+
+    region = "IN" if is_inr else data.get("region", "US")
+    currency = "INR" if is_inr else data.get("currency", "USD")
+    symbol = "₹" if is_inr else data.get("symbol", "$")
 
     raw_price = float(data.get("price", 0))
 
-    # If native_price is already explicitly provided, price is already normalized base USD!
-    if "native_price" in data and data["native_price"] is not None:
-        native_price = float(data["native_price"])
-        norm_price = raw_price
-        
-        raw_orig = data.get("original_price")
-        if raw_orig:
-            raw_orig_val = float(raw_orig)
-            if (currency == "INR" or region == "IN") and (raw_orig_val > norm_price * 5 or raw_orig_val > 500):
-                norm_orig = round(raw_orig_val / 83.50, 2)
-            else:
-                norm_orig = raw_orig_val
-        else:
-            norm_orig = round(norm_price * 1.15, 2)
-        
-        raw_target = data.get("target_price")
-        if raw_target:
-            raw_tgt_val = float(raw_target)
-            if (currency == "INR" or region == "IN") and (raw_tgt_val > norm_price * 5 or raw_tgt_val > 500):
-                norm_target = round(raw_tgt_val / 83.50, 2)
-            else:
-                norm_target = raw_tgt_val
-        else:
-            norm_target = round(norm_price * 0.90, 2)
+    if is_inr and raw_price > 500:
+        norm_price = round(raw_price / 83.50, 2)
+        native_price = raw_price
     else:
-        # Fallback guard: Normalize to USD baseline if price was passed in un-converted local currency
-        if currency == "INR" and raw_price > 500:
-            norm_price = round(raw_price / 83.50, 2)
-            native_price = raw_price
-        elif currency == "GBP" and raw_price > 500:
-            norm_price = round(raw_price / 0.79, 2)
-            native_price = raw_price
+        norm_price = raw_price
+        if is_inr:
+            raw_nat = data.get("native_price")
+            native_price = float(raw_nat) if raw_nat and float(raw_nat) > 0 else round(raw_price * 83.50, 2)
         else:
-            norm_price = raw_price
-            native_price = round(raw_price * 83.50, 2) if currency == "INR" else raw_price
+            native_price = float(data.get("native_price") or raw_price)
 
-        raw_orig = data.get("original_price")
-        if raw_orig:
-            raw_orig_val = float(raw_orig)
-            norm_orig = round(raw_orig_val / 83.50, 2) if (currency == "INR" and (raw_orig_val > norm_price * 5 or raw_orig_val > 500)) else raw_orig_val
+    raw_orig = data.get("original_price")
+    if raw_orig:
+        raw_orig_val = float(raw_orig)
+        if is_inr and (raw_orig_val > norm_price * 5 or raw_orig_val > 500):
+            norm_orig = round(raw_orig_val / 83.50, 2)
         else:
-            norm_orig = round(norm_price * 1.15, 2)
+            norm_orig = raw_orig_val
+    else:
+        norm_orig = round(norm_price * 1.15, 2)
 
-        raw_target = data.get("target_price")
-        if raw_target:
-            raw_tgt_val = float(raw_target)
-            norm_target = round(raw_tgt_val / 83.50, 2) if (currency == "INR" and (raw_tgt_val > norm_price * 5 or raw_tgt_val > 500)) else raw_tgt_val
+    raw_target = data.get("target_price")
+    if raw_target:
+        raw_tgt_val = float(raw_target)
+        if is_inr and (raw_tgt_val > norm_price * 5 or raw_tgt_val > 500):
+            norm_target = round(raw_tgt_val / 83.50, 2)
         else:
-            norm_target = round(norm_price * 0.90, 2)
+            norm_target = raw_tgt_val
+    else:
+        norm_target = round(norm_price * 0.90, 2)
 
     if existing:
         product_id = existing["id"]
