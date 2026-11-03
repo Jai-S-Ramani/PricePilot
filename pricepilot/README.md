@@ -82,6 +82,22 @@
 
 ---
 
+## 📸 Visual Showcase
+
+| Command Center Dashboard | Live Amazon Catalog Search |
+| :---: | :---: |
+| <img src="../docs/images/dashboard_overview.png" width="100%"> | <img src="../docs/images/live_search.png" width="100%"> |
+
+| 18-Store Competitor Arbitrage | Authentic Bank Offers Drawer |
+| :---: | :---: |
+| <img src="../docs/images/competitor_arbitrage.png" width="100%"> | <img src="../docs/images/bank_offers.png" width="100%"> |
+
+| 30-Day Volatility & Forecast | High-Conversion Landing Page |
+| :---: | :---: |
+| <img src="../docs/images/analytics_chart.png" width="100%"> | <img src="../docs/images/landing_hero.png" width="100%"> |
+
+---
+
 ## ✨ Key Features
 
 ### 1. Real-Time Amazon Catalog Search & Predictive Autocomplete with Target Price Setting
