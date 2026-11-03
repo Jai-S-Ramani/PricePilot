@@ -27,7 +27,7 @@
 - [Project Architecture](#-project-architecture)
 - [Database Schema & Data Pipeline](#-database-schema--data-pipeline)
 - [REST API Reference](#-rest-api-reference)
-- [Automated Test Suite (55 Tests)](#-automated-test-suite-55-tests)
+- [Automated Test Suite (59 Tests)](#-automated-test-suite-59-tests)
 - [Installation & Quickstart](#-installation--quickstart)
 - [Multi-Channel Notification Setup](#-multi-channel-notification-setup)
 - [Attribution & Credits](#-attribution--credits)
@@ -323,12 +323,12 @@ PortfolioProjects/
 
 ---
 
-## 🧪 Automated Test Suite (55 Tests)
+## 🧪 Automated Test Suite (59 Tests)
 
-The repository features **55 automated unit and integration tests** organized into three specialized test suites:
+The repository features **59 automated unit and integration tests** organized into three specialized test suites:
 - [`tests/test_all_features.py`](tests/test_all_features.py) (24 tests): Scraper parsing, 18-store competitor benchmarking, catalog availability engine, predictive signals, background scheduler, and Flask endpoints.
 - [`tests/test_advanced_features.py`](tests/test_advanced_features.py) (19 tests): Live Amazon catalog search, suggestion autocompletion, target price setting, Discord webhook embeds, Telegram push alerts, multi-channel dispatch, single-product live refresh, and multi-format CSV/JSON exports.
-- [`tests/test_intelligence_suite.py`](tests/test_intelligence_suite.py) (12 tests): Deceptive price detection, AI review authenticity & sentiment breakdown, price drop probability forecaster, multi-store split basket arbitrage optimizer, and stacked coupon & Indian partner bank card discount calculations.
+- [`tests/test_intelligence_suite.py`](tests/test_intelligence_suite.py) (16 tests): Deceptive price detection, AI review authenticity & sentiment breakdown, price drop probability forecaster, multi-store split basket arbitrage optimizer, stacked coupons, and authentic Indian partner bank card discount calculations.
 
 ### Running the Full Test Suite:
 ```bash
@@ -337,7 +337,7 @@ python -m unittest discover -s tests -p "test_*.py"
 
 ```
 ----------------------------------------------------------------------
-Ran 55 tests in 5.421s
+Ran 59 tests in 5.621s
 
 OK
 ```

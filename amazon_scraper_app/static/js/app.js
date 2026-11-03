@@ -1614,7 +1614,7 @@ document.addEventListener('DOMContentLoaded', () => {
   scrapeAllBtn.addEventListener('click', async () => {
     scrapeAllBtn.disabled = true;
     scrapeAllBtn.querySelector('.spinner-icon').classList.add('spinning');
-    showToast('Running live scraper check across all items...', 'info');
+    showToast('Running live PricePilot check across all items...', 'info');
 
     try {
       const res = await fetch('/api/products/scrape-all', { method: 'POST' });
@@ -1624,7 +1624,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchProducts();
       }
     } catch (err) {
-      showToast('Error running scraper batch check', 'error');
+      showToast('Error running PricePilot batch check', 'error');
     } finally {
       scrapeAllBtn.disabled = false;
       scrapeAllBtn.querySelector('.spinner-icon').classList.remove('spinning');

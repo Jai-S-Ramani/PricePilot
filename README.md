@@ -1,4 +1,4 @@
-# ⚡ Amazon Price Intelligence & Multi-Store Arbitrage Command Center
+# 🚀 PricePilot — Autonomous E-Commerce Price Intelligence & Multi-Store Arbitrage Platform
 
 > An enterprise-grade, full-stack Data Analytics Web Application, Competitor Arbitrage Engine, Live Amazon Catalog Search, and Multi-Channel Notification Platform built with Python, Flask, BeautifulSoup4, SQLite3, Chart.js, and GSAP. A real-time price monitoring, predictive intelligence, and multi-channel alerting ecosystem.
 >
@@ -21,7 +21,7 @@
 - 🎨 **Obsidian Briar & Warm Biscuit Luxe UI**: Premium dark glassmorphic design featuring rolling GSAP numeric roll-ups, spring pop-up physics, and interactive Chart.js analytics.
 - 📊 **Multi-Format Data Exports**: Export time-series records to CSV and comprehensive portfolio intelligence to JSON, with per-product historical downloads directly from the analytics modal.
 - 🔄 **Instant 1-Click Price Re-Scraper**: Refresh live Amazon prices for any individual product on demand with animated spring feedback.
-- 🧪 **55 Automated Tests**: Comprehensive test suite covering scrapers, competitor comparison, availability filters, intelligence engines, scheduler lifecycle, export pipelines, and REST APIs.
+- 🧪 **59 Automated Tests**: Comprehensive test suite covering scrapers, competitor comparison, availability filters, intelligence engines, scheduler lifecycle, export pipelines, and REST APIs.
 
 ---
 
