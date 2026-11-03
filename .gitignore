@@ -50,6 +50,7 @@ Thumbs.db
 # Playwright MCP and empty local temp DB
 .playwright-mcp/
 database.db
+.pytest_cache/
 
 # Archify build receipts
 *.finalize.json

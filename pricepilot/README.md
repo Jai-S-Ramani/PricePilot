@@ -172,7 +172,7 @@ PortfolioProjects/
 ├── run_original_scraper.py          # Standalone runner for single-item command-line scraper
 ├── architecture.html                # Interactive system architecture diagram
 ├── pricepilot.architecture.json     # Architecture specification model
-└── amazon_scraper_app/
+└── pricepilot/
     ├── app.py                       # Flask application, routing & REST API controllers
     ├── scheduler.py                 # Thread-safe BackgroundPriceScheduler daemon
     ├── scraper.py                   # Multi-region BS4 scraper, live search & suggestion engine
@@ -185,7 +185,7 @@ PortfolioProjects/
     ├── tests/
     │   ├── test_all_features.py     # Base test suite (24 passing unit & integration tests)
     │   ├── test_advanced_features.py# Search & notification tests (19 passing tests)
-    │   └── test_intelligence_suite.py # 6-engine intelligence suite tests (12 passing tests)
+    │   └── test_intelligence_suite.py # 6-engine intelligence suite tests (16 passing tests)
     ├── static/
     │   ├── css/
     │   │   ├── styles.css           # Dashboard design system & theme variables
