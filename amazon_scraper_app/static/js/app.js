@@ -1208,19 +1208,34 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   let liveSearchDebounceTimer = null;
+  let currentSearchAbortController = null;
+  let currentSearchSeq = 0;
+
   if (searchAmazonQueryInput) {
     searchAmazonQueryInput.addEventListener('input', (e) => {
-      const val = e.target.value;
+      const rawVal = e.target.value;
+      const val = rawVal.trim();
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(() => {
         fetchLiveSuggestions(val);
       }, 200);
 
-      // Instant live search execution as user types (400ms debounce)
+      // Instant live search execution as user types (450ms debounce, minimum 2 characters)
       clearTimeout(liveSearchDebounceTimer);
-      liveSearchDebounceTimer = setTimeout(() => {
-        executeLiveSearch(val);
-      }, 400);
+      if (val.length >= 2) {
+        liveSearchDebounceTimer = setTimeout(() => {
+          executeLiveSearch(val);
+        }, 450);
+      } else if (val.length === 0) {
+        if (currentSearchAbortController) {
+          try { currentSearchAbortController.abort(); } catch (e) {}
+        }
+        if (searchSuggestionsBox) searchSuggestionsBox.classList.add('hidden');
+        if (liveSearchResults) {
+          liveSearchResults.classList.add('hidden');
+          liveSearchResults.innerHTML = '';
+        }
+      }
     });
   }
 
@@ -1426,9 +1441,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Execute Live Search across Amazon Catalog
+  // Execute Live Search across Amazon Catalog with race-condition prevention & abort handling
   async function executeLiveSearch(query) {
     const q = (query || '').trim();
+    if (!q || q.length < 2) {
+      if (liveSearchResults) {
+        liveSearchResults.classList.add('hidden');
+        liveSearchResults.innerHTML = '';
+      }
+      return;
+    }
+
+    if (currentSearchAbortController) {
+      try { currentSearchAbortController.abort(); } catch (e) {}
+    }
+    currentSearchAbortController = new AbortController();
+    const searchId = ++currentSearchSeq;
+
     const region = searchAmazonRegionSelect ? searchAmazonRegionSelect.value : 'IN';
 
     if (searchAmazonSubmitBtn) {
@@ -1436,22 +1465,33 @@ document.addEventListener('DOMContentLoaded', () => {
       searchAmazonSubmitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Searching...`;
     }
     liveSearchResults.classList.remove('hidden');
-    liveSearchResults.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 24px; color: #94a3b8;"><i class="fa-solid fa-spinner fa-spin"></i> Indexing Amazon ${region} catalog in real-time...</div>`;
+    liveSearchResults.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 24px; color: #94a3b8;"><i class="fa-solid fa-spinner fa-spin"></i> Searching Amazon ${region} in real-time for "${escapeHtml(q)}"...</div>`;
 
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&region=${region}&limit=40`);
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&region=${region}&limit=40`, {
+        signal: currentSearchAbortController.signal
+      });
       const data = await res.json();
+      if (searchId !== currentSearchSeq) {
+        // Newer search initiated, discard stale response
+        return;
+      }
       if (data.status === 'success' && data.results && data.results.length > 0) {
         currentSearchResults = data.results;
         currentSearchActiveCategory = 'ALL';
         renderLiveSearchCards(currentSearchResults, q, region);
       } else {
-        liveSearchResults.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #94a3b8;">No matching products found. Try a different query or brand name.</div>`;
+        liveSearchResults.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #94a3b8;">No matching products found for "${escapeHtml(q)}". Try searching a brand or category (e.g. iPhone, Samsung, boAt, Nike, MacBook, Sony).</div>`;
       }
     } catch (err) {
-      liveSearchResults.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #ef4444;">Search request failed. Please check network and try again.</div>`;
+      if (err.name === 'AbortError') {
+        return; // Intentionally aborted by newer search
+      }
+      if (searchId === currentSearchSeq) {
+        liveSearchResults.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #ef4444;">Search request failed. Please check network and try again.</div>`;
+      }
     } finally {
-      if (searchAmazonSubmitBtn) {
+      if (searchId === currentSearchSeq && searchAmazonSubmitBtn) {
         searchAmazonSubmitBtn.disabled = false;
         searchAmazonSubmitBtn.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> Search Products`;
       }

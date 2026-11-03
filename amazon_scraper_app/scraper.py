@@ -592,6 +592,295 @@ SAMPLE_PRODUCTS = {
         "region": "IN",
         "currency": "INR",
         "symbol": "₹"
+    },
+    # 10. Popular Indian & Global Flagships
+    "B0CHX2F5QT": {
+        "title": "Apple iPhone 15 (128 GB) - Blue",
+        "price": 790.41,
+        "original_price": 899.00,
+        "native_price": 65999.00,
+        "asin": "B0CHX2F5QT",
+        "url": "https://www.amazon.in/dp/B0CHX2F5QT",
+        "image_url": "/static/images/products/iphone_16_pro.jpg",
+        "rating": 4.6,
+        "reviews_count": 14200,
+        "availability": "In Stock",
+        "category": "Smartphones",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0CHX1W1XY": {
+        "title": "Apple iPhone 15 Pro (128 GB) - Natural Titanium",
+        "price": 1317.25,
+        "original_price": 1499.00,
+        "native_price": 109990.00,
+        "asin": "B0CHX1W1XY",
+        "url": "https://www.amazon.in/dp/B0CHX1W1XY",
+        "image_url": "/static/images/products/iphone_16_pro.jpg",
+        "rating": 4.7,
+        "reviews_count": 9180,
+        "availability": "In Stock",
+        "category": "Smartphones",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0BDJH6GL6": {
+        "title": "Apple iPhone 14 (128 GB) - Midnight",
+        "price": 694.60,
+        "original_price": 799.00,
+        "native_price": 57999.00,
+        "asin": "B0BDJH6GL6",
+        "url": "https://www.amazon.in/dp/B0BDJH6GL6",
+        "image_url": "/static/images/products/iphone_16_pro.jpg",
+        "rating": 4.6,
+        "reviews_count": 22400,
+        "availability": "In Stock",
+        "category": "Smartphones",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0DGJG692Y": {
+        "title": "Apple Watch Series 10 GPS 46mm Jet Black Aluminium Case with Black Sport Band",
+        "price": 399.00,
+        "original_price": 449.00,
+        "native_price": 46900.00,
+        "asin": "B0DGJG692Y",
+        "url": "https://www.amazon.in/dp/B0DGJG692Y",
+        "image_url": "/static/images/products/apple_watch_10.jpg",
+        "rating": 4.7,
+        "reviews_count": 3150,
+        "availability": "In Stock",
+        "category": "Smartwatches & Wearables",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0C6BY8N21": {
+        "title": "Samsung Galaxy Watch 6 44mm Bluetooth Smartwatch (Graphite, Fitness & Sleep Tracker)",
+        "price": 239.50,
+        "original_price": 299.00,
+        "native_price": 19999.00,
+        "asin": "B0C6BY8N21",
+        "url": "https://www.amazon.in/dp/B0C6BY8N21",
+        "image_url": "/static/images/products/samsung_galaxy_watch_6.jpg",
+        "rating": 4.5,
+        "reviews_count": 4820,
+        "availability": "In Stock",
+        "category": "Smartwatches & Wearables",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0BY8MCQ9S": {
+        "title": "OnePlus Nord Buds 2 TWS in-Ear Earbuds with 25dB ANC | 36 Hours Playtime",
+        "price": 35.92,
+        "original_price": 45.00,
+        "native_price": 2999.00,
+        "asin": "B0BY8MCQ9S",
+        "url": "https://www.amazon.in/dp/B0BY8MCQ9S",
+        "image_url": "/static/images/products/oneplus_buds_2.jpg",
+        "rating": 4.4,
+        "reviews_count": 28900,
+        "availability": "In Stock",
+        "category": "Audio & Headphones",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0CCZ1P7N6": {
+        "title": "boAt Nirvana Ion ANC True Wireless Earbuds with 120 Hours Playback & Crystal Bionic Sound",
+        "price": 23.94,
+        "original_price": 49.99,
+        "native_price": 1999.00,
+        "asin": "B0CCZ1P7N6",
+        "url": "https://www.amazon.in/dp/B0CCZ1P7N6",
+        "image_url": "/static/images/products/oneplus_buds_2.jpg",
+        "rating": 4.3,
+        "reviews_count": 41200,
+        "availability": "In Stock",
+        "category": "Audio & Headphones",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B07S8L8T7F": {
+        "title": "boAt Rockerz 450 Bluetooth On-Ear Headphones with 15H Battery & 40mm Drivers",
+        "price": 17.95,
+        "original_price": 39.99,
+        "native_price": 1499.00,
+        "asin": "B07S8L8T7F",
+        "url": "https://www.amazon.in/dp/B07S8L8T7F",
+        "image_url": "/static/images/products/sony_whch720n.jpg",
+        "rating": 4.2,
+        "reviews_count": 87500,
+        "availability": "In Stock",
+        "category": "Audio & Headphones",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0CY5Q2539": {
+        "title": "Sony WH-1000XM4 Wireless Industry Leading Noise Canceling Headphones (Black)",
+        "price": 275.33,
+        "original_price": 349.99,
+        "native_price": 22990.00,
+        "asin": "B0CY5Q2539",
+        "url": "https://www.amazon.in/dp/B0CY5Q2539",
+        "image_url": "/static/images/products/sony_wh1000xm4.jpg",
+        "rating": 4.7,
+        "reviews_count": 36100,
+        "availability": "In Stock",
+        "category": "Audio & Headphones",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0CL5KNB9M": {
+        "title": "PlayStation 5 Slim Console (Disc Edition) with 1TB SSD & DualSense Controller",
+        "price": 658.56,
+        "original_price": 699.99,
+        "native_price": 54990.00,
+        "asin": "B0CL5KNB9M",
+        "url": "https://www.amazon.in/dp/B0CL5KNB9M",
+        "image_url": "/static/images/products/playstation_5.jpg",
+        "rating": 4.8,
+        "reviews_count": 7890,
+        "availability": "In Stock",
+        "category": "Gaming & Consoles",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B098RKWHHZ": {
+        "title": "Nintendo Switch OLED Model with White Joy-Con 64GB Console",
+        "price": 347.29,
+        "original_price": 399.00,
+        "native_price": 28999.00,
+        "asin": "B098RKWHHZ",
+        "url": "https://www.amazon.in/dp/B098RKWHHZ",
+        "image_url": "/static/images/products/nintendo_switch_oled.jpg",
+        "rating": 4.8,
+        "reviews_count": 16400,
+        "availability": "In Stock",
+        "category": "Gaming & Consoles",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B09V668741": {
+        "title": "Nike Revolution 7 Men's Road Running Shoes (Breathable Mesh, Soft Foam Cushioning)",
+        "price": 44.25,
+        "original_price": 49.99,
+        "native_price": 3695.00,
+        "asin": "B09V668741",
+        "url": "https://www.amazon.in/dp/B09V668741",
+        "image_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80",
+        "rating": 4.4,
+        "reviews_count": 5210,
+        "availability": "In Stock",
+        "category": "Shoes & Footwear",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0CZHNKSYZ": {
+        "title": "Puma Smashic Unisex Low-Boot Casual Sneakers",
+        "price": 26.33,
+        "original_price": 49.99,
+        "native_price": 2199.00,
+        "asin": "B0CZHNKSYZ",
+        "url": "https://www.amazon.in/dp/B0CZHNKSYZ",
+        "image_url": "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&auto=format&fit=crop&q=80",
+        "rating": 4.3,
+        "reviews_count": 8940,
+        "availability": "In Stock",
+        "category": "Shoes & Footwear",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B00770CBXA": {
+        "title": "Adidas Men's Strutter Walking & Cross Training Shoes",
+        "price": 39.51,
+        "original_price": 55.00,
+        "native_price": 3299.00,
+        "asin": "B00770CBXA",
+        "url": "https://www.amazon.in/dp/B00770CBXA",
+        "image_url": "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&auto=format&fit=crop&q=80",
+        "rating": 4.5,
+        "reviews_count": 4120,
+        "availability": "In Stock",
+        "category": "Shoes & Footwear",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0DYL4GZ2N": {
+        "title": "Levi's Men's Regular Fit 100% Pure Cotton Crewneck T-Shirt",
+        "price": 10.77,
+        "original_price": 18.00,
+        "native_price": 899.00,
+        "asin": "B0DYL4GZ2N",
+        "url": "https://www.amazon.in/dp/B0DYL4GZ2N",
+        "image_url": "/static/images/products/carhartt_tshirt.jpg",
+        "rating": 4.2,
+        "reviews_count": 12800,
+        "availability": "In Stock",
+        "category": "Apparel & Fashion",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B09V39PZZW": {
+        "title": "Logitech MX Master 3S Wireless Performance Mouse (8K DPI, Quiet Clicks, USB-C)",
+        "price": 107.72,
+        "original_price": 119.99,
+        "native_price": 8995.00,
+        "asin": "B09V39PZZW",
+        "url": "https://www.amazon.in/dp/B09V39PZZW",
+        "image_url": "/static/images/products/mx_master_3s.jpg",
+        "rating": 4.8,
+        "reviews_count": 15400,
+        "availability": "In Stock",
+        "category": "Computer Accessories",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0CL2Y71WN": {
+        "title": "Raspberry Pi 5 Single Board Computer (8GB RAM, Quad-Core 64-bit Arm Cortex-A76)",
+        "price": 95.80,
+        "original_price": 109.99,
+        "native_price": 7999.00,
+        "asin": "B0CL2Y71WN",
+        "url": "https://www.amazon.in/dp/B0CL2Y71WN",
+        "image_url": "/static/images/products/raspberry_pi_5.jpg",
+        "rating": 4.7,
+        "reviews_count": 3290,
+        "availability": "In Stock",
+        "category": "Computers & Laptops",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
+    },
+    "B0CTD41Q9N": {
+        "title": "Anker 737 Power Bank (PowerCore 24K) 140W Ultra-Fast Fast Charging",
+        "price": 119.75,
+        "original_price": 149.99,
+        "native_price": 9999.00,
+        "asin": "B0CTD41Q9N",
+        "url": "https://www.amazon.in/dp/B0CTD41Q9N",
+        "image_url": "/static/images/products/xiaomi_powerbank.jpg",
+        "rating": 4.7,
+        "reviews_count": 9400,
+        "availability": "In Stock",
+        "category": "Computer Accessories",
+        "region": "IN",
+        "currency": "INR",
+        "symbol": "₹"
     }
 }
 
@@ -1035,6 +1324,11 @@ CATEGORY_VISUALS = {
         "img": "/static/images/products/apple_watch_10.jpg",
         "base_usd": 279.00
     },
+    "shoes": {
+        "category": "Shoes & Footwear",
+        "img": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80",
+        "base_usd": 45.00
+    },
     "kitchen": {
         "category": "Home & Kitchen",
         "img": "/static/images/products/anker_dock.jpg",
@@ -1053,7 +1347,7 @@ CATEGORY_VISUALS = {
     "fashion": {
         "category": "Apparel & Fashion",
         "img": "/static/images/products/carhartt_tshirt.jpg",
-        "base_usd": 29.99
+        "base_usd": 24.99
     },
     "office": {
         "category": "Office & Tech Accessories",
@@ -1068,61 +1362,88 @@ CATEGORY_VISUALS = {
 }
 
 
+_SUGGESTION_CACHE = {}
+
 def fetch_amazon_suggestions(query: str, region: str = "IN") -> list:
     """
     Fetches real-time search autocompletion suggestions directly from Amazon's Completion API.
-    Defaults to Indian marketplace (IN) for primary discovery.
+    Defaults to Indian marketplace (IN) for primary discovery with rapid US completion fallback.
     """
     clean_q = (query or "").strip()
     if not clean_q:
         return []
 
-    mid = SUGGESTION_MARKETPLACE_IDS.get(region.upper(), "A21TJRUUN4KGV")
-    api_url = f"https://completion.amazon.com/api/2017/suggestions?prefix={requests.utils.quote(clean_q)}&mid={mid}&alias=aps"
+    cache_key = f"{region.upper()}:{clean_q.lower()}"
+    if cache_key in _SUGGESTION_CACHE:
+        return _SUGGESTION_CACHE[cache_key]
 
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
         "Accept": "application/json, text/plain, */*",
         "Accept-Language": "en-US,en;q=0.9"
     }
 
+    # Candidate marketplace IDs (region-specific first, followed by US global completion)
+    reg_mid = SUGGESTION_MARKETPLACE_IDS.get(region.upper(), "A21TJRUUN4KGV")
+    candidate_mids = [reg_mid]
+    if reg_mid != "ATVPDKIKX0DER":
+        candidate_mids.append("ATVPDKIKX0DER")
+
     try:
         session = get_http_session()
-        resp = session.get(api_url, headers=headers, timeout=1.8)
-        if resp.status_code == 200:
-            data = resp.json()
-            suggestions = []
-            for item in data.get("suggestions", []):
-                val = item.get("value")
-                if val and val.lower() not in [s.lower() for s in suggestions]:
-                    suggestions.append(val)
-            if suggestions:
-                return suggestions[:8]
+        for mid in candidate_mids:
+            api_url = f"https://completion.amazon.com/api/2017/suggestions?prefix={requests.utils.quote(clean_q)}&mid={mid}&alias=aps"
+            try:
+                resp = session.get(api_url, headers=headers, timeout=1.8)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    suggestions = []
+                    for item in data.get("suggestions", []):
+                        val = item.get("value")
+                        if val and val.lower() not in [s.lower() for s in suggestions]:
+                            suggestions.append(val)
+                    if suggestions:
+                        res = suggestions[:8]
+                        _SUGGESTION_CACHE[cache_key] = res
+                        return res
+            except Exception:
+                continue
     except Exception:
         pass
 
     # Offline / fast fallback suggestion matching from catalog
     low_q = clean_q.lower()
     fallback_pool = [
-        "Samsung Galaxy A23 5G", "Samsung Galaxy A23", "Samsung Galaxy A23 Awesome Black",
-        "OnePlus Nord Buds 2", "Samsung Galaxy S24 Ultra", "Apple iPhone 16 Pro Max",
-        "Apple MacBook Air M3", "boAt Nirvana Ion", "Sony WH-1000XM5 Headphones",
-        "Apple AirPods Pro 2", "PlayStation 5 Slim Console", "Nintendo Switch OLED",
-        "Apple Watch Series 10", "Samsung Galaxy Watch 6", "Ninja Air Fryer AF101",
-        "Breville Barista Express", "Nespresso Vertuo Next", "Keurig K-Elite Coffee Maker",
-        "Instant Pot Duo 7-in-1", "Logitech MX Master 3S", "Logitech MX Mechanical",
-        "Amazon Kindle Paperwhite", "Echo Dot 5th Gen", "Raspberry Pi 5", "Anker Thunderbolt Dock"
+        "Apple iPhone 16 Pro Max", "Apple iPhone 15 Pro", "Apple iPhone 15", "Apple iPhone 14",
+        "Samsung Galaxy S24 Ultra", "Samsung Galaxy A23 5G", "Samsung Galaxy Watch 6",
+        "OnePlus Nord Buds 2", "boAt Nirvana Ion ANC", "boAt Rockerz 450",
+        "Apple MacBook Air M3", "Apple MacBook Pro M4", "Dell XPS 15 9530",
+        "Sony WH-1000XM5 Headphones", "Sony WH-1000XM4", "Apple AirPods Pro 2",
+        "Apple Watch Series 10", "PlayStation 5 Slim Console", "Nintendo Switch OLED",
+        "Nike Revolution 7 Running Shoes", "Puma Smashic Sneakers", "Adidas Strutter Shoes",
+        "Levi's Men's Cotton T-Shirt", "Logitech MX Master 3S", "Anker 737 Power Bank",
+        "Ninja Air Fryer AF101", "Breville Barista Express", "Instant Pot Duo 7-in-1",
+        "Raspberry Pi 5", "Keychron K2 Mechanical Keyboard"
     ]
     matched = [p for p in fallback_pool if low_q in p.lower()]
-    return matched[:6]
+    if not matched:
+        # Match tokens
+        tokens = [t for t in low_q.split() if len(t) > 1]
+        if tokens:
+            matched = [p for p in fallback_pool if any(t in p.lower() for t in tokens)]
+    res = matched[:6]
+    _SUGGESTION_CACHE[cache_key] = res
+    return res
 
 
 def search_amazon_products(query: str, region: str = "IN", limit: int = 24) -> list:
     """
     Searches Amazon for products matching a query or keyword.
     Defaults to Indian marketplace (IN) for authentic Rupee pricing.
-    Tries live scraping first (with fast timeout); if empty, incomplete, or blocked,
-    intelligently searches curated catalog with synonym expansion, DB items, and regional currency normalization.
+    Tries live scraping first (with modern Chrome Client Hints & Sec-Fetch headers);
+    if empty, incomplete, or challenged by Akamai/bot-protection,
+    intelligently searches curated catalog with intent-aware category filtering,
+    synonym expansion, and regional currency normalization.
     If query is empty or 'all', returns all catalog products.
     """
     clean_q = (query or "").strip()
@@ -1217,78 +1538,116 @@ def search_amazon_products(query: str, region: str = "IN", limit: int = 24) -> l
     seen_asins = set()
 
     clean_q_lower = clean_q.lower()
-    is_phone_query = any(w in clean_q_lower for w in ["phone", "galaxy", "iphone", "pixel", "samsung", "a23", "s24", "mobile"])
+    is_phone_query = any(w in clean_q_lower for w in ["phone", "galaxy", "iphone", "pixel", "samsung", "a23", "s24", "mobile", "smartphone"])
+    is_laptop_query = any(w in clean_q_lower for w in ["laptop", "macbook", "xps", "notebook", "computer", "pc", "chromebook", "thinkpad"])
+    is_audio_query = any(w in clean_q_lower for w in ["headphone", "audio", "earbuds", "earphone", "speaker", "sound", "buds", "airpods", "xm5", "xm4", "qc45", "rockerz", "nirvana"])
+    is_watch_query = any(w in clean_q_lower for w in ["watch", "smartwatch", "fitness", "band", "tracker"])
+    is_shoe_query = any(w in clean_q_lower for w in ["shoe", "shoes", "sneaker", "sneakers", "running", "strutter", "smashic", "footwear", "boots"])
+    is_gaming_query = any(w in clean_q_lower for w in ["gaming", "console", "playstation", "ps5", "switch", "nintendo", "xbox", "controller"])
     user_wants_accessory = any(w in clean_q_lower for w in ["case", "cover", "protector", "glass", "skin", "pouch", "charger", "cable", "guard"])
     accessory_words = ["case", "cover", "protector", "tempered glass", "skin", "pouch", "bumper", "thegiftkart", "pikkme", "strap", "guard", "flip cover", "back cover"]
 
-    # 1. Attempt live Amazon search with fast 2.0s timeout
+    # 1. Attempt live Amazon search with modern Chrome Client Hints and Sec-Fetch headers
     try:
         from urllib.parse import quote_plus
         search_url = f"https://www.{domain}/s?k={quote_plus(clean_q)}"
         headers = {
-            "User-Agent": random.choice(USER_AGENTS),
-            "Accept-Language": "en-US,en;q=0.9",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Language": "en-GB,en;q=0.9,en-US;q=0.8",
             "Accept-Encoding": "gzip, deflate, br",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+            "Sec-Ch-Ua": '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
+            "Sec-Ch-Ua-Mobile": "?0",
+            "Sec-Ch-Ua-Platform": '"Windows"',
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1",
+            "Upgrade-Insecure-Requests": "1"
         }
         session = get_http_session()
-        res = session.get(search_url, headers=headers, timeout=2.0)
-        if res.status_code == 200 and "api-services-support@amazon.com" not in res.text:
+        res = session.get(search_url, headers=headers, timeout=4.0)
+        
+        # Verify response is valid HTML and not a challenge page
+        if res.status_code == 200 and "api-services-support@amazon.com" not in res.text and "bm-verify" not in res.text:
             soup = BeautifulSoup(res.content, "html.parser")
-            items = soup.select('div[data-component-type="s-search-result"]')
-            if not items:
-                items = [d for d in soup.select('div[data-asin]') if d.get('data-asin') and len(d.get('data-asin')) == 10]
-            for item in items:
-                if len(results) >= limit:
-                    break
-                asin = item.get("data-asin")
-                if not asin or asin in seen_asins:
-                    continue
+            page_title = soup.title.string.strip() if soup.title and soup.title.string else ""
+            if page_title and page_title != "\xa0":
+                items = soup.select('div[data-component-type="s-search-result"]')
+                if not items:
+                    items = [d for d in soup.select('div[data-asin]') if d.get('data-asin') and len(d.get('data-asin')) == 10]
                 
-                # Robust title extraction
-                title = None
-                h2 = item.select_one("h2")
-                if h2:
-                    spans = [s.get_text().strip() for s in h2.select("span") if s.get_text().strip()]
-                    title = " ".join(spans) if spans else h2.get_text().strip()
-                if not title or len(title) < 10 or title.lower() in ["samsung", "apple", "sponsored"]:
-                    for a in item.select("a.a-link-normal"):
-                        txt = a.get_text().strip()
-                        if len(txt) > 15 and not txt.startswith("₹") and not txt.startswith("(") and not txt.startswith("$"):
-                            title = txt
-                            break
-                if not title:
-                    img_alt = item.select_one("img.s-image, img")
-                    if img_alt and img_alt.get("alt") and len(img_alt.get("alt")) > 10:
-                        title = img_alt.get("alt").strip()
-                if not title:
-                    title = f"Product {asin}"
-
-                title_lower = title.lower()
-                price_elem = item.select_one(".a-price .a-offscreen")
-                price_val = parse_price(price_elem.get_text().strip(), region_info=reg_cfg) if price_elem else 0.0
-
-                # Filter out accessories when user is looking for a smartphone device
-                if is_phone_query and not user_wants_accessory:
-                    if any(acc in title_lower for acc in accessory_words):
-                        continue
-                    if price_val > 0 and (price_val < 3500 if reg_code == "IN" else price_val < 40):
+                for item in items:
+                    if len(results) >= limit:
+                        break
+                    asin = item.get("data-asin")
+                    if not asin or asin in seen_asins:
                         continue
 
-                # If user queried a specific model code (e.g. A23), skip live results of completely different phones (e.g. A56, M17)
-                if "a23" in clean_q_lower and "a23" not in title_lower:
-                    continue
+                    # Robust multi-strategy title extraction
+                    title = ""
+                    heading_el = item.select_one('h2 a span, h2 a, a.a-link-normal.s-line-clamp-2, a.a-link-normal.s-line-clamp-3, h2.a-text-normal')
+                    if heading_el:
+                        title = heading_el.get_text(" ", strip=True)
 
-                img_elem = item.select_one("img.s-image, img")
-                img_url = img_elem.get("src") if img_elem else ""
-                if not img_url or "transparent" in img_url or "placeholder" in img_url:
-                    img_url = get_smart_product_image(title, "Amazon Catalog", asin)
+                    if not title or len(title) < 10 or title.lower() in ["apple", "samsung", "sponsored", "deal"]:
+                        for a in item.select('a.a-link-normal'):
+                            txt = a.get_text(" ", strip=True)
+                            if len(txt) > 15 and not txt.startswith(('₹', '$', '£', '€', '(')) and not txt.lower().startswith('+'):
+                                title = txt
+                                break
 
-                rating_elem = item.select_one(".a-icon-star-small .a-icon-alt, .a-icon-star .a-icon-alt")
-                rating = parse_price(rating_elem.get_text().strip()) if rating_elem else 4.5
-                url = f"https://www.{domain}/dp/{asin}"
-                if price_val > 0:
+                    if not title or len(title) < 8:
+                        img_elem = item.select_one('img.s-image')
+                        if img_elem and img_elem.get('alt') and len(img_elem.get('alt')) > 10:
+                            title = img_elem.get('alt').strip()
+
+                    if not title:
+                        continue
+
+                    # Clean title: strip leading "Sponsored Ad - "
+                    title = re.sub(r'^(Sponsored\s+Ad\s*[-–:]?\s*)', '', title, flags=re.IGNORECASE).strip()
+                    title_lower = title.lower()
+
+                    # Price extraction: offscreen or whole+fraction
+                    price_val = 0.0
+                    price_elem = item.select_one(".a-price .a-offscreen")
+                    if price_elem:
+                        price_val = parse_price(price_elem.get_text().strip(), region_info=reg_cfg)
+                    if price_val <= 0:
+                        whole = item.select_one('.a-price-whole')
+                        if whole:
+                            w_txt = whole.get_text().replace(',', '').replace('.', '').strip()
+                            frac = item.select_one('.a-price-fraction')
+                            f_txt = frac.get_text().strip() if frac else "00"
+                            price_val = parse_price(f"{w_txt}.{f_txt}", region_info=reg_cfg)
+
+                    if price_val <= 0:
+                        continue
+
+                    # Filter out accessories when user is looking for a smartphone device
+                    if is_phone_query and not user_wants_accessory:
+                        if any(acc in title_lower for acc in accessory_words):
+                            continue
+                        if price_val > 0 and (price_val < 3500 if reg_code == "IN" else price_val < 40):
+                            continue
+
+                    # Brand consistency: if user asked for iPhone, skip completely unrelated Android phones
+                    if "iphone" in clean_q_lower and "iphone" not in title_lower:
+                        continue
+
+                    img_elem = item.select_one("img.s-image, img")
+                    img_url = img_elem.get("src") if img_elem else ""
+                    if not img_url or "transparent" in img_url or "placeholder" in img_url:
+                        img_url = get_smart_product_image(title, "Amazon Catalog", asin)
+
+                    rating_elem = item.select_one(".a-icon-star-small .a-icon-alt, .a-icon-star .a-icon-alt")
+                    rating = parse_price(rating_elem.get_text().strip()) if rating_elem else 4.5
+                    url = f"https://www.{domain}/dp/{asin}"
+
                     base_usd = round(price_val / rate, 2) if rate != 1.0 else price_val
+                    category_label = "Smartphones" if is_phone_query else ("Computers & Laptops" if is_laptop_query else ("Shoes & Footwear" if is_shoe_query else "Amazon Catalog"))
+
                     found_item = {
                         "asin": asin,
                         "title": title,
@@ -1302,7 +1661,7 @@ def search_amazon_products(query: str, region: str = "IN", limit: int = 24) -> l
                         "region": reg_code,
                         "currency": curr,
                         "symbol": sym,
-                        "category": "Smartphones" if is_phone_query else "Amazon Catalog",
+                        "category": category_label,
                         "availability": "In Stock"
                     }
                     sample_entry = dict(found_item)
@@ -1314,7 +1673,7 @@ def search_amazon_products(query: str, region: str = "IN", limit: int = 24) -> l
     except Exception:
         pass
 
-    # 2. Intelligent Catalog Matching across full catalog with Synonym Expansion and Model Discrimination
+    # 2. Intelligent Intent-Aware Catalog Matching across catalog pool
     matched = []
     tokens = [t.lower() for t in re.split(r'\W+', clean_q) if t]
     model_tokens = [tok for tok in tokens if any(c.isdigit() for c in tok)]
@@ -1329,41 +1688,75 @@ def search_amazon_products(query: str, region: str = "IN", limit: int = 24) -> l
             continue
         score = 0
         title_lower = p.get('title', '').lower()
-        p_text = f"{title_lower} {p.get('category', '')} {asin}".lower()
+        p_category = (p.get('category', '')).lower()
+        p_text = f"{title_lower} {p_category} {asin}".lower()
 
-        # Exact clean query match
-        if clean_q.lower() in title_lower:
-            score += 80
-        elif clean_q.lower() in p_text:
-            score += 50
+        # Category Intent Filtering (Enforce hard separation between categories)
+        if is_phone_query and not is_laptop_query:
+            if "laptop" in p_category or "computer" in p_category or any(w in title_lower for w in ["laptop", "macbook", "xps", "thinkpad", "desktop"]):
+                continue  # Never return a laptop when user searched for a phone
+            if "watch" in p_category and "phone" not in title_lower:
+                score -= 60
+        elif is_laptop_query and not is_phone_query:
+            if "smartphone" in p_category or "smartwatch" in p_category or any(w in title_lower for w in ["galaxy s", "galaxy a", "iphone", "pixel 9"]):
+                continue  # Never return a phone when user searched for a laptop
+        elif is_shoe_query:
+            if "shoe" not in p_category and "footwear" not in p_category and "fashion" not in p_category and not any(w in title_lower for w in ["shoe", "sneaker", "running", "strutter"]):
+                continue  # Never return electronics when user searched for shoes
+        elif is_watch_query and not is_laptop_query:
+            if "smartwatch" not in p_category and "wearable" not in p_category and "watch" not in title_lower:
+                score -= 80
+        elif is_gaming_query:
+            if "gaming" not in p_category and not any(w in title_lower for w in ["ps5", "playstation", "switch", "nintendo", "xbox"]):
+                score -= 80
+
+        # Exact clean query match in title
+        if clean_q_lower in title_lower:
+            score += 120
+        elif clean_q_lower in p_text:
+            score += 60
+
+        # Brand Exclusivity
+        if "iphone" in clean_q_lower:
+            if "iphone" in title_lower:
+                score += 100
+            else:
+                score -= 150
+        if "macbook" in clean_q_lower:
+            if "macbook" in title_lower:
+                score += 100
+            else:
+                score -= 150
+        if "pixel" in clean_q_lower and "google" in clean_q_lower:
+            if "pixel" in title_lower:
+                score += 80
 
         # All tokens present in title
         if tokens and all(tok in title_lower for tok in tokens):
-            score += 60
+            score += 70
         elif tokens and all(tok in p_text for tok in tokens):
-            score += 40
+            score += 35
 
-        # Model token handling: if user searched for specific model code (e.g. 'a23', 's24', '15')
+        # Model token handling: ONLY reward model numbers if category matches
         if model_tokens:
             if all(mt in title_lower for mt in model_tokens):
-                score += 50
+                score += 40
             elif any(mt in title_lower for mt in model_tokens):
-                score += 25
+                score += 20
             else:
-                # Penalty: does not match the requested model number
-                score -= 40
+                score -= 25
 
-        # Penalize accessories if user is looking for a phone
+        # Penalize accessories if user is looking for a main device
         if is_phone_query and not user_wants_accessory:
             if any(acc in title_lower for acc in accessory_words):
-                score -= 50
+                score -= 70
 
         # Regular token scoring
         for tok in expanded_tokens:
             if tok in title_lower:
-                score += 4 if tok in tokens else 2
+                score += 6 if tok in tokens else 2
             elif tok in p_text:
-                score += 2 if tok in tokens else 1
+                score += 3 if tok in tokens else 1
 
         if score > 0:
             norm_item = _normalize_item(p, score)
@@ -1377,47 +1770,58 @@ def search_amazon_products(query: str, region: str = "IN", limit: int = 24) -> l
             results.append(item)
             seen_asins.add(item["asin"])
 
-    # 3. Model Guarantee: Verify if results contain the exact model requested
+    # 3. Model Guarantee: If no result matches the exact user query, synthesize a realistic top result
     has_model_match = any(
-        (clean_q.lower() in r.get("title", "").lower()) or
-        (tokens and all(tok in r.get("title", "").lower() for tok in tokens)) or
-        (model_tokens and all(mt in r.get("title", "").lower() for mt in model_tokens))
+        (clean_q_lower in r.get("title", "").lower()) or
+        (tokens and all(tok in r.get("title", "").lower() for tok in tokens))
         for r in results
     )
 
-    if not has_model_match:
-        # Dynamically synthesize the exact requested model product at the top
+    if not has_model_match and len(results) < 5:
+        # Determine appropriate category
         cat_key = "default"
         low_q = clean_q.lower()
-        if any(w in low_q for w in ["phone", "mobile", "iphone", "samsung", "pixel", "galaxy", "cellular", "redmi", "oneplus", "a23"]):
+        if is_phone_query:
             cat_key = "phone"
-        elif any(w in low_q for w in ["laptop", "macbook", "computer", "notebook", "pc", "chromebook"]):
+        elif is_laptop_query:
             cat_key = "laptop"
-        elif any(w in low_q for w in ["headphone", "audio", "earbuds", "earphone", "speaker", "sound", "buds", "airpods"]):
+        elif is_audio_query:
             cat_key = "audio"
-        elif any(w in low_q for w in ["watch", "smartwatch", "fitness", "band", "tracker"]):
+        elif is_watch_query:
             cat_key = "watch"
-        elif any(w in low_q for w in ["coffee", "espresso", "fryer", "cooker", "kitchen", "blender", "pot", "oven"]):
-            cat_key = "kitchen"
-        elif any(w in low_q for w in ["game", "gaming", "playstation", "ps5", "xbox", "switch", "controller"]):
+        elif is_shoe_query:
+            cat_key = "shoes"
+        elif is_gaming_query:
             cat_key = "gaming"
-        elif any(w in low_q for w in ["camera", "dslr", "lens", "photo", "drone"]):
-            cat_key = "camera"
-        elif any(w in low_q for w in ["shirt", "tshirt", "shoe", "shoes", "jacket", "pants", "dress", "clothes"]):
+        elif any(w in low_q for w in ["shirt", "tshirt", "jacket", "pants", "dress", "clothes"]):
             cat_key = "fashion"
-        elif any(w in low_q for w in ["mouse", "keyboard", "dock", "cable", "charger", "monitor", "stand"]):
+        elif any(w in low_q for w in ["coffee", "espresso", "fryer", "cooker", "kitchen", "blender", "pot"]):
+            cat_key = "kitchen"
+        elif any(w in low_q for w in ["mouse", "keyboard", "dock", "cable", "charger", "monitor"]):
             cat_key = "office"
 
         vis = CATEGORY_VISUALS.get(cat_key, CATEGORY_VISUALS["default"])
-        base_usd = 221.54 if ("a23" in low_q or "a14" in low_q or "a34" in low_q) else vis["base_usd"]
+        base_usd = vis["base_usd"]
         model_local = round(base_usd * rate, 2)
         mock_asin = f"B09V{abs(hash(clean_q)) % 900000 + 100000}"
 
         if cat_key == "phone":
-            synth_title = f"{clean_q.title()} (Awesome Black, 6GB RAM, 128GB Storage)"
+            synth_title = f"{clean_q.title()} 5G Smartphone (128GB Storage, Fast Charging)"
             img_choice = get_smart_product_image(clean_q, "Smartphones", mock_asin)
+        elif cat_key == "shoes":
+            synth_title = f"{clean_q.title()} Men's Road Running & Training Sneakers"
+            img_choice = vis["img"]
+        elif cat_key == "laptop":
+            synth_title = f"{clean_q.title()} 15.6-inch FHD Thin & Light Laptop (16GB RAM, 512GB SSD)"
+            img_choice = vis["img"]
+        elif cat_key == "watch":
+            synth_title = f"{clean_q.title()} Smartwatch with Health Tracking & AMOLED Display"
+            img_choice = vis["img"]
+        elif cat_key == "audio":
+            synth_title = f"{clean_q.title()} Wireless Bluetooth Headphones with Active Noise Cancellation"
+            img_choice = vis["img"]
         else:
-            synth_title = f"{clean_q.title()} - Official Series ({reg_code})"
+            synth_title = f"{clean_q.title()} - Official Edition ({reg_code})"
             img_choice = vis["img"]
 
         synth_item = {
@@ -1429,8 +1833,8 @@ def search_amazon_products(query: str, region: str = "IN", limit: int = 24) -> l
             "base_usd": base_usd,
             "url": f"https://www.{domain}/dp/{mock_asin}",
             "image_url": img_choice,
-            "rating": 4.5,
-            "reviews_count": 8920,
+            "rating": 4.6,
+            "reviews_count": 4820,
             "category": vis["category"],
             "region": reg_code,
             "currency": curr,
@@ -1444,7 +1848,7 @@ def search_amazon_products(query: str, region: str = "IN", limit: int = 24) -> l
         SAMPLE_PRODUCTS[mock_asin] = sample_entry
         results.insert(0, synth_item)
 
-    # Prioritize items matching exact query or model token at the top
+    # Prioritize items matching exact query at the top
     def _item_relevance(item):
         t = item.get("title", "").lower()
         rel = 0
@@ -1453,82 +1857,11 @@ def search_amazon_products(query: str, region: str = "IN", limit: int = 24) -> l
         if tokens and all(tok in t for tok in tokens):
             rel += 80
         if model_tokens and all(mt in t for mt in model_tokens):
-            rel += 60
-        elif model_tokens and not any(mt in t for mt in model_tokens):
-            rel -= 40
+            rel += 40
         if is_phone_query and not user_wants_accessory and any(acc in t for acc in accessory_words):
             rel -= 100
         return rel
 
     results.sort(key=_item_relevance, reverse=True)
-
-    if len(results) >= limit:
-        return results[:limit]
-
-    # 4. Fill additional category variants if results are still scarce
-    if len(results) < 3:
-        cat_key = "default"
-        low_q = clean_q.lower()
-        if any(w in low_q for w in ["phone", "mobile", "iphone", "samsung", "pixel", "galaxy", "cellular", "redmi", "oneplus", "a23"]):
-            cat_key = "phone"
-        elif any(w in low_q for w in ["laptop", "macbook", "computer", "notebook", "pc", "chromebook"]):
-            cat_key = "laptop"
-        elif any(w in low_q for w in ["headphone", "audio", "earbuds", "earphone", "speaker", "sound", "buds", "airpods"]):
-            cat_key = "audio"
-        elif any(w in low_q for w in ["watch", "smartwatch", "fitness", "band", "tracker"]):
-            cat_key = "watch"
-        elif any(w in low_q for w in ["coffee", "espresso", "fryer", "cooker", "kitchen", "blender", "pot", "oven"]):
-            cat_key = "kitchen"
-        elif any(w in low_q for w in ["game", "gaming", "playstation", "ps5", "xbox", "switch", "controller"]):
-            cat_key = "gaming"
-        elif any(w in low_q for w in ["camera", "dslr", "lens", "photo", "drone"]):
-            cat_key = "camera"
-        elif any(w in low_q for w in ["shirt", "tshirt", "shoe", "shoes", "jacket", "pants", "dress", "clothes"]):
-            cat_key = "fashion"
-        elif any(w in low_q for w in ["mouse", "keyboard", "dock", "cable", "charger", "monitor", "stand"]):
-            cat_key = "office"
-
-        vis = CATEGORY_VISUALS.get(cat_key, CATEGORY_VISUALS["default"])
-        base_usd = vis["base_usd"]
-
-        suffixes = [
-            ("Pro Max Edition", 1.25, 4.8, 12400),
-            ("Standard Series", 1.0, 4.6, 8300),
-            ("Ultra Compact Model", 0.85, 4.5, 4200)
-        ]
-
-        for label, mult, rating, revs in suffixes:
-            if len(results) >= limit:
-                break
-            model_usd = round(base_usd * mult, 2)
-            model_local = round(model_usd * rate, 2)
-            mock_asin = f"B0{abs(hash(f'{clean_q}_{label}')) % 90000000 + 10000000}"
-            title = f"{clean_q.title()} - {label} ({reg_code})"
-            
-            synth_item = {
-                "asin": mock_asin,
-                "title": title,
-                "price": model_local,
-                "original_price": round(model_local * 1.18, 2),
-                "native_price": model_local,
-                "base_usd": model_usd,
-                "url": f"https://www.{domain}/dp/{mock_asin}",
-                "image_url": get_smart_product_image(clean_q, vis["category"], mock_asin) if cat_key == "phone" else vis["img"],
-                "rating": rating,
-                "reviews_count": revs,
-                "category": vis["category"],
-                "region": reg_code,
-                "currency": curr,
-                "symbol": sym,
-                "availability": "In Stock",
-                "is_simulated": True
-            }
-
-            sample_entry = dict(synth_item)
-            sample_entry["price"] = model_usd
-            sample_entry["original_price"] = round(model_usd * 1.18, 2)
-            SAMPLE_PRODUCTS[mock_asin] = sample_entry
-            results.append(synth_item)
-
     return results[:limit]
 
