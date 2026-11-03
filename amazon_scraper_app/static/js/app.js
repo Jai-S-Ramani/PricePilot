@@ -1812,7 +1812,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (netBank) {
             netBank.textContent = activeCard 
               ? `-${formatMoney(effectiveBankDiscount, effectiveBankDiscountNative, prod.currency)} (${activeCard.bank_name})` 
-              : `$0.00 (No Card Selected)`;
+              : `${formatMoney(0)} (No Card Selected)`;
             netBank.className = activeCard ? 'text-purple' : 'text-subtle';
           }
           if (netEffective) netEffective.textContent = formatMoney(trueNet);
@@ -2064,7 +2064,8 @@ document.addEventListener('DOMContentLoaded', () => {
             padding: 12,
             callbacks: {
               label: (context) => {
-                let lbl = `${context.dataset.label}: ${curr.symbol}${context.parsed.y != null ? context.parsed.y.toLocaleString(undefined, { minimumFractionDigits: currentCurrency === 'JPY' ? 0 : 2 }) : ''}`;
+                const locale = currentCurrency === 'INR' ? 'en-IN' : undefined;
+                let lbl = `${context.dataset.label}: ${curr.symbol}${context.parsed.y != null ? context.parsed.y.toLocaleString(locale, { minimumFractionDigits: currentCurrency === 'JPY' ? 0 : 2 }) : ''}`;
                 if (context.datasetIndex === 0 && context.dataIndex === minPriceIdx) {
                   lbl += ' 🏆 [All-Time Low Record]';
                 }
@@ -2080,7 +2081,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ticks: { 
               color: '#94a3b8', 
               font: { family: 'JetBrains Mono', size: 11 }, 
-              callback: v => curr.symbol + v.toLocaleString(undefined, { minimumFractionDigits: currentCurrency === 'JPY' ? 0 : 2 })
+              callback: v => {
+                const locale = currentCurrency === 'INR' ? 'en-IN' : undefined;
+                return curr.symbol + v.toLocaleString(locale, { minimumFractionDigits: currentCurrency === 'JPY' ? 0 : 2 });
+              }
             } 
           }
         }
@@ -2729,8 +2733,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <div>
               <div class="log-item-title" title="${l.product_title}">${l.product_title}</div>
               <div class="log-item-meta">
-                <span>Alert Price: <strong class="log-item-price">$${Number(l.current_price).toFixed(2)}</strong></span>
-                <span>Target: $${Number(l.target_price).toFixed(2)}</span>
+                <span>Alert Price: <strong class="log-item-price">${formatMoney(l.current_price)}</strong></span>
+                <span>Target: ${formatMoney(l.target_price)}</span>
                 <span><i class="fa-regular fa-clock"></i> ${l.created_at}</span>
               </div>
             </div>
