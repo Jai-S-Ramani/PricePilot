@@ -34,7 +34,7 @@ PortfolioProjects/
 ├── architecture.html                # Interactive system architecture diagram
 ├── pricepilot.architecture.json     # Architecture specification model
 ├── README.md                        # Portfolio overview and repository documentation
-└── amazon_scraper_app/              # Production Web Application & Intelligence Center
+└── pricepilot/                      # Production Web Application & Intelligence Center
     ├── app.py                       # REST API controllers & web routes
     ├── scheduler.py                 # Thread-safe BackgroundPriceScheduler daemon
     ├── scraper.py                   # Multi-region BS4 scraper, live search & suggestion engine
@@ -78,16 +78,16 @@ python -m pip install flask beautifulsoup4 requests pandas pillow
 
 ### 3. Launch the Web Application
 ```bash
-python amazon_scraper_app/app.py
+python pricepilot/app.py
 ```
 Open **[`http://127.0.0.1:5000/dashboard`](http://127.0.0.1:5000/dashboard)** in your browser.
 *(Or visit [`http://127.0.0.1:5000/`](http://127.0.0.1:5000/) for the High-Conversion Landing Page & 1-Click Guest Demo)*.
 
 ### 4. Run Automated Tests
 ```bash
-python -m unittest discover -s amazon_scraper_app/tests -p "test_*.py"
+python -m unittest discover -s pricepilot/tests -p "test_*.py"
 ```
-*(All 55 tests passing 100% across all 3 test modules)*.
+*(All 59 tests passing 100% across all 3 test modules)*.
 
 ### 5. Run the Original Tutorial Scraper
 ```bash

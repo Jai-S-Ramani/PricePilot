@@ -30,7 +30,7 @@ Render provides free hosting with automatic HTTPS and continuous deployment dire
 3. **Connect your GitHub repository**.
 4. Configure settings:
    - **Environment**: `Docker` (or `Python 3`)
-   - **Root Directory**: `amazon_scraper_app`
+   - **Root Directory**: `pricepilot`
    - **Build Command**: `pip install -r requirements.txt` (if using Python env)
    - **Start Command**: `gunicorn --workers=4 --bind=0.0.0.0:$PORT app:app`
    - **Health Check Path**: `/api/health`
