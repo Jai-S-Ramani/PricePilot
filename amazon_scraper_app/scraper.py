@@ -887,6 +887,7 @@ SAMPLE_PRODUCTS = {
 
 REGIONAL_CONFIGS = {
     "amazon.in": {"region": "IN", "currency": "INR", "symbol": "₹", "rate": 83.50, "name": "Amazon India"},
+    "amzn.in": {"region": "IN", "currency": "INR", "symbol": "₹", "rate": 83.50, "name": "Amazon India"},
     "amazon.co.uk": {"region": "UK", "currency": "GBP", "symbol": "£", "rate": 0.79, "name": "Amazon UK"},
     "amazon.ca": {"region": "CA", "currency": "CAD", "symbol": "CA$", "rate": 1.35, "name": "Amazon Canada"},
     "amazon.de": {"region": "DE", "currency": "EUR", "symbol": "€", "rate": 0.92, "name": "Amazon Germany"},
@@ -896,12 +897,23 @@ REGIONAL_CONFIGS = {
 
 
 def detect_region_info(url: str) -> dict:
-    """Detects regional marketplace details from URL."""
-    url_lower = url.lower()
-    for domain, config in REGIONAL_CONFIGS.items():
-        if domain in url_lower:
-            return config.copy()
-    return REGIONAL_CONFIGS["amazon.com"].copy()
+    """Detects regional marketplace details from URL, supporting official shorteners (amzn.in) and domains."""
+    url_lower = (url or "").lower()
+    if "amazon.in" in url_lower or "amzn.in" in url_lower or ".in/" in url_lower:
+        return REGIONAL_CONFIGS["amazon.in"].copy()
+    if "amazon.co.uk" in url_lower or ".co.uk/" in url_lower:
+        return REGIONAL_CONFIGS["amazon.co.uk"].copy()
+    if "amazon.ca" in url_lower or ".ca/" in url_lower:
+        return REGIONAL_CONFIGS["amazon.ca"].copy()
+    if "amazon.de" in url_lower or ".de/" in url_lower:
+        return REGIONAL_CONFIGS["amazon.de"].copy()
+    if "amazon.fr" in url_lower or ".fr/" in url_lower:
+        return REGIONAL_CONFIGS["amazon.fr"].copy()
+    if "amazon.com" in url_lower:
+        return REGIONAL_CONFIGS["amazon.com"].copy()
+    
+    # If no explicit domain found (e.g. bare ASIN or generic shortener), default to Amazon India (IN)
+    return REGIONAL_CONFIGS["amazon.in"].copy()
 
 
 def extract_asin(url: str) -> str:
@@ -910,7 +922,7 @@ def extract_asin(url: str) -> str:
     if match:
         return match.group(1).upper()
     asin_match = re.search(r'([A-Z0-9]{10})', url)
-    if asin_match:
+    if asin_match and not any(p in asin_match.group(1).lower() for p in ["http", "amzn", "amazon"]):
         return asin_match.group(1).upper()
     return f"ASIN_{abs(hash(url)) % 1000000:06d}"
 
@@ -1105,11 +1117,33 @@ def get_smart_product_image(title: str = "", category: str = "", asin: str = "")
 
 def scrape_amazon_product(url: str) -> dict:
     """
-    Scrapes product details from Amazon.
+    Scrapes product details from Amazon, automatically resolving URL redirects (amzn.in / shortlinks)
+    and detecting accurate currency symbols and regional exchange rates.
     Falls back gracefully to intelligent mock parser if live request is throttled or CAPTCHA triggered.
     """
-    asin = extract_asin(url)
-    region_info = detect_region_info(url)
+    session = get_http_session()
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "en-GB,en;q=0.9,en-US;q=0.8",
+        "DNT": "1",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1"
+    }
+
+    final_url = url
+    # Follow redirects for shortlinks (e.g. amzn.in/d/..., amzn.to/...)
+    if any(k in url.lower() for k in ["amzn.", "/d/", "bit.ly", "tinyurl"]):
+        try:
+            head_resp = session.head(url, headers=headers, allow_redirects=True, timeout=5)
+            if head_resp.url and head_resp.url != url:
+                final_url = head_resp.url
+        except Exception:
+            pass
+
+    asin = extract_asin(final_url)
+    region_info = detect_region_info(final_url)
     
     # Check if ASIN matches pre-loaded sample dataset
     if asin in SAMPLE_PRODUCTS:
@@ -1124,19 +1158,13 @@ def scrape_amazon_product(url: str) -> dict:
         prod.setdefault("symbol", region_info["symbol"])
         return prod
 
-    headers = {
-        "User-Agent": random.choice(USER_AGENTS),
-        "Accept-Encoding": "gzip, deflate, br",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-        "DNT": "1",
-        "Connection": "keep-alive",
-        "Upgrade-Insecure-Requests": "1"
-    }
-
     try:
-        session = get_http_session()
-        response = session.get(url, headers=headers, timeout=10)
+        response = session.get(final_url, headers=headers, allow_redirects=True, timeout=10)
+        if response.url and response.url != final_url:
+            final_url = response.url
+            asin = extract_asin(final_url)
+            region_info = detect_region_info(final_url)
+
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, "html.parser")
             
@@ -1145,7 +1173,7 @@ def scrape_amazon_product(url: str) -> dict:
             if title_elem and title_elem.get_text().strip():
                 title = title_elem.get_text().strip()
             else:
-                title, _ = extract_title_from_url(url, asin)
+                title, _ = extract_title_from_url(final_url, asin)
             
             # Extract Price & Detect Currency Symbol
             price_val = 0.0
@@ -1165,11 +1193,22 @@ def scrape_amazon_product(url: str) -> dict:
                     if price_val > 0:
                         break
 
+            # Automatic Currency Override based on content clues
+            if any(s in raw_price_str for s in ["₹", "Rs", "INR"]) or ".in" in final_url:
+                region_info = REGIONAL_CONFIGS["amazon.in"].copy()
+            elif "£" in raw_price_str or ".co.uk" in final_url:
+                region_info = REGIONAL_CONFIGS["amazon.co.uk"].copy()
+            elif "€" in raw_price_str or any(d in final_url for d in [".de", ".fr"]):
+                region_info = REGIONAL_CONFIGS["amazon.de"].copy()
+            elif "CA$" in raw_price_str or "C$" in raw_price_str or ".ca" in final_url:
+                region_info = REGIONAL_CONFIGS["amazon.ca"].copy()
+
             native_price = price_val
+            rate = region_info.get("rate", 83.50 if region_info["currency"] == "INR" else 1.0)
 
             # Normalize scraped non-USD prices to base USD
-            if region_info["rate"] != 1.0 and price_val > 0:
-                normalized_price = round(price_val / region_info["rate"], 2)
+            if rate != 1.0 and price_val > 0:
+                normalized_price = round(price_val / rate, 2)
             else:
                 normalized_price = price_val
 
@@ -1203,7 +1242,7 @@ def scrape_amazon_product(url: str) -> dict:
                     "original_price": round(normalized_price * 1.15, 2),
                     "native_price": native_price,
                     "asin": asin,
-                    "url": url,
+                    "url": final_url,
                     "image_url": image_url,
                     "rating": rating,
                     "reviews_count": reviews_count,
@@ -1220,16 +1259,18 @@ def scrape_amazon_product(url: str) -> dict:
 
     # Fallback product info generation for arbitrary URLs when Amazon blocks IP
     mock_price = round(random.uniform(29.99, 149.99), 2)
-    fallback_title, fallback_cat = extract_title_from_url(url, asin)
+    fallback_title, fallback_cat = extract_title_from_url(final_url, asin)
     fallback_img = get_smart_product_image(fallback_title, fallback_cat, asin)
+    rate = region_info.get("rate", 83.50 if region_info["currency"] == "INR" else 1.0)
+    mock_native = round(mock_price * rate, 2)
 
     return {
         "title": fallback_title,
         "price": mock_price,
         "original_price": round(mock_price * 1.25, 2),
-        "native_price": round(mock_price * region_info["rate"], 2),
+        "native_price": mock_native,
         "asin": asin,
-        "url": url,
+        "url": final_url,
         "image_url": fallback_img,
         "rating": 4.7,
         "reviews_count": 850,
