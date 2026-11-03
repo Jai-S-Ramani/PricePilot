@@ -35,7 +35,6 @@
   - [3. 18-Store Competitor Arbitrage Engine](#3-18-store-competitor-arbitrage-engine)
   - [4. Authentic Amazon India Bank Offers Drawer](#4-authentic-amazon-india-bank-offers-drawer)
   - [5. 30-Day Volatility & Predictive Price Drop Forecaster](#5-30-day-volatility--predictive-price-drop-forecaster)
-  - [6. High-Conversion Dual-Theme Landing Page](#6-high-conversion-dual-theme-landing-page)
 - [🧠 Advanced Technical Engines](#-advanced-technical-engines)
   - [Multi-Region Scraping & Normalization](#-multi-region-scraping--normalization)
   - [Catalog Availability Vertical Filtering](#-catalog-availability-vertical-filtering)
@@ -145,19 +144,6 @@ Clicking any product opens an in-depth analytics modal powered by Chart.js, rend
 - **Timeframe Filtering**: Toggle between 7-day, 14-day, 30-day, and all-time price curves.
 - **Price Drop Probability Forecaster**: Evaluates 30-day standard deviation and support levels to output a 7–14 day drop probability score (0% – 100%).
 - **Multi-Format Data Exports**: Export time-series price points for the selected product as clean CSV or structured JSON.
-
----
-
-### 6. High-Conversion Dual-Theme Landing Page
-
-A presentation landing page built with obsidian glassmorphic styling, interactive market ticker marquee, and guest demo access.
-
-<p align="center">
-  <img src="docs/images/landing_hero.png" alt="PricePilot Landing Page" width="95%">
-</p>
-
-- **1-Click Instant Demo**: Allows reviewers, recruiters, and guests to explore full authenticated dashboard capabilities with pre-seeded telemetry.
-- **Obsidian Dark & Light Sand Themes**: Smooth CSS variable theme toggle persisted in `localStorage`.
 
 ---
 

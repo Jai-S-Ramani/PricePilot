@@ -92,9 +92,10 @@
 | :---: | :---: |
 | <img src="../docs/images/competitor_arbitrage.png" width="100%"> | <img src="../docs/images/bank_offers.png" width="100%"> |
 
-| 30-Day Volatility & Forecast | High-Conversion Landing Page |
-| :---: | :---: |
-| <img src="../docs/images/analytics_chart.png" width="100%"> | <img src="../docs/images/landing_hero.png" width="100%"> |
+<p align="center">
+  <strong>30-Day Volatility & Predictive Price Drop Forecaster</strong><br>
+  <img src="../docs/images/analytics_chart.png" width="85%">
+</p>
 
 ---
 
