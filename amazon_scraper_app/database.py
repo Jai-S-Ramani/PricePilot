@@ -975,21 +975,23 @@ def simulate_product_price_drop(product_id: int, drop_percent: float = 30.0) -> 
     """
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT current_price, original_price FROM products WHERE id = ?", (product_id,))
+    cursor.execute("SELECT current_price, original_price, native_price, currency, region FROM products WHERE id = ?", (product_id,))
     row = cursor.fetchone()
     if not row:
         conn.close()
         return None
 
-    cur = float(row[0])
-    orig = float(row[1]) if row[1] else cur
+    cur = float(row["current_price"])
+    orig = float(row["original_price"]) if row["original_price"] else cur
+    curr = row["currency"]
     new_price = max(1.0, round(cur * (1.0 - (drop_percent / 100.0)), 2))
+    new_native = round(new_price * 83.50, 2) if curr == "INR" else new_price
     
     cursor.execute("""
         UPDATE products 
-        SET current_price = ?, original_price = ?, last_scraped = datetime('now', 'localtime')
+        SET current_price = ?, original_price = ?, native_price = ?, last_scraped = datetime('now', 'localtime')
         WHERE id = ?
-    """, (new_price, orig, product_id))
+    """, (new_price, orig, new_native, product_id))
     
     now_dt = datetime.datetime.now()
     cursor.execute("""
@@ -1009,13 +1011,14 @@ def reset_product_price(product_id: int) -> dict:
     """
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT original_price, current_price FROM products WHERE id = ?", (product_id,))
+    cursor.execute("SELECT original_price, current_price, currency FROM products WHERE id = ?", (product_id,))
     row = cursor.fetchone()
     if not row:
         conn.close()
         return None
 
-    orig_p = float(row[0]) if row[0] else None
+    orig_p = float(row["original_price"]) if row["original_price"] else None
+    curr = row["currency"]
 
     cursor.execute("SELECT price FROM price_history WHERE product_id = ? ORDER BY id ASC", (product_id,))
     rows = cursor.fetchall()
@@ -1030,12 +1033,13 @@ def reset_product_price(product_id: int) -> dict:
         restored_price = 99.0
 
     original_p = orig_p if orig_p else round(restored_price * 1.15, 2)
+    new_native = round(restored_price * 83.50, 2) if curr == "INR" else restored_price
     
     cursor.execute("""
         UPDATE products 
-        SET current_price = ?, original_price = ?, last_scraped = datetime('now', 'localtime')
+        SET current_price = ?, original_price = ?, native_price = ?, last_scraped = datetime('now', 'localtime')
         WHERE id = ?
-    """, (restored_price, original_p, product_id))
+    """, (restored_price, original_p, new_native, product_id))
     
     now_dt = datetime.datetime.now()
     cursor.execute("""

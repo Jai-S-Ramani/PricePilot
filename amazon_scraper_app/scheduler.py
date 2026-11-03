@@ -134,6 +134,14 @@ class BackgroundPriceScheduler:
                         return False
                     # Scrape updated product info
                     scraped = scrape_amazon_product(url)
+                    if prod.get("title") and (scraped.get("is_simulated") or not scraped.get("title") or str(scraped.get("title", "")).startswith("Amazon Item")):
+                        scraped["title"] = prod["title"]
+                    if prod.get("image_url") and not str(prod.get("image_url")).endswith("placeholder.svg") and (scraped.get("is_simulated") or not scraped.get("image_url")):
+                        scraped["image_url"] = prod["image_url"]
+                    if prod.get("currency"):
+                        scraped["currency"] = prod["currency"]
+                    if prod.get("region"):
+                        scraped["region"] = prod["region"]
                     scraped["target_price"] = prod.get("target_price")
                     scraped["user_id"] = prod.get("user_id")
 

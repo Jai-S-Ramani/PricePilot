@@ -345,6 +345,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (competitorModal && !competitorModal.classList.contains('hidden')) {
         renderCompetitorComparison();
       }
+      if (chartModal && !chartModal.classList.contains('hidden') && currentModalHistory.length > 0) {
+        renderChart(filterHistoryByTimeframe(currentModalHistory, currentActiveTimeframe), currentModalTargetUSD, currentModalForecast);
+      }
       showToast(`Switched display currency to ${CURRENCIES[currentCurrency].name}`, 'info');
     });
   }

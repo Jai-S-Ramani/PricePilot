@@ -383,11 +383,19 @@ def api_scrape_all():
 
     for p in products:
         scraped = scrape_amazon_product(p["url"])
+        if p.get("title") and (scraped.get("is_simulated") or not scraped.get("title") or str(scraped.get("title", "")).startswith("Amazon Item")):
+            scraped["title"] = p["title"]
+        if p.get("image_url") and not str(p.get("image_url")).endswith("placeholder.svg") and (scraped.get("is_simulated") or not scraped.get("image_url")):
+            scraped["image_url"] = p["image_url"]
+        if p.get("currency"):
+            scraped["currency"] = p["currency"]
+        if p.get("region"):
+            scraped["region"] = p["region"]
         if p.get("target_price"):
             scraped["target_price"] = p["target_price"]
         
         # Check if price dropped below target
-        if scraped["price"] <= p.get("target_price", 0):
+        if p.get("target_price") and scraped.get("price", 0) <= float(p["target_price"]):
             price_drops.append(scraped)
 
         save_or_update_product(scraped, user_id=user_id)
