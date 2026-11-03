@@ -60,7 +60,7 @@
 3. **Catalog Availability Engine**: Dynamically identifies whether a dealer actually stocks a given product vertical (e.g., Nykaa does not sell OnePlus Buds; Croma does not sell fashion dresses) with an interactive UI toggle.
 4. **Multi-Channel Alerts**: Automated notification engine dispatching rich HTML emails, Discord webhook embeds, and Telegram bot messages when target prices are reached.
 5. **Multi-Currency System (7 Currencies)**: Full support for INR (`₹`), USD (`$`), EUR (`€`), GBP (`£`), CAD (`CA$`), AUD (`A$`), and JPY (`¥`), preserving exact native prices (`₹83,416.50`) and preventing multi-currency conversion discrepancies.
-6. **Autonomous Daemon Scheduler**: Thread-safe background worker sweeps monitored products, calculates volatility, logs time-series records to SQLite, and maintains an exportable dataset (`AmazonWebScraperDataset.csv`).
+6. **Autonomous Daemon Scheduler**: Thread-safe background worker sweeps monitored products, calculates volatility, logs time-series records to SQLite, and maintains an exportable dataset (`pricepilot_dataset.csv`).
 7. **Predictive Recommendation Engine**: Analyzes 30-day moving averages and historical lows to output real-time `BUY_NOW`, `FAIR_PRICE`, or `WAIT` decision signals.
 8. **Minimalist Dual-Theme UI**: Obsidian Dark & Light Sand themes with 1-click instant toggle on both the landing page and dashboard.
 
@@ -201,7 +201,7 @@ A dedicated 1-click **Light / Dark Mode** button is positioned right in the top 
 
 ```
 PortfolioProjects/
-├── AmazonWebScraperDataset.csv       # Live synchronized CSV export
+├── pricepilot_dataset.csv            # Live synchronized CSV export
 ├── architecture.html                # Interactive system architecture diagram
 ├── pricepilot.architecture.json     # Architecture specification model
 └── pricepilot/
@@ -324,7 +324,7 @@ PortfolioProjects/
 | `GET /api/products/<id>/export/csv` | `GET` | Exports historical price records for a specific product as CSV |
 | `GET /api/products/<id>/export/json` | `GET` | Returns complete price telemetry and deal score analysis as JSON |
 | `GET /api/kpis` | `GET` | Returns portfolio-wide aggregate savings & deal KPIs |
-| `GET /api/export/csv` | `GET` | Streams synchronized `AmazonWebScraperDataset.csv` |
+| `GET /api/export/csv` | `GET` | Streams synchronized `pricepilot_dataset.csv` |
 | `GET /api/export/json` | `GET` | Streams entire portfolio intelligence dataset in structured JSON |
 
 ### Multi-Store Competitor Endpoints

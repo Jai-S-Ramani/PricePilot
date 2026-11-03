@@ -194,7 +194,7 @@ Located in `notifier.py`:
 Located in `scheduler.py`:
 - Runs in an isolated background thread (`BackgroundPriceScheduler`) using thread-safe SQLite connections.
 - Sweeps all monitored products every 30 minutes (configurable via UI from 5m to 24h).
-- Records new price observations into `price_history`, updates volatility metrics, checks alert thresholds, and synchronizes rows to `AmazonWebScraperDataset.csv` with zero UI blocking.
+- Records new price observations into `price_history`, updates volatility metrics, checks alert thresholds, and synchronizes rows to `pricepilot_dataset.csv` with zero UI blocking.
 
 ---
 
@@ -221,7 +221,7 @@ flowchart TD
 
     subgraph DataLayer ["Persistence & External Services"]
         SQLiteDB[("SQLite3 Database (amazon_tracker.db)")]
-        CSVExport["Live Dataset Export (AmazonWebScraperDataset.csv)"]
+        CSVExport["Live Dataset Export (pricepilot_dataset.csv)"]
         AmazonCatalog["Amazon Catalog (IN, US, UK, CA, DE)"]
         DiscordBot["Discord Webhooks API"]
         TelegramBot["Telegram Bot API"]
@@ -338,7 +338,7 @@ erDiagram
 | `GET /api/products/<id>/export/csv` | `GET` | Exports historical price records for a specific product as CSV |
 | `GET /api/products/<id>/export/json` | `GET` | Returns complete price telemetry and deal score analysis as JSON |
 | `GET /api/kpis` | `GET` | Returns portfolio-wide aggregate savings & deal KPIs |
-| `GET /api/export/csv` | `GET` | Streams synchronized `AmazonWebScraperDataset.csv` |
+| `GET /api/export/csv` | `GET` | Streams synchronized `pricepilot_dataset.csv` |
 | `GET /api/export/json` | `GET` | Streams entire portfolio intelligence dataset in structured JSON |
 
 ### Multi-Store Competitor Endpoints

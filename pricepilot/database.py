@@ -13,7 +13,7 @@ from intelligence import (
 )
 
 DB_PATH = Path(__file__).parent / "amazon_tracker.db"
-CSV_PATH = Path(__file__).parent.parent / "AmazonWebScraperDataset.csv"
+CSV_PATH = Path(__file__).parent.parent / "pricepilot_dataset.csv"
 
 def get_db_connection():
     db_file = os.environ.get("TRACKER_DB_PATH") or DB_PATH

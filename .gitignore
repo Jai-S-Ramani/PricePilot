@@ -52,6 +52,11 @@ Thumbs.db
 database.db
 .pytest_cache/
 
+# Auto-generated price export datasets
+*.csv
+AmazonWebScraperDataset.csv
+pricepilot_dataset.csv
+
 # Archify build receipts
 *.finalize.json
 *.finalize-summary.json

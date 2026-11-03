@@ -182,7 +182,7 @@ class TestFlaskEndpoints(unittest.TestCase):
     def test_export_csv_endpoint(self):
         response = self.app.get('/api/export/csv')
         self.assertEqual(response.status_code, 200)
-        self.assertIn("AmazonWebScraperDataset.csv", response.headers.get("Content-Disposition", ""))
+        self.assertIn("pricepilot_dataset.csv", response.headers.get("Content-Disposition", ""))
         self.assertIn(b"Title", response.data)
 
     def test_api_competitors_endpoint(self):

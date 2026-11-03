@@ -570,7 +570,7 @@ def api_scheduler_trigger():
 @app.route("/api/export/csv", methods=["GET"])
 def api_export_csv():
     if CSV_PATH.exists():
-        return send_file(CSV_PATH, as_attachment=True, download_name="AmazonWebScraperDataset.csv")
+        return send_file(CSV_PATH, as_attachment=True, download_name="pricepilot_dataset.csv")
     return jsonify({"status": "error", "message": "CSV dataset file not found"}), 404
 
 
