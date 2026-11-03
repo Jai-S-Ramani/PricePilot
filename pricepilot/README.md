@@ -1,8 +1,24 @@
-# ⚡ PricePilot — Amazon Price Tracker & Competitor Arbitrage Intelligence Platform
+# <p align="center"><img src="static/images/pricepilot_brand_dark.png" alt="PricePilot" width="480"></p>
 
-> **TRACK. COMPARE. MAKE THE MOVE.**  
-> A production-grade, full-stack Data Analytics Web Application, Multi-Store Competitor Arbitrage Engine, Live Amazon Catalog Search, and Multi-Channel Notification Platform built with Python, Flask, BeautifulSoup4, SQLite3, Chart.js, and GSAP. An enterprise-grade real-time price monitoring, competitor benchmarking, and predictive decision-support platform.
->
+<p align="center">
+  <strong>Autonomous E-Commerce Price Intelligence, Cross-Store Arbitrage & Multi-Channel Alerting Platform</strong>
+</p>
+
+<p align="center">
+  <em>TRACK. COMPARE. MAKE THE MOVE.</em>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.9+">
+  <img src="https://img.shields.io/badge/Flask-3.0%2B-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask">
+  <img src="https://img.shields.io/badge/SQLite3-Production-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite3">
+  <img src="https://img.shields.io/badge/Tests-59%20Passing-10B981?style=for-the-badge&logo=pytest&logoColor=white" alt="59 Tests Passing">
+  <img src="https://img.shields.io/badge/Chart.js-Analytics-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white" alt="Chart.js">
+  <img src="https://img.shields.io/badge/GSAP-3.12-88CE02?style=for-the-badge&logo=greensock&logoColor=white" alt="GSAP">
+</p>
+
+---
+
 > **Architect & Lead Engineer**: **Jai S Ramani**  
 > 📧 **Email**: [jaisramani05@gmail.com](mailto:jaisramani05@gmail.com) | 💼 **LinkedIn**: [jai-s-ramani-2948532bb](https://www.linkedin.com/in/jai-s-ramani-2948532bb) | 🐙 **GitHub**: [Jai-S-Ramani](https://github.com/Jai-S-Ramani)
 
@@ -337,7 +353,7 @@ python -m unittest discover -s tests -p "test_*.py"
 
 ```
 ----------------------------------------------------------------------
-Ran 59 tests in 5.621s
+Ran 59 tests in 2.85s
 
 OK
 ```
