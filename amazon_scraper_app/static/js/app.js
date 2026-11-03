@@ -360,25 +360,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (valUSD == null || isNaN(valUSD)) return '₹0.00';
     const curr = CURRENCIES[currentCurrency] || CURRENCIES.INR;
 
-    // 1. Safety guard: if valUSD is already raw unconverted native INR (> 1000)
-    if (currentCurrency === 'INR' && valUSD > 1000 && (!nativePrice || Math.abs(nativePrice - valUSD) < 1)) {
-      return `${curr.symbol}${Number(valUSD).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
-
-    // 2. If viewing in INR and product has an authentic Indian native rupee price (> 500)
-    if (currentCurrency === 'INR' && nativePrice != null && Number(nativePrice) > 500 && (!nativeCurrency || nativeCurrency === 'INR')) {
-      return `${curr.symbol}${Number(nativePrice).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    }
-
-    // 3. If viewing in product's exact native currency and we have an authentic native price
-    if (nativeCurrency && nativeCurrency === currentCurrency && nativePrice != null && Number(nativePrice) > 0) {
+    // 1. If viewing in the product's native marketplace currency (e.g. INR product in INR mode, GBP in GBP mode):
+    // Use the authentic scraped native_price directly without recalculating
+    if (nativeCurrency && nativeCurrency === currentCurrency && nativePrice != null && !isNaN(nativePrice) && Number(nativePrice) > 0) {
       const decimals = currentCurrency === 'JPY' ? 0 : 2;
       const locale = currentCurrency === 'INR' ? 'en-IN' : undefined;
       return `${curr.symbol}${Number(nativePrice).toLocaleString(locale, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
     }
 
-    // 4. Otherwise, convert base USD to current view currency
-    const converted = valUSD * curr.rate;
+    // 2. In ALL other cases (e.g. US product in INR mode, or INR product in USD mode):
+    // Accurately convert the USD baseline price using the active currency exchange rate
+    const converted = Number(valUSD) * curr.rate;
     const decimals = currentCurrency === 'JPY' ? 0 : 2;
     const locale = currentCurrency === 'INR' ? 'en-IN' : undefined;
     return `${curr.symbol}${converted.toLocaleString(locale, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;

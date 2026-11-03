@@ -21,6 +21,14 @@ from intelligence import optimize_basket_arbitrage
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "amazon_scraper_super_secret_luxe_key_2026")
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
+
+@app.after_request
+def add_no_cache_headers(response):
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 # Ensure database tables exist and start background daemon scheduler
 init_db()
@@ -198,12 +206,12 @@ def api_add_product():
         else:
             region = scraped.get("region") or ("IN" if currency == "INR" else "US")
 
-        raw_price = float(data.get("price", 0))
-        base_usd = float(data.get("base_usd", 0))
+        raw_price = float(data.get("price") or scraped.get("price") or 0)
+        base_usd = float(data.get("base_usd") or (raw_price if currency == "USD" else (round(raw_price / 83.50, 2) if raw_price > 500 else raw_price)))
 
         if base_usd > 0:
             usd_price = base_usd
-            native_p = float(data.get("native_price") or (round(base_usd * 83.50, 2) if currency == "INR" else base_usd))
+            native_p = float(data.get("native_price") or scraped.get("native_price") or (round(base_usd * 83.50, 2) if currency == "INR" else base_usd))
         elif currency == "INR":
             if raw_price > 500:
                 usd_price = round(raw_price / 83.50, 2)
@@ -213,7 +221,7 @@ def api_add_product():
                 native_p = round(raw_price * 83.50, 2)
         else:
             usd_price = raw_price
-            native_p = float(data.get("native_price") or raw_price)
+            native_p = float(data.get("native_price") or scraped.get("native_price") or raw_price)
 
         scraped["price"] = usd_price
         scraped["original_price"] = round(usd_price * 1.15, 2)
