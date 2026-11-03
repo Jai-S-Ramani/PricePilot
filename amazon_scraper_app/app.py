@@ -180,13 +180,30 @@ def api_add_product():
     # Preserve rich search metadata if available (from live search or fallback)
     if data.get("title") and (scraped.get("is_simulated") or str(scraped.get("title", "")).startswith("Amazon Item") or data.get("native_price")):
         scraped["title"] = data["title"]
-        currency = data.get("currency", scraped.get("currency", "INR"))
+        
+        url_l = (url or data.get("url") or "").lower()
+        is_inr_domain = "amazon.in" in url_l or "amzn.in" in url_l or ".in/" in url_l
+        
+        if data.get("currency"):
+            currency = data["currency"]
+        elif is_inr_domain:
+            currency = "INR"
+        else:
+            currency = scraped.get("currency") or ("INR" if data.get("region") == "IN" else "USD")
+
+        if data.get("region"):
+            region = data["region"]
+        elif is_inr_domain:
+            region = "IN"
+        else:
+            region = scraped.get("region") or ("IN" if currency == "INR" else "US")
+
         raw_price = float(data.get("price", 0))
         base_usd = float(data.get("base_usd", 0))
 
         if base_usd > 0:
             usd_price = base_usd
-            native_p = float(data.get("native_price") or raw_price)
+            native_p = float(data.get("native_price") or (round(base_usd * 83.50, 2) if currency == "INR" else base_usd))
         elif currency == "INR":
             if raw_price > 500:
                 usd_price = round(raw_price / 83.50, 2)
@@ -211,9 +228,9 @@ def api_add_product():
                 scraped["rating"] = float(data["rating"])
             except (ValueError, TypeError):
                 pass
-        scraped["region"] = data.get("region", "IN")
+        scraped["region"] = region
         scraped["currency"] = currency
-        scraped["symbol"] = data.get("symbol", "₹" if currency == "INR" else "$")
+        scraped["symbol"] = "₹" if currency == "INR" else ("£" if currency == "GBP" else ("€" if currency == "EUR" else "$"))
 
     if "target_price" in data and data["target_price"]:
         try:

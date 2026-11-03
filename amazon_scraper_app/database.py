@@ -810,17 +810,19 @@ def save_or_update_product(data: dict, user_id: int = None):
     today_str = datetime.date.today().strftime("%Y-%m-%d")
 
     url_str = (data.get("url") or "").lower()
-    is_inr = (
-        data.get("currency") == "INR" 
-        or data.get("region") == "IN" 
-        or "amazon.in" in url_str 
-        or "amzn.in" in url_str
-        or ".in/" in url_str
-    )
+    is_inr_domain = "amazon.in" in url_str or "amzn.in" in url_str or ".in/" in url_str
+    
+    # If explicit USD or US domain, not INR
+    if "amazon.com" in url_str or data.get("currency") == "USD" or data.get("region") == "US":
+        is_inr = False
+    elif is_inr_domain or data.get("currency") == "INR" or data.get("region") == "IN":
+        is_inr = True
+    else:
+        is_inr = False
 
     region = "IN" if is_inr else data.get("region", "US")
     currency = "INR" if is_inr else data.get("currency", "USD")
-    symbol = "₹" if is_inr else data.get("symbol", "$")
+    symbol = "₹" if is_inr else ("£" if currency == "GBP" else ("€" if currency == "EUR" else "$"))
 
     raw_price = float(data.get("price", 0))
 

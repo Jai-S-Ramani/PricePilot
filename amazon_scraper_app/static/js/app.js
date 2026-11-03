@@ -360,19 +360,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (valUSD == null || isNaN(valUSD)) return '₹0.00';
     const curr = CURRENCIES[currentCurrency] || CURRENCIES.INR;
 
-    // Safety guard: if valUSD is already unconverted native INR (> 2000), do not multiply by exchange rate
-    if (currentCurrency === 'INR' && valUSD > 2000 && (!nativePrice || Math.abs(nativePrice - valUSD) < 1)) {
+    // 1. Safety guard: if valUSD is already raw unconverted native INR (> 1000)
+    if (currentCurrency === 'INR' && valUSD > 1000 && (!nativePrice || Math.abs(nativePrice - valUSD) < 1)) {
       return `${curr.symbol}${Number(valUSD).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
-    // If viewing in native currency (e.g. INR) and we have exact scraped native_price, use it directly!
-    if (nativePrice != null && !isNaN(nativePrice) && Number(nativePrice) > 0 && 
-       (nativeCurrency === currentCurrency || (!nativeCurrency && currentCurrency === 'INR') || (currentCurrency === 'INR' && Number(nativePrice) > 500))) {
+    // 2. If viewing in INR and product has an authentic Indian native rupee price (> 500)
+    if (currentCurrency === 'INR' && nativePrice != null && Number(nativePrice) > 500 && (!nativeCurrency || nativeCurrency === 'INR')) {
+      return `${curr.symbol}${Number(nativePrice).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    // 3. If viewing in product's exact native currency and we have an authentic native price
+    if (nativeCurrency && nativeCurrency === currentCurrency && nativePrice != null && Number(nativePrice) > 0) {
       const decimals = currentCurrency === 'JPY' ? 0 : 2;
       const locale = currentCurrency === 'INR' ? 'en-IN' : undefined;
       return `${curr.symbol}${Number(nativePrice).toLocaleString(locale, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
     }
 
+    // 4. Otherwise, convert base USD to current view currency
     const converted = valUSD * curr.rate;
     const decimals = currentCurrency === 'JPY' ? 0 : 2;
     const locale = currentCurrency === 'INR' ? 'en-IN' : undefined;
@@ -748,8 +753,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const bankDiscountVal = activeBankCard ? activeBankCard.discount_val : 0;
       const bankDiscountNative = activeBankCard ? activeBankCard.discount_val_native : null;
 
+      const isIndianProduct = (p.currency === 'INR' || p.region === 'IN');
       const effectivePrice = Math.max(1, p.current_price - bankDiscountVal);
-      const effectiveNativePrice = (p.native_price && p.current_price) 
+      const effectiveNativePrice = (isIndianProduct && p.native_price && p.current_price) 
         ? Math.max(1, p.native_price - (bankDiscountVal * (p.native_price / p.current_price))) 
         : null;
 
@@ -757,10 +763,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const diff = effectivePrice - target;
       const isDeal = diff <= 0;
       
-      const targetNative = (p.native_price && p.current_price) 
+      const targetNative = (isIndianProduct && p.native_price && p.current_price) 
         ? (target * (p.native_price / p.current_price)) 
         : null;
-      const diffNative = (effectiveNativePrice != null && effectivePrice) 
+      const diffNative = (isIndianProduct && effectiveNativePrice != null && effectivePrice) 
         ? (effectiveNativePrice - (targetNative || target)) 
         : null;
 
@@ -884,8 +890,8 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="price-row">
                 <span class="current-price ${activeBankCard ? 'price-discounted' : ''}">${formatMoney(effectivePrice, effectiveNativePrice, p.currency)}</span>
                 ${activeBankCard ? `
-                  <span class="original-price" style="text-decoration: line-through;" title="Original Amazon Price">${formatMoney(p.current_price, p.native_price, p.currency)}</span>
-                ` : (p.original_price ? `<span class="original-price">${formatMoney(p.original_price, p.native_price ? (p.native_price * 1.15) : null, p.currency)}</span>` : '')}
+                  <span class="original-price" style="text-decoration: line-through;" title="Original Amazon Price">${formatMoney(p.current_price, isIndianProduct ? p.native_price : null, p.currency)}</span>
+                ` : (p.original_price ? `<span class="original-price">${formatMoney(p.original_price, isIndianProduct && p.native_price ? (p.native_price * 1.15) : null, p.currency)}</span>` : '')}
                 ${activeBankCard ? `
                   <span class="badge-bank-applied" title="${activeBankCard.offer_desc}"><i class="fa-solid fa-credit-card"></i> -${formatMoney(bankDiscountVal, bankDiscountNative, p.currency)} ${activeBankCard.bank_code || 'Card'}</span>
                 ` : ''}
@@ -926,7 +932,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="target-labels">
               <span>Alert Target: <strong>${formatMoney(target, targetNative, p.currency)}</strong></span>
-              <span>30-Day Low: <strong>${formatMoney(p.lowest_price || p.current_price, (p.native_price && p.current_price && p.lowest_price) ? (p.lowest_price * (p.native_price / p.current_price)) : null, p.currency)}</strong></span>
+              <span>30-Day Low: <strong>${formatMoney(p.lowest_price || p.current_price, (isIndianProduct && p.native_price && p.current_price && p.lowest_price) ? (p.lowest_price * (p.native_price / p.current_price)) : null, p.currency)}</strong></span>
             </div>
             <div class="progress-bar-bg" title="${fillWidth}% progress towards alert price">
               <div class="progress-bar-fill ${barClass}" style="width: ${fillWidth}%;"></div>
