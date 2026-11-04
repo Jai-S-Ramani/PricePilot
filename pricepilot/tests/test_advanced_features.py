@@ -402,6 +402,24 @@ class TestAdvancedFeatures(unittest.TestCase):
         data = json.loads(res.data)
         self.assertEqual(data.get("status"), "error")
 
+    def test_demo_simulate_flash_deal_endpoint(self):
+        """Test POST /api/demo/simulate-flash-deal triggers flash price drop."""
+        res = self.client.post('/api/demo/simulate-flash-deal', data=json.dumps({"drop_percent": 30.0}), content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        data = json.loads(res.data)
+        self.assertEqual(data.get("status"), "success")
+        self.assertIn("product", data)
+        self.assertIn("auto_alerts_triggered", data)
+
+    def test_demo_reset_all_endpoint(self):
+        """Test POST /api/demo/reset-all restores baseline product prices."""
+        res = self.client.post('/api/demo/reset-all', content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        data = json.loads(res.data)
+        self.assertEqual(data.get("status"), "success")
+        self.assertIn("restored_count", data)
+        self.assertGreater(data["restored_count"], 0)
+
 
 if __name__ == '__main__':
     unittest.main()

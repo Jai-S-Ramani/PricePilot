@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/Flask-3.0%2B-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask">
   <img src="https://img.shields.io/badge/SQLite3-Production-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite3">
-  <img src="https://img.shields.io/badge/Tests-62%20Passing-10B981?style=for-the-badge&logo=pytest&logoColor=white" alt="62 Tests Passing">
+  <img src="https://img.shields.io/badge/Tests-64%20Passing-10B981?style=for-the-badge&logo=pytest&logoColor=white" alt="64 Tests Passing">
   <img src="https://img.shields.io/badge/Chart.js-Analytics-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white" alt="Chart.js">
   <img src="https://img.shields.io/badge/GSAP-3.12-88CE02?style=for-the-badge&logo=greensock&logoColor=white" alt="GSAP">
   <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
@@ -45,7 +45,7 @@
 - [🏗️ System Architecture](#-system-architecture)
 - [🗄️ Database Architecture & Data Pipeline](#-database-architecture--data-pipeline)
 - [🔌 REST API Reference](#-rest-api-reference)
-- [🧪 Automated Test Suite (62 Tests)](#-automated-test-suite-62-tests)
+- [🧪 Automated Test Suite (64 Tests)](#-automated-test-suite-64-tests)
 - [🚀 Quickstart & Deployment](#-quickstart--deployment)
 - [📜 Attribution & License](#-attribution--license)
 
@@ -368,31 +368,33 @@ erDiagram
 | `POST /api/notifications/test-telegram` | `POST` | Sends a test Telegram Markdown message |
 | `POST /api/alerts/test` | `POST` | Sends live test email alert or generates simulated HTML preview |
 | `GET /api/alerts/history` | `GET` | Returns audit log of sent alert notifications |
+| `POST /api/demo/simulate-flash-deal` | `POST` | Recruiter Chaos Sandbox: Simulates live -35% price drop, records history & evaluates alert triggers |
+| `POST /api/demo/reset-all` | `POST` | Recruiter Chaos Sandbox: Restores all tracked products back to verified market baselines |
 
 ---
 
-## 🧪 Automated Test Suite (62 Tests)
+## 🧪 Automated Test Suite (64 Tests)
 
-The repository features **62 automated unit and integration tests** organized into three specialized test suites:
+The repository features **64 automated unit and integration tests** organized into three specialized test suites:
 
 - [`tests/test_all_features.py`](file:///e:/DATA%20ANALYTICS/PortfolioProjects/pricepilot/tests/test_all_features.py) (24 tests): Scraper parsing, multi-region detection, 18-store competitor benchmarking, catalog availability engine, predictive signals, background scheduler, and Flask endpoints.
-- [`tests/test_advanced_features.py`](file:///e:/DATA%20ANALYTICS/PortfolioProjects/pricepilot/tests/test_advanced_features.py) (22 tests): Google Identity Services (GIS) auth, autocomplete suggestions, target price presets, Discord webhook embeds, Telegram push alerts, multi-channel dispatch, single-product live refresh, and multi-format CSV/JSON exports.
+- [`tests/test_advanced_features.py`](file:///e:/DATA%20ANALYTICS/PortfolioProjects/pricepilot/tests/test_advanced_features.py) (24 tests): Google Identity Services (GIS) auth, autocomplete suggestions, target price presets, Discord webhook embeds, Telegram push alerts, multi-channel dispatch, single-product live refresh, multi-format CSV/JSON exports, and Recruiter Demo Chaos Sandbox endpoints.
 - [`tests/test_intelligence_suite.py`](file:///e:/DATA%20ANALYTICS/PortfolioProjects/pricepilot/tests/test_intelligence_suite.py) (16 tests): Deceptive price detection, AI review authenticity & sentiment breakdown, price drop probability forecaster, multi-store split basket arbitrage optimizer, stacked coupons, and authentic Indian partner bank card discount calculations.
 
 ### Running the Full Test Suite:
 ```bash
-python -m unittest discover -s pricepilot/tests -p "test_*.py"
+python -m pytest pricepilot/tests
 ```
 
 ```
 ============================= test session starts =============================
-collected 62 items
+collected 64 items
 
-pricepilot/tests/test_advanced_features.py .........................     [ 40%]
+pricepilot/tests/test_advanced_features.py ...........................   [ 42%]
 pricepilot/tests/test_all_features.py ........................           [ 79%]
 pricepilot/tests/test_intelligence_suite.py .............                [100%]
 
-============================= 62 passed in 6.01s ==============================
+============================= 64 passed in 6.06s ==============================
 ```
 
 ---

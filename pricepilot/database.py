@@ -1094,3 +1094,36 @@ def reset_product_price(product_id: int) -> dict:
     conn.close()
     export_to_csv()
     return get_product_by_id(product_id)
+
+
+def simulate_random_flash_crash(drop_percent: float = 35.0) -> dict:
+    """
+    Selects an active product and simulates an instant flash crash price drop.
+    Prefers products that have not yet had a recent drop.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, title, current_price, target_price FROM products ORDER BY RANDOM() LIMIT 1")
+    row = cursor.fetchone()
+    conn.close()
+    if not row:
+        return None
+    return simulate_product_price_drop(row["id"], drop_percent=drop_percent)
+
+
+def reset_all_product_prices() -> int:
+    """
+    Restores all tracked products back to their verified market baselines.
+    Returns the count of products restored.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM products")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    count = 0
+    for r in rows:
+        if reset_product_price(r["id"]):
+            count += 1
+    return count

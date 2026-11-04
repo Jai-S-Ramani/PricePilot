@@ -1632,6 +1632,79 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // -----------------------------------------------------------------
+  // Recruiter Demo Sandbox & Live Chaos Triggers
+  // -----------------------------------------------------------------
+  const btnSimulateFlashCrash = document.getElementById('btnSimulateFlashCrash');
+  const btnResetPrices = document.getElementById('btnResetPrices');
+
+  if (btnSimulateFlashCrash) {
+    btnSimulateFlashCrash.addEventListener('click', async () => {
+      btnSimulateFlashCrash.disabled = true;
+      const origHtml = btnSimulateFlashCrash.innerHTML;
+      btnSimulateFlashCrash.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Triggering Flash Crash...</span>';
+      
+      try {
+        const res = await fetch('/api/demo/simulate-flash-deal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ drop_percent: 35.0 })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(data.message || '⚡ 35% Flash Crash triggered live!', 'success');
+          await fetchProducts();
+          fetchNotifications();
+
+          // Highlight the crashed product card with GSAP spring shockwave
+          const pId = data.product?.id;
+          if (pId) {
+            const card = document.querySelector(`.product-card[data-id="${pId}"]`);
+            if (card && typeof gsap !== 'undefined') {
+              card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              gsap.fromTo(card, 
+                { scale: 0.96, boxShadow: '0 0 35px rgba(16, 185, 129, 0.8)', borderColor: '#10b981' },
+                { scale: 1, boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)', borderColor: 'var(--border-glass)', duration: 1.4, ease: 'elastic.out(1, 0.4)' }
+              );
+            }
+          }
+        } else {
+          showToast(data.message || 'Error simulating deal', 'error');
+        }
+      } catch (e) {
+        showToast('Failed to trigger simulation', 'error');
+      } finally {
+        btnSimulateFlashCrash.disabled = false;
+        btnSimulateFlashCrash.innerHTML = origHtml;
+      }
+    });
+  }
+
+  if (btnResetPrices) {
+    btnResetPrices.addEventListener('click', async () => {
+      btnResetPrices.disabled = true;
+      const origHtml = btnResetPrices.innerHTML;
+      btnResetPrices.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Restoring...</span>';
+
+      try {
+        const res = await fetch('/api/demo/reset-all', { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(data.message || 'Prices restored to verified baselines.', 'info');
+          await fetchProducts();
+          fetchNotifications();
+        } else {
+          showToast(data.message || 'Error resetting prices', 'error');
+        }
+      } catch (e) {
+        showToast('Failed to reset prices', 'error');
+      } finally {
+        btnResetPrices.disabled = false;
+        btnResetPrices.innerHTML = origHtml;
+      }
+    });
+  }
+
+  // -----------------------------------------------------------------
   // Price History Chart Modal & GSAP Pop
   // -----------------------------------------------------------------
   let currentModalHistory = [];
