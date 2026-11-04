@@ -255,14 +255,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof gsap === 'undefined') return;
 
     // Top Header Brand Entrance (nav-actions controls remain static & 100% permanently visible)
-    gsap.from('.brand-logo, .brand-text', {
-      duration: 0.6,
-      y: -15,
-      opacity: 0,
-      stagger: 0.08,
-      ease: 'power2.out',
-      clearProps: 'all'
-    });
+    if (document.querySelectorAll('.brand-navbar-img').length > 0) {
+      gsap.from('.brand-navbar-img', {
+        duration: 0.6,
+        y: -15,
+        opacity: 0,
+        stagger: 0.08,
+        ease: 'power2.out',
+        clearProps: 'all'
+      });
+    }
 
     // ScrollTrigger: Elevated Navbar on Scroll
     if (typeof ScrollTrigger !== 'undefined') {
@@ -977,7 +979,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCardPopup();
 
     // GSAP Staggered Spring Pop-Up Entrance for Cards (No Flip-Flop / Tilt)
-    if (typeof gsap !== 'undefined') {
+    if (typeof gsap !== 'undefined' && document.querySelectorAll('.product-card').length > 0) {
       gsap.fromTo('.product-card', 
         { opacity: 0, y: 40, scale: 0.7 },
         { 

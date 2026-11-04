@@ -2672,6 +2672,54 @@ html, body {
     font-size: 0.76rem;
   }
 
+  /* Responsive Mobile Add Product & Search Forms */
+  .add-form {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .input-group,
+  .input-group-target {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .add-form .btn-accent {
+    width: 100% !important;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .search-form-row {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .search-region-select,
+  .search-target-preset-wrap,
+  .search-target-select,
+  .search-submit-btn {
+    width: 100% !important;
+  }
+
+  .sample-chips {
+    gap: 6px;
+    padding-top: 10px;
+  }
+
+  .chip {
+    padding: 5px 10px;
+    font-size: 0.72rem;
+  }
+
+  .products-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
   /* Single Column Mobile Product Cards */
   .products-grid {
     grid-template-columns: 1fr;
@@ -2717,27 +2765,55 @@ html, body {
   }
 
   /* Adaptive Full-Width Modals */
-  .modal {
-    padding: 8px;
+  .modal,
+  .modal-overlay {
+    padding: 8px !important;
   }
 
   .modal-content {
     width: 100% !important;
     max-width: 100% !important;
-    margin: 8px auto !important;
+    margin: 6px auto !important;
     max-height: 92vh;
     padding: 16px 12px !important;
     border-radius: 16px !important;
-    gap: 16px;
+    gap: 14px;
+    box-sizing: border-box !important;
+  }
+
+  .stats-ribbon {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .modal-verdict-banner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .verdict-banner-left,
+  .verdict-banner-right {
+    width: 100% !important;
+  }
+
+  .modal-forecast-banner {
+    flex-direction: column !important;
+    gap: 10px !important;
   }
 
   .modal-header h3 {
-    font-size: 1.15rem;
+    font-size: 1.12rem;
   }
 
   .competitor-stores-grid {
     grid-template-columns: 1fr;
     gap: 10px;
+  }
+
+  #liveSearchResults,
+  .live-search-results {
+    grid-template-columns: 1fr !important;
   }
 
   .notif-dropdown,

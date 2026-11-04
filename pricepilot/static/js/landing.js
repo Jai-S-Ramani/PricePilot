@@ -121,11 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
             callback: handleGoogleCredentialResponse,
             auto_select: false
           });
-          google.accounts.id.prompt((notification) => {
-            if (notification.isNotDisplayed()) {
-              console.warn('Google One Tap suppressed reason:', notification.getNotDisplayedReason());
-            }
-          });
         }
 
         // Initialize OAuth2 Token Popup Flow (for direct button clicks)
