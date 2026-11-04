@@ -86,6 +86,10 @@ class TestAdvancedFeatures(unittest.TestCase):
         self.assertEqual(data["product"]["current_price"], 149.99)
         self.assertEqual(data["product"]["category"], "Office & Tech")
 
+        # Clean up test product to keep database pristine
+        if "product" in data and "id" in data["product"]:
+            self.client.delete(f"/api/products/{data['product']['id']}")
+
     def test_discord_alert_simulation(self):
         """Test Discord alert simulator works cleanly without live credentials."""
         sent = send_discord_alert(
