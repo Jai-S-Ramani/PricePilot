@@ -11,7 +11,7 @@ Provides:
 
 import math
 import random
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 
 def detect_deceptive_pricing(current_price: float, original_price: float, price_history: List[float]) -> Dict[str, Any]:
