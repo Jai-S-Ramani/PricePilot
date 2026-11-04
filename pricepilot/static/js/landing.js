@@ -102,22 +102,74 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -----------------------------------------------------------------
-  // Google Authentication Integration (GIS & Fast Simulation Fallback)
+  // Google Authentication Integration (GIS, OAuth2 Token Popup & Fallback)
   // -----------------------------------------------------------------
   const landingGoogleSignInBtn = document.getElementById('landingGoogleSignInBtn');
+  let googleTokenClient = null;
+  let googleConfig = null;
 
   async function initGoogleAuth() {
     try {
       const cfgRes = await fetch('/api/auth/config');
-      const cfg = await cfgRes.json();
+      googleConfig = await cfgRes.json();
       
-      if (cfg.google_client_id && typeof google !== 'undefined' && google.accounts?.id) {
-        google.accounts.id.initialize({
-          client_id: cfg.google_client_id,
-          callback: handleGoogleCredentialResponse,
-          auto_select: false
-        });
-        google.accounts.id.prompt();
+      if (googleConfig.google_client_id && typeof google !== 'undefined') {
+        // Initialize GIS Credential Flow
+        if (google.accounts?.id) {
+          google.accounts.id.initialize({
+            client_id: googleConfig.google_client_id,
+            callback: handleGoogleCredentialResponse,
+            auto_select: false
+          });
+          google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed()) {
+              console.warn('Google One Tap suppressed reason:', notification.getNotDisplayedReason());
+            }
+          });
+        }
+
+        // Initialize OAuth2 Token Popup Flow (for direct button clicks)
+        if (google.accounts?.oauth2) {
+          googleTokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: googleConfig.google_client_id,
+            scope: 'email profile openid',
+            callback: async (tokenResponse) => {
+              if (tokenResponse.error) {
+                showToast(`Google Sign-In: ${tokenResponse.error}`, 'error');
+                return;
+              }
+              showToast('Fetching Google profile...', 'info');
+              try {
+                const userinfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                  headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                });
+                const profile = await userinfoRes.json();
+                const res = await fetch('/api/auth/google', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    email: profile.email,
+                    name: profile.name,
+                    avatar_url: profile.picture
+                  })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                  showToast(data.message || `Signed in as ${profile.name}!`, 'success');
+                  setTimeout(() => { window.location.href = data.redirect || '/dashboard'; }, 400);
+                } else {
+                  showToast(data.message || 'Google Auth verification failed', 'error');
+                }
+              } catch (err) {
+                showToast('Failed to retrieve Google profile', 'error');
+              }
+            },
+            error_callback: (err) => {
+              console.warn('Google Token Client error:', err);
+              showToast('Google popup was closed or origin not authorized', 'info');
+            }
+          });
+        }
       }
     } catch (e) {
       console.warn('Google Auth config fetch deferred:', e);
@@ -147,15 +199,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (landingGoogleSignInBtn) {
     landingGoogleSignInBtn.addEventListener('click', async () => {
-      try {
-        const cfgRes = await fetch('/api/auth/config');
-        const cfg = await cfgRes.json();
-        if (cfg.google_client_id && typeof google !== 'undefined' && google.accounts?.id) {
-          google.accounts.id.prompt();
+      // 1. If Google OAuth2 Token Client is available, trigger the official Google popup
+      if (googleTokenClient) {
+        try {
+          googleTokenClient.requestAccessToken({ prompt: 'select_account' });
           return;
+        } catch (err) {
+          console.warn('Google Token Client request failed, falling back:', err);
         }
-      } catch (err) {}
+      }
 
+      // 2. If GIS is initialized, attempt prompt
+      if (googleConfig?.google_client_id && typeof google !== 'undefined' && google.accounts?.id) {
+        try {
+          google.accounts.id.prompt();
+          showToast('Google Sign-In prompt triggered. If blocked, check Authorized Origins.', 'info');
+          return;
+        } catch (err) {}
+      }
+
+      // 3. Fallback: Authenticate as verified demo account
       showToast('Authenticating with Google Account...', 'info');
       try {
         const res = await fetch('/api/auth/google', {

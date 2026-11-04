@@ -2812,39 +2812,82 @@ document.addEventListener('DOMContentLoaded', () => {
   // Google Authentication Integration in Modal
   // -----------------------------------------------------------------
   const modalGoogleSignInBtn = document.getElementById('modalGoogleSignInBtn');
+  let modalGoogleTokenClient = null;
+  let modalGoogleConfig = null;
 
   async function initDashboardGoogleAuth() {
     try {
       const cfgRes = await fetch('/api/auth/config');
-      const cfg = await cfgRes.json();
-      if (cfg.google_client_id && typeof google !== 'undefined' && google.accounts?.id) {
-        google.accounts.id.initialize({
-          client_id: cfg.google_client_id,
-          callback: async (response) => {
-            if (!response || !response.credential) return;
-            showToast('Verifying Google credentials...', 'info');
-            try {
-              const res = await fetch('/api/auth/google', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ credential: response.credential })
-              });
-              const data = await res.json();
-              if (data.status === 'success') {
-                currentUser = data.user;
-                renderUserAuth(currentUser);
-                if (alertAuthModal) alertAuthModal.classList.add('hidden');
-                showToast(`Signed in as ${currentUser.name || currentUser.email}`, 'success');
-                fetchProducts();
-              } else {
-                showToast(data.message || 'Google Sign-In failed', 'error');
+      modalGoogleConfig = await cfgRes.json();
+      if (modalGoogleConfig.google_client_id && typeof google !== 'undefined') {
+        if (google.accounts?.id) {
+          google.accounts.id.initialize({
+            client_id: modalGoogleConfig.google_client_id,
+            callback: async (response) => {
+              if (!response || !response.credential) return;
+              showToast('Verifying Google credentials...', 'info');
+              try {
+                const res = await fetch('/api/auth/google', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ credential: response.credential })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                  currentUser = data.user;
+                  renderUserAuth(currentUser);
+                  if (alertAuthModal) alertAuthModal.classList.add('hidden');
+                  showToast(`Signed in as ${currentUser.name || currentUser.email}`, 'success');
+                  fetchProducts();
+                } else {
+                  showToast(data.message || 'Google Sign-In failed', 'error');
+                }
+              } catch (err) {
+                showToast('Error verifying Google account', 'error');
               }
-            } catch (err) {
-              showToast('Error verifying Google account', 'error');
+            },
+            auto_select: false
+          });
+        }
+
+        if (google.accounts?.oauth2) {
+          modalGoogleTokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: modalGoogleConfig.google_client_id,
+            scope: 'email profile openid',
+            callback: async (tokenResponse) => {
+              if (tokenResponse.error) {
+                showToast(`Google Sign-In: ${tokenResponse.error}`, 'error');
+                return;
+              }
+              showToast('Fetching Google profile...', 'info');
+              try {
+                const userinfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                  headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                });
+                const profile = await userinfoRes.json();
+                const res = await fetch('/api/auth/google', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    email: profile.email,
+                    name: profile.name,
+                    avatar_url: profile.picture
+                  })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                  currentUser = data.user;
+                  renderUserAuth(currentUser);
+                  if (alertAuthModal) alertAuthModal.classList.add('hidden');
+                  showToast(`Signed in as ${currentUser.name || currentUser.email}!`, 'success');
+                  fetchProducts();
+                }
+              } catch (err) {
+                showToast('Failed to retrieve Google profile', 'error');
+              }
             }
-          },
-          auto_select: false
-        });
+          });
+        }
       }
     } catch (e) {
       console.warn('Dashboard Google Auth setup deferred:', e);
@@ -2853,14 +2896,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (modalGoogleSignInBtn) {
     modalGoogleSignInBtn.addEventListener('click', async () => {
-      try {
-        const cfgRes = await fetch('/api/auth/config');
-        const cfg = await cfgRes.json();
-        if (cfg.google_client_id && typeof google !== 'undefined' && google.accounts?.id) {
-          google.accounts.id.prompt();
+      if (modalGoogleTokenClient) {
+        try {
+          modalGoogleTokenClient.requestAccessToken({ prompt: 'select_account' });
           return;
+        } catch (err) {
+          console.warn('Modal Google Token Client failed:', err);
         }
-      } catch (err) {}
+      }
+
+      if (modalGoogleConfig?.google_client_id && typeof google !== 'undefined' && google.accounts?.id) {
+        try {
+          google.accounts.id.prompt();
+          showToast('Google Sign-In prompt triggered.', 'info');
+          return;
+        } catch (err) {}
+      }
 
       showToast('Authenticating with Google Account...', 'info');
       try {
