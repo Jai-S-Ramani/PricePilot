@@ -28,8 +28,7 @@ from database import (
     create_user, get_user_by_email, get_user_by_id, get_or_create_google_user,
     get_alert_logs_for_user, toggle_user_auto_alerts, process_auto_alerts_for_user,
     get_portfolio_kpis, calculate_deal_score, update_user_notification_settings,
-    calculate_price_forecast, simulate_product_price_drop, reset_product_price,
-    simulate_random_flash_crash, reset_all_product_prices
+    calculate_price_forecast, simulate_product_price_drop, reset_product_price
 )
 from scraper import scrape_amazon_product, extract_asin, SAMPLE_PRODUCTS, search_amazon_products, fetch_amazon_suggestions
 from notifier import build_alert_email_template, send_mail, send_discord_alert, dispatch_multi_channel_alert
@@ -432,49 +431,6 @@ def api_reset_price(product_id):
         "current_price": updated_product["current_price"],
         "message": f"Product price restored to historical baseline (${updated_product['current_price']:.2f})",
         "product": updated_product
-    })
-
-
-@app.route("/api/demo/simulate-flash-deal", methods=["POST"])
-def api_demo_simulate_flash_deal():
-    """
-    Triggers an instant portfolio-level flash crash (-35%) on an active tracked product.
-    Updates SQLite, runs automatic alert evaluations, and dispatches in-app notifications.
-    """
-    data = request.get_json(silent=True) or {}
-    drop_pct = float(data.get("drop_percent", 35.0))
-    product_id = data.get("product_id")
-
-    if product_id:
-        product = simulate_product_price_drop(int(product_id), drop_percent=drop_pct)
-    else:
-        product = simulate_random_flash_crash(drop_percent=drop_pct)
-
-    if not product:
-        return jsonify({"status": "error", "message": "No active products found to simulate"}), 404
-
-    # Trigger automatic notification evaluations
-    user_id = session.get("user_id")
-    triggered_alerts = process_auto_alerts_for_user(user_id) if user_id else []
-
-    return jsonify({
-        "status": "success",
-        "message": f"⚡ Simulated -{drop_pct:.0f}% Flash Crash on {product['title'][:40]}...! Price dropped to ${product['current_price']:.2f}",
-        "product": product,
-        "auto_alerts_triggered": len(triggered_alerts)
-    })
-
-
-@app.route("/api/demo/reset-all", methods=["POST"])
-def api_demo_reset_all():
-    """
-    Restores all tracked items back to their verified market baselines.
-    """
-    count = reset_all_product_prices()
-    return jsonify({
-        "status": "success",
-        "message": f"Restored {count} products to verified market baselines.",
-        "restored_count": count
     })
 
 
