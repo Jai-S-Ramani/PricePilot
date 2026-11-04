@@ -2740,13 +2740,24 @@ html, body {
     gap: 10px;
   }
 
-  .nav-notif-dropdown {
-    position: fixed;
-    top: 60px;
-    left: 12px;
-    right: 12px;
-    width: auto;
-    max-width: none;
+  .notif-dropdown,
+  #notifDropdown {
+    position: fixed !important;
+    top: 58px !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: 75vh !important;
+    z-index: 99999 !important;
+    margin: 0 auto !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 20px rgba(16, 185, 129, 0.2) !important;
+  }
+
+  .notif-dropdown .notif-list {
+    max-height: calc(75vh - 55px);
+    overflow-y: auto;
   }
 
   .toast-container {
