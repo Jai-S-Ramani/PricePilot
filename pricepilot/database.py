@@ -193,7 +193,13 @@ def seed_default_data(conn):
     cursor = conn.cursor()
     today = datetime.date.today()
 
-    for asin, item in SAMPLE_PRODUCTS.items():
+    # Seed exactly 3 premier showcase products across key categories (Laptops, Audio, Wearables)
+    showcase_asins = ["B0DMXNPT66", "B09B8V1LZ3", "B0BY8MCQ9S"]
+    seed_items = [SAMPLE_PRODUCTS[asin] for asin in showcase_asins if asin in SAMPLE_PRODUCTS]
+    if not seed_items:
+        seed_items = list(SAMPLE_PRODUCTS.values())[:3]
+
+    for item in seed_items:
         target_price = round(item["price"] * 0.90, 2)
         cursor.execute("""
             INSERT INTO products (asin, title, current_price, original_price, target_price, url, image_url, rating, reviews_count, availability, category, last_scraped)
