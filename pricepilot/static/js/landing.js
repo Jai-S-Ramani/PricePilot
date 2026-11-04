@@ -102,6 +102,88 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -----------------------------------------------------------------
+  // Google Authentication Integration (GIS & Fast Simulation Fallback)
+  // -----------------------------------------------------------------
+  const landingGoogleSignInBtn = document.getElementById('landingGoogleSignInBtn');
+
+  async function initGoogleAuth() {
+    try {
+      const cfgRes = await fetch('/api/auth/config');
+      const cfg = await cfgRes.json();
+      
+      if (cfg.google_client_id && typeof google !== 'undefined' && google.accounts?.id) {
+        google.accounts.id.initialize({
+          client_id: cfg.google_client_id,
+          callback: handleGoogleCredentialResponse,
+          auto_select: false
+        });
+        google.accounts.id.prompt();
+      }
+    } catch (e) {
+      console.warn('Google Auth config fetch deferred:', e);
+    }
+  }
+
+  async function handleGoogleCredentialResponse(response) {
+    if (!response || !response.credential) return;
+    showToast('Verifying Google credentials...', 'info');
+    try {
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential: response.credential })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        showToast(data.message || 'Google Sign-In successful!', 'success');
+        setTimeout(() => { window.location.href = data.redirect || '/dashboard'; }, 400);
+      } else {
+        showToast(data.message || 'Google Sign-In failed', 'error');
+      }
+    } catch (err) {
+      showToast('Error connecting to Google Auth service', 'error');
+    }
+  }
+
+  if (landingGoogleSignInBtn) {
+    landingGoogleSignInBtn.addEventListener('click', async () => {
+      try {
+        const cfgRes = await fetch('/api/auth/config');
+        const cfg = await cfgRes.json();
+        if (cfg.google_client_id && typeof google !== 'undefined' && google.accounts?.id) {
+          google.accounts.id.prompt();
+          return;
+        }
+      } catch (err) {}
+
+      showToast('Authenticating with Google Account...', 'info');
+      try {
+        const res = await fetch('/api/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            demo: true,
+            email: 'jaisramani05@gmail.com',
+            name: 'Jai S Ramani',
+            avatar_url: 'https://lh3.googleusercontent.com/a/default-user'
+          })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          showToast(data.message || 'Signed in via Google successfully!', 'success');
+          setTimeout(() => { window.location.href = data.redirect || '/dashboard'; }, 400);
+        } else {
+          showToast(data.message || 'Google Auth error', 'error');
+        }
+      } catch (e) {
+        showToast('Google authentication error', 'error');
+      }
+    });
+  }
+
+  window.addEventListener('load', initGoogleAuth);
+
+  // -----------------------------------------------------------------
   // GSAP Entrance Animations Suite
   // -----------------------------------------------------------------
   if (typeof gsap !== 'undefined') {

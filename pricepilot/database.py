@@ -38,11 +38,14 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             email TEXT UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL,
+            password_hash TEXT,
             name TEXT,
             auto_alerts_enabled INTEGER DEFAULT 1,
             discord_webhook TEXT,
             telegram_chat_id TEXT,
+            google_id TEXT,
+            avatar_url TEXT,
+            auth_provider TEXT DEFAULT 'local',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     """)
@@ -56,6 +59,12 @@ def init_db():
         cursor.execute("ALTER TABLE users ADD COLUMN discord_webhook TEXT")
     if "telegram_chat_id" not in user_cols:
         cursor.execute("ALTER TABLE users ADD COLUMN telegram_chat_id TEXT")
+    if "google_id" not in user_cols:
+        cursor.execute("ALTER TABLE users ADD COLUMN google_id TEXT")
+    if "avatar_url" not in user_cols:
+        cursor.execute("ALTER TABLE users ADD COLUMN avatar_url TEXT")
+    if "auth_provider" not in user_cols:
+        cursor.execute("ALTER TABLE users ADD COLUMN auth_provider TEXT DEFAULT 'local'")
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS products (
@@ -244,7 +253,7 @@ def create_user(email: str, password_hash: str, name: str = None):
 def get_user_by_email(email: str):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, email, password_hash, name, auto_alerts_enabled, discord_webhook, telegram_chat_id, created_at FROM users WHERE LOWER(email) = LOWER(?)", (email.strip(),))
+    cursor.execute("SELECT id, email, password_hash, name, avatar_url, google_id, auth_provider, auto_alerts_enabled, discord_webhook, telegram_chat_id, created_at FROM users WHERE LOWER(email) = LOWER(?)", (email.strip(),))
     row = cursor.fetchone()
     conn.close()
     return dict(row) if row else None
@@ -252,10 +261,44 @@ def get_user_by_email(email: str):
 def get_user_by_id(user_id: int):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, email, name, auto_alerts_enabled, discord_webhook, telegram_chat_id, created_at FROM users WHERE id = ?", (user_id,))
+    cursor.execute("SELECT id, email, name, avatar_url, google_id, auth_provider, auto_alerts_enabled, discord_webhook, telegram_chat_id, created_at FROM users WHERE id = ?", (user_id,))
     row = cursor.fetchone()
     conn.close()
     return dict(row) if row else None
+
+def get_or_create_google_user(email: str, name: str = None, google_id: str = None, avatar_url: str = None):
+    """Retrieves existing user by email or creates a new user via Google OAuth."""
+    import secrets
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, email, name, avatar_url, google_id, auth_provider, auto_alerts_enabled, discord_webhook, telegram_chat_id, created_at 
+        FROM users 
+        WHERE LOWER(email) = LOWER(?)
+    """, (email.strip(),))
+    row = cursor.fetchone()
+    
+    if row:
+        user = dict(row)
+        cursor.execute("""
+            UPDATE users 
+            SET google_id = COALESCE(?, google_id),
+                avatar_url = COALESCE(?, avatar_url),
+                name = COALESCE(name, ?)
+            WHERE id = ?
+        """, (google_id, avatar_url, name, user["id"]))
+        conn.commit()
+        conn.close()
+        return get_user_by_id(user["id"])
+    else:
+        cursor.execute("""
+            INSERT INTO users (email, password_hash, name, google_id, avatar_url, auth_provider)
+            VALUES (?, ?, ?, ?, ?, 'google')
+        """, (email.lower().strip(), f"google_oauth_{secrets.token_hex(16)}", name or email.split('@')[0], google_id, avatar_url))
+        conn.commit()
+        user_id = cursor.lastrowid
+        conn.close()
+        return get_user_by_id(user_id)
 
 def update_user_notification_settings(user_id: int, discord_webhook: str = None, telegram_chat_id: str = None):
     conn = get_db_connection()

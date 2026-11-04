@@ -370,6 +370,38 @@ class TestAdvancedFeatures(unittest.TestCase):
         self.assertEqual(mark_data.get("status"), "success")
         self.assertEqual(mark_data.get("unread_count"), 0)
 
+    def test_google_auth_config_endpoint(self):
+        """Test GET /api/auth/config returns google auth metadata."""
+        res = self.client.get('/api/auth/config')
+        self.assertEqual(res.status_code, 200)
+        data = json.loads(res.data)
+        self.assertEqual(data.get("status"), "success")
+        self.assertIn("google_client_id", data)
+        self.assertIn("google_auth_enabled", data)
+
+    def test_google_auth_demo_simulation(self):
+        """Test POST /api/auth/google with simulation fallback."""
+        payload = {
+            "demo": True,
+            "email": "tester.google@example.com",
+            "name": "Google Tester",
+            "avatar_url": "https://example.com/avatar.png"
+        }
+        res = self.client.post('/api/auth/google', data=json.dumps(payload), content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        data = json.loads(res.data)
+        self.assertEqual(data.get("status"), "success")
+        self.assertEqual(data["user"]["email"], "tester.google@example.com")
+        self.assertEqual(data["user"]["name"], "Google Tester")
+        self.assertEqual(data["user"]["avatar_url"], "https://example.com/avatar.png")
+
+    def test_google_auth_missing_credentials(self):
+        """Test POST /api/auth/google returns 400 on empty payload."""
+        res = self.client.post('/api/auth/google', data=json.dumps({}), content_type='application/json')
+        self.assertEqual(res.status_code, 400)
+        data = json.loads(res.data)
+        self.assertEqual(data.get("status"), "error")
+
 
 if __name__ == '__main__':
     unittest.main()

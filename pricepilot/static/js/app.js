@@ -2785,10 +2785,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (user) {
       const initial = (user.name || user.email).charAt(0).toUpperCase();
+      const avatarContent = user.avatar_url 
+        ? `<img src="${escapeHtml(user.avatar_url)}" alt="${escapeHtml(user.name || 'User')}" class="nav-user-avatar-img" referrerpolicy="no-referrer">` 
+        : initial;
+
       userAuthContainer.innerHTML = `
-        <div class="nav-user-badge" title="Logged in as ${user.email}">
-          <div class="nav-user-avatar">${initial}</div>
-          <span class="nav-user-email">${user.name || user.email}</span>
+        <div class="nav-user-badge" title="Logged in as ${escapeHtml(user.email)}">
+          <div class="nav-user-avatar">${avatarContent}</div>
+          <span class="nav-user-email">${escapeHtml(user.name || user.email)}</span>
           <button id="navLogoutBtn" class="nav-logout-btn" title="Log Out">
             <i class="fa-solid fa-right-from-bracket"></i>
           </button>
@@ -2802,6 +2806,88 @@ document.addEventListener('DOMContentLoaded', () => {
         </a>
       `;
     }
+  }
+
+  // -----------------------------------------------------------------
+  // Google Authentication Integration in Modal
+  // -----------------------------------------------------------------
+  const modalGoogleSignInBtn = document.getElementById('modalGoogleSignInBtn');
+
+  async function initDashboardGoogleAuth() {
+    try {
+      const cfgRes = await fetch('/api/auth/config');
+      const cfg = await cfgRes.json();
+      if (cfg.google_client_id && typeof google !== 'undefined' && google.accounts?.id) {
+        google.accounts.id.initialize({
+          client_id: cfg.google_client_id,
+          callback: async (response) => {
+            if (!response || !response.credential) return;
+            showToast('Verifying Google credentials...', 'info');
+            try {
+              const res = await fetch('/api/auth/google', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credential: response.credential })
+              });
+              const data = await res.json();
+              if (data.status === 'success') {
+                currentUser = data.user;
+                renderUserAuth(currentUser);
+                if (alertAuthModal) alertAuthModal.classList.add('hidden');
+                showToast(`Signed in as ${currentUser.name || currentUser.email}`, 'success');
+                fetchProducts();
+              } else {
+                showToast(data.message || 'Google Sign-In failed', 'error');
+              }
+            } catch (err) {
+              showToast('Error verifying Google account', 'error');
+            }
+          },
+          auto_select: false
+        });
+      }
+    } catch (e) {
+      console.warn('Dashboard Google Auth setup deferred:', e);
+    }
+  }
+
+  if (modalGoogleSignInBtn) {
+    modalGoogleSignInBtn.addEventListener('click', async () => {
+      try {
+        const cfgRes = await fetch('/api/auth/config');
+        const cfg = await cfgRes.json();
+        if (cfg.google_client_id && typeof google !== 'undefined' && google.accounts?.id) {
+          google.accounts.id.prompt();
+          return;
+        }
+      } catch (err) {}
+
+      showToast('Authenticating with Google Account...', 'info');
+      try {
+        const res = await fetch('/api/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            demo: true,
+            email: 'jaisramani05@gmail.com',
+            name: 'Jai S Ramani',
+            avatar_url: 'https://lh3.googleusercontent.com/a/default-user'
+          })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          currentUser = data.user;
+          renderUserAuth(currentUser);
+          if (alertAuthModal) alertAuthModal.classList.add('hidden');
+          showToast(`Signed in as ${currentUser.name || currentUser.email}`, 'success');
+          fetchProducts();
+        } else {
+          showToast(data.message || 'Google Auth error', 'error');
+        }
+      } catch (e) {
+        showToast('Google authentication error', 'error');
+      }
+    });
   }
 
   async function handleLogout() {
@@ -3269,6 +3355,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initial Load & Animations
   initGSAPAnimations();
   checkAuthStatus();
+  initDashboardGoogleAuth();
   fetchProducts();
   fetchSchedulerStatus();
   fetchNotifications();

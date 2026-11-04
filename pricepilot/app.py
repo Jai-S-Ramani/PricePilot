@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from database import (
     init_db, get_all_products, get_product_by_id, save_or_update_product,
     delete_product, update_target_price, get_price_history, CSV_PATH,
-    create_user, get_user_by_email, get_user_by_id,
+    create_user, get_user_by_email, get_user_by_id, get_or_create_google_user,
     get_alert_logs_for_user, toggle_user_auto_alerts, process_auto_alerts_for_user,
     get_portfolio_kpis, calculate_deal_score, update_user_notification_settings,
     calculate_price_forecast, simulate_product_price_drop, reset_product_price
@@ -133,20 +133,69 @@ def api_auth_logout():
     return jsonify({"status": "success", "message": "Logged out successfully"})
 
 
-@app.route("/api/auth/demo", methods=["GET", "POST"])
-def api_auth_demo():
-    email = "jaisramani05@gmail.com"
-    user = get_user_by_email(email)
-    if not user:
-        user_id = create_user(email, generate_password_hash("demo1234"), name="Jai S Ramani")
-        user = get_user_by_id(user_id)
-    session["user_id"] = user["id"]
-    session["user_email"] = user["email"]
-    if request.method == "GET":
-        return redirect(url_for("dashboard"))
+@app.route("/api/auth/config", methods=["GET"])
+def api_auth_config():
+    """Returns public authentication config such as Google Client ID."""
+    client_id = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
     return jsonify({
         "status": "success",
-        "message": f"Welcome, {user.get('name') or user['email']}! Demo session active.",
+        "google_client_id": client_id,
+        "google_auth_enabled": bool(client_id)
+    })
+
+
+@app.route("/api/auth/google", methods=["POST"])
+def api_auth_google():
+    """Authenticates or provisions user via Google Identity Services (GIS)."""
+    data = request.json or {}
+    credential = data.get("credential")
+
+    email = None
+    name = None
+    google_id = None
+    avatar_url = None
+
+    # 1. Real Google Identity Services (GIS) Token Verification
+    if credential:
+        try:
+            import urllib.request
+            import json as pyjson
+            req_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={credential}"
+            req = urllib.request.Request(req_url, headers={"User-Agent": "PricePilot-Auth/2.4"})
+            with urllib.request.urlopen(req, timeout=5.0) as resp:
+                token_info = pyjson.loads(resp.read().decode("utf-8"))
+
+                # Verify audience if client ID is configured
+                client_id = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
+                if client_id and token_info.get("aud") != client_id:
+                    return jsonify({"status": "error", "message": "Invalid token audience"}), 401
+
+                email = token_info.get("email")
+                name = token_info.get("name") or token_info.get("given_name")
+                google_id = token_info.get("sub")
+                avatar_url = token_info.get("picture")
+        except Exception as e:
+            return jsonify({"status": "error", "message": f"Google token verification failed: {str(e)}"}), 400
+
+    # 2. Instant Demo / Local Simulation Fallback
+    elif data.get("demo") or data.get("mock"):
+        email = data.get("email", "jaisramani05@gmail.com").strip().lower()
+        name = data.get("name", "Jai S Ramani").strip()
+        google_id = data.get("google_id", "google_sim_109283741829")
+        avatar_url = data.get("avatar_url", "https://lh3.googleusercontent.com/a/default-user")
+    else:
+        return jsonify({"status": "error", "message": "Missing Google authentication credential"}), 400
+
+    if not email:
+        return jsonify({"status": "error", "message": "Unable to extract email from Google identity"}), 400
+
+    user = get_or_create_google_user(email, name=name, google_id=google_id, avatar_url=avatar_url)
+    session["user_id"] = user["id"]
+    session["user_email"] = user["email"]
+
+    return jsonify({
+        "status": "success",
+        "message": f"Welcome back, {user.get('name') or user.get('email')}!",
         "user": user,
         "redirect": "/dashboard"
     })
