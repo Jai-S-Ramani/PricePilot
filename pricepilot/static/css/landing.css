@@ -1567,7 +1567,40 @@ html, body {
   }
 
   .hero-section {
-    padding: 36px 14px 44px;
+    padding: 32px 14px 40px;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+  }
+
+  .hero-container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .hero-content {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .hero-auth-card {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px 16px;
+    border-radius: var(--radius-lg);
+    box-sizing: border-box;
+    align-self: center;
+    position: relative;
+    left: auto;
+    right: auto;
+    transform: none;
   }
 
   .hero-badge {
@@ -1702,7 +1735,31 @@ html, body {
   }
 
   .hero-section {
-    padding: 24px 12px 36px;
+    padding: 20px 10px 32px;
+  }
+
+  .hero-auth-card {
+    padding: 16px 12px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .auth-card-body {
+    padding: 14px 4px 6px;
+  }
+
+  .auth-card-header {
+    margin-bottom: 14px;
+    padding: 0;
+  }
+
+  .landing-auth-tabs {
+    padding: 3px;
+  }
+
+  .landing-tab {
+    padding: 7px 10px;
+    font-size: 0.8rem;
   }
 
   .hero-title {

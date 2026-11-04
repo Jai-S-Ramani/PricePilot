@@ -250,21 +250,26 @@ document.addEventListener('DOMContentLoaded', () => {
   // GSAP Entrance Animations Suite
   // -----------------------------------------------------------------
   if (typeof gsap !== 'undefined') {
+    const isMobile = window.innerWidth <= 768;
+
     // Hero Entrance
     gsap.from('.hero-badge, .hero-title, .hero-subtitle, .hero-ctas, .hero-stats', {
       duration: 0.8,
-      y: 35,
+      y: 30,
       opacity: 0,
-      stagger: 0.1,
-      ease: 'power3.out'
+      stagger: 0.08,
+      ease: 'power3.out',
+      clearProps: 'transform'
     });
 
     gsap.from('.hero-auth-card', {
-      duration: 0.9,
-      x: 45,
+      duration: 0.8,
+      y: isMobile ? 30 : 0,
+      x: isMobile ? 0 : 35,
       opacity: 0,
       ease: 'power3.out',
-      delay: 0.2
+      delay: 0.15,
+      clearProps: 'all'
     });
 
     // Step cards entrance
