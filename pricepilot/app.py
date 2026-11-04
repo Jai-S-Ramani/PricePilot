@@ -476,6 +476,7 @@ def api_scrape_all():
 
 
 @app.route("/api/alerts/activity", methods=["GET"])
+@app.route("/api/alerts/history", methods=["GET"])
 def api_get_alert_activity():
     user_id = session.get("user_id")
     if not user_id:
@@ -627,8 +628,12 @@ def api_scheduler_trigger():
     return jsonify(result)
 
 
+@app.route("/api/export", methods=["GET"])
 @app.route("/api/export/csv", methods=["GET"])
 def api_export_csv():
+    fmt = request.args.get("format", "csv").lower()
+    if fmt == "json":
+        return api_export_all_json()
     if CSV_PATH.exists():
         return send_file(CSV_PATH, as_attachment=True, download_name="pricepilot_dataset.csv")
     return jsonify({"status": "error", "message": "CSV dataset file not found"}), 404
