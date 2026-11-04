@@ -2518,7 +2518,23 @@ body::before {
 
 /* ==========================================================================
    RESPONSIVENESS (BREAKPOINTS)
+   Device-Adaptive Mobile, Tablet & Desktop Layout Engine
    ========================================================================== */
+
+/* Universal Mobile Overflow Protection */
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-text-size-adjust: 100%;
+}
+
+.market-ticker-wrap {
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+}
 
 @media (max-width: 1200px) {
   .kpi-grid {
@@ -2526,30 +2542,268 @@ body::before {
   }
 }
 
-@media (max-width: 768px) {
-  .navbar {
-    height: auto;
-    padding: 12px 0;
-  }
-
-  .kpi-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 1024px) {
+  .main-layout {
+    padding: 0 18px 100px 18px;
+    gap: 22px;
   }
 
   .products-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    padding: 0 12px 90px 12px;
+    gap: 18px;
   }
 
-  .stats-ribbon {
-    grid-template-columns: 1fr 1fr;
+  .navbar {
+    height: auto;
+    padding: 8px 0;
   }
 
-  .filter-controls {
+  .nav-container {
+    padding: 0 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .brand-navbar-img {
+    height: 32px;
+    max-width: 125px;
+  }
+
+  .brand-text h1 {
+    font-size: 1.05rem;
+  }
+
+  .brand-text p {
+    display: none;
+  }
+
+  .scheduler-pill {
+    display: none;
+  }
+
+  .nav-actions {
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .currency-picker-btn {
+    padding: 5px 8px;
+    font-size: 0.76rem;
+  }
+
+  .btn-nav-scrape span:not(.spinner-icon) {
+    display: none;
+  }
+
+  .nav-auth-btn span {
+    display: none;
+  }
+
+  .nav-auth-btn {
+    padding: 6px 9px;
+  }
+
+  /* 2-Column Clean Mobile Analytics Ribbon */
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .kpi-card {
+    padding: 12px 10px;
+  }
+
+  .kpi-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
+  .kpi-info h3 {
+    font-size: 1.25rem;
+  }
+
+  .kpi-title {
+    font-size: 0.72rem;
+  }
+
+  /* Catalog Controls & Horizontal Channel Swipe */
+  .catalog-controls-card {
+    padding: 14px 12px;
+    border-radius: var(--radius-md);
+  }
+
+  .filter-controls-wrap {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .search-input-wrap {
     width: 100%;
   }
 
   .search-input {
     width: 100%;
+    font-size: 0.88rem;
+  }
+
+  .channel-filter-tabs,
+  .filter-channels {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .channel-tab {
+    flex-shrink: 0;
+    padding: 6px 11px;
+    font-size: 0.76rem;
+  }
+
+  /* Single Column Mobile Product Cards */
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .product-card {
+    padding: 16px 12px;
+    border-radius: var(--radius-md);
+  }
+
+  .product-card-top {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .product-img {
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+    object-fit: contain;
+  }
+
+  .product-title {
+    font-size: 0.92rem;
+    line-height: 1.35;
+  }
+
+  .current-price {
+    font-size: 1.35rem;
+  }
+
+  .action-buttons-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .btn-grid-action {
+    padding: 9px 6px;
+    font-size: 0.78rem;
+    min-height: 40px;
+  }
+
+  /* Adaptive Full-Width Modals */
+  .modal {
+    padding: 8px;
+  }
+
+  .modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 8px auto !important;
+    max-height: 92vh;
+    padding: 16px 12px !important;
+    border-radius: 16px !important;
+    gap: 16px;
+  }
+
+  .modal-header h3 {
+    font-size: 1.15rem;
+  }
+
+  .competitor-stores-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .nav-notif-dropdown {
+    position: fixed;
+    top: 60px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+  }
+
+  .toast-container {
+    left: 12px;
+    right: 12px;
+    bottom: 14px;
+  }
+
+  .toast {
+    width: 100%;
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 6px 0;
+  }
+
+  .nav-container {
+    padding: 0 8px;
+  }
+
+  .brand-navbar-img {
+    height: 26px;
+    max-width: 105px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .kpi-card {
+    padding: 10px 8px;
+  }
+
+  .kpi-info h3 {
+    font-size: 1.15rem;
+  }
+
+  .kpi-title {
+    font-size: 0.68rem;
+  }
+
+  .current-price {
+    font-size: 1.25rem;
+  }
+
+  .action-buttons-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .btn-grid-action {
+    font-size: 0.74rem;
+    padding: 8px 4px;
   }
 }
 

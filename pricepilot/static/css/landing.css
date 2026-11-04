@@ -1497,7 +1497,23 @@ body::before {
 
 /* ==========================================================================
    RESPONSIVENESS (BREAKPOINTS)
+   Device-Adaptive Mobile & Tablet Layout Engine
    ========================================================================== */
+
+/* Universal Mobile Overflow Protection */
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-text-size-adjust: 100%;
+}
+
+.market-ticker-wrap {
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+}
 
 @media (max-width: 1024px) {
   .hero-container {
@@ -1507,13 +1523,14 @@ body::before {
 
   .preview-container {
     grid-template-columns: 1fr;
-    gap: 40px;
-    padding: 36px 24px;
+    gap: 36px;
+    padding: 32px 20px;
   }
 
   .steps-grid,
   .features-grid {
     grid-template-columns: 1fr 1fr;
+    gap: 20px;
   }
 
   .hero-title {
@@ -1523,31 +1540,190 @@ body::before {
 
 @media (max-width: 768px) {
   .landing-navbar {
-    height: auto;
-    padding: 14px 0;
+    height: 58px;
+    padding: 0;
+  }
+
+  .landing-nav-container {
+    padding: 0 14px;
+  }
+
+  .brand-navbar-img {
+    height: 32px;
+    max-width: 130px;
   }
 
   .nav-links {
     display: none;
   }
 
+  .landing-nav-actions {
+    gap: 8px;
+  }
+
+  .nav-action-btn {
+    padding: 7px 12px;
+    font-size: 0.8rem;
+  }
+
+  .hero-section {
+    padding: 36px 14px 44px;
+  }
+
+  .hero-badge {
+    font-size: 0.72rem;
+    padding: 5px 12px;
+  }
+
   .hero-title {
-    font-size: 2.1rem;
+    font-size: clamp(1.85rem, 6.5vw, 2.4rem);
+    line-height: 1.18;
+  }
+
+  .hero-subtitle {
+    font-size: 0.94rem;
+    line-height: 1.55;
+    margin-bottom: 24px;
+  }
+
+  .hero-cta {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .hero-cta .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 13px 18px;
+    font-size: 0.92rem;
   }
 
   .hero-stats {
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .hero-stat-card {
+    padding: 14px 12px;
+  }
+
+  .stat-number {
+    font-size: 1.4rem;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
   }
 
   .steps-grid,
   .features-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .tech-container,
   .footer-container {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .preview-section {
+    padding: 40px 14px;
+  }
+
+  .preview-container {
+    padding: 22px 14px;
+    gap: 20px;
+  }
+
+  .preview-meta-stats {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .section-header {
+    margin-bottom: 32px;
+    padding: 0 10px;
+  }
+
+  .section-title {
+    font-size: 1.65rem;
+  }
+
+  .auth-card-body {
+    padding: 20px 14px;
+  }
+
+  .auth-card-header {
+    padding: 16px 14px;
+  }
+
+  .toast-container {
+    left: 14px;
+    right: 14px;
+    bottom: 16px;
+  }
+
+  .toast {
+    width: 100%;
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-navbar {
+    height: 52px;
+  }
+
+  .landing-nav-container {
+    padding: 0 10px;
+  }
+
+  .brand-navbar-img {
+    height: 28px;
+    max-width: 110px;
+  }
+
+  .nav-action-btn span,
+  .nav-action-btn:not(.btn-primary) span {
+    display: inline;
+  }
+
+  .landing-nav-actions .btn-secondary {
+    padding: 6px 9px;
+    font-size: 0.76rem;
+  }
+
+  .landing-nav-actions .btn-primary {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+  }
+
+  .hero-section {
+    padding: 24px 12px 36px;
+  }
+
+  .hero-title {
+    font-size: 1.8rem;
+  }
+
+  .hero-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .stat-number {
+    font-size: 1.25rem;
+  }
+
+  .ticker-badge {
+    padding: 0 10px;
+    font-size: 0.65rem;
+  }
+
+  .ticker-item {
+    font-size: 0.72rem;
   }
 }
