@@ -9,6 +9,7 @@
 </p>
 
 <p align="center">
+  <a href="https://pricepilot-nwmk.onrender.com/"><img src="https://img.shields.io/badge/Live%20Demo-pricepilot--nwmk.onrender.com-10B981?style=for-the-badge&logo=render&logoColor=white" alt="Live Demo"></a>
   <img src="https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.9+">
   <img src="https://img.shields.io/badge/Flask-3.0%2B-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask">
   <img src="https://img.shields.io/badge/SQLite3-Production-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite3">
@@ -19,6 +20,9 @@
 
 ---
 
+> 🚀 **Live Production Deployment**: [https://pricepilot-nwmk.onrender.com/](https://pricepilot-nwmk.onrender.com/)  
+> *(Test the live command center, 18-store competitor arbitrage, and 1-click instant guest demo)*  
+>
 > **Architect & Lead Engineer**: **Jai S Ramani**  
 > 📧 **Email**: [jaisramani05@gmail.com](mailto:jaisramani05@gmail.com) | 💼 **LinkedIn**: [jai-s-ramani-2948532bb](https://www.linkedin.com/in/jai-s-ramani-2948532bb) | 🐙 **GitHub**: [Jai-S-Ramani](https://github.com/Jai-S-Ramani)
 
